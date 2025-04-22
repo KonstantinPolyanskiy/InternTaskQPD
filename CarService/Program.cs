@@ -18,6 +18,7 @@ builder.Services.AddDbContext<CarDbContext>(options =>
 });
 
 builder.Services.AddScoped<ICarDao, EntityCarDao>();
+
 builder.Services.AddScoped<ICarService, CarService.Services.CarService.CarService>();   
 
 builder.Services.AddAutoMapper(typeof(CarMappingProfile));
