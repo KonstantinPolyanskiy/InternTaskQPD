@@ -1,4 +1,4 @@
-﻿namespace CarService.Models.Car.Requests;
+﻿namespace CarService.Models.Car.Dtos;
 
 public class CarResponseDto
 {
