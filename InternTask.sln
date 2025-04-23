@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarService", "CarService\CarService.csproj", "{C0CECAC4-7B2A-4DB1-927D-4616491072BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car.Api", "Car.Api\Car.Api.csproj", "{C0CECAC4-7B2A-4DB1-927D-4616491072BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car.App", "Car.App\Car.App.csproj", "{66CA5C40-1135-4F61-BEA1-E24953CA85A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car.Dal", "Car.Dal\Car.Dal.csproj", "{C7E14332-8FDF-42F6-A73B-2A188607F64D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +16,13 @@ Global
 		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
