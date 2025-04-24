@@ -48,18 +48,14 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
         var car = mapper.Map<ICar>(carEntity);
         if (car is null) throw new ApplicationException("fail convert entity to business object ");
         
-        if (carEntity.PhotoId is not null)
-            car.Photo = await photoRepository.GetPhotoAsync((int)carEntity.PhotoId);
-        
         return car;
     }
 
     public async Task<ICar> UpdateCarAsync(PatchCarServicesDto carServicesDto, int id)
     {
         var dataDto = mapper.Map<UpdatedCarDataLayerDto>(carServicesDto);
-        var updatingDataAsEntity = mapper.Map<Car.Dal.Models.Car>(dataDto);
         
-        var updatedCarEntity = await carRepository.UpdateCarAsync(updatingDataAsEntity, id);
+        var updatedCarEntity = await carRepository.UpdateCarAsync(dataDto, id);
         if (updatedCarEntity is null) throw new ApplicationException("Failed to update car");
         
         return mapper.Map<ICar>(updatedCarEntity);

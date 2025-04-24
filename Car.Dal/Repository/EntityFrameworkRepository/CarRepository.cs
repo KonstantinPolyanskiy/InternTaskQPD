@@ -29,7 +29,7 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 
     public async Task<Models.Car?> GetCarByIdAsync(int id)
     {
-        var car = await dbContext.Cars.FindAsync(id);
+        var car = await dbContext.Cars.Include(c => c.Photo).FirstOrDefaultAsync(x => x.Id == id);
         return car;
     }
 
@@ -51,16 +51,16 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
         return await dbContext.Cars.ToListAsync();
     }
 
-    public async Task<Models.Car?> UpdateCarAsync(Models.Car updatingCar, int carId)
+    public async Task<Models.Car?> UpdateCarAsync(UpdatedCarDataLayerDto updatingCar, int carId)
     {
-        dbContext.Update(updatingCar);
-        await dbContext.SaveChangesAsync();
-     
         var car = await dbContext.Cars
             .Include(c => c.Photo)
             .FirstOrDefaultAsync(c => c.Id == carId);
         if (car is null) return null;
         
+        dbContext.Update(updatingCar);
+        await dbContext.SaveChangesAsync();
+
         return car;
     }
 }

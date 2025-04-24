@@ -57,4 +57,18 @@ public class AddedCarDataLayerDto
 /// <summary>
 /// DTO обновляемой машины в слое данных  
 /// </summary>
-public class UpdatedCarDataLayerDto : AddedCarDataLayerDto {}
+public class UpdatedCarDataLayerDto
+{
+    public string? Brand { get; set; }
+    
+    public string? Color { get; set; }
+    
+    public decimal? Price { get; set; }
+    
+    public ApplicationPhotoModel? Photo { get; set; }
+    
+    public int? Mileage { get; set; }
+    
+    public string? CurrentOwner { get; set; }
+    public CarTypes? CarType { get; set; }
+}

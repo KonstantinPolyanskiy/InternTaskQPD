@@ -29,8 +29,8 @@ public interface ICarRepository
     /// <summary>
     /// Обновить машину по id
     /// </summary>
-    /// <param name="newCar">Поля для обновления (должны быть не null)</param>
+    /// <param name="dto">Поля для обновления (должны быть не null для обновления)</param>
     /// <param name="id">id обновляемой машины</param>
     /// <returns>Обновленная машина, null - если такой нет</returns>
-    public Task<Models.Car?> UpdateCarAsync(Models.Car newCar, int id);
+    public Task<Models.Car?> UpdateCarAsync(UpdatedCarDataLayerDto dto, int id);
 }
