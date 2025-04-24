@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Car.App.Models;
 using Contracts.Shared;
+using Contracts.Types;
 
 namespace Car.App.Converters;
 

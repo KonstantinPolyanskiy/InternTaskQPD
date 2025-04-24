@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Car.App.Models;
 
-namespace CarService.Models;
+namespace Car.Api.Profiles.Models;
 
 /// <summary>
 /// Описывает запрос с данными на добавление новой машины

@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
+using Car.Api.Profiles.Models;
 using Car.App.Models;
-using CarService.Models;
 using Contracts.Shared;
-using Microsoft.Extensions.Primitives;
 
 namespace CarService.Converters;
 

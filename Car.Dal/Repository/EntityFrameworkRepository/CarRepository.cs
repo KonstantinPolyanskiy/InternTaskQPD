@@ -9,6 +9,7 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 {
     public async Task<int> SaveCarAsync(AddedCarDataLayerDto dto, int? photoId)
     {
+        // TODO: add mapper
         var entity = new Models.Car()
         {
             Brand = dto.Brand,
@@ -28,17 +29,21 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 
     public async Task<Models.Car?> GetCarByIdAsync(int id)
     {
-        return await dbContext.Cars.FindAsync(id);
+        var car = await dbContext.Cars.FindAsync(id);
+        return car;
     }
 
     public async Task<bool> DeleteCarByIdAsync(int id)
     {
-        dbContext.Cars.Remove(new Models.Car{ Id = id });
-        await dbContext.SaveChangesAsync();
-        
-        var car = await GetCarByIdAsync(id);
+        var car = await dbContext.Cars.FindAsync(id);
 
-        return car is null;
+        if (car is null)
+            return false; 
+
+        dbContext.Cars.Remove(car);
+        await dbContext.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<List<Models.Car>> GetAllCarsAsync()

@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using Car.App.Models;
-using CarService.Extensions;
-using CarService.Models;
+using Car.Api.Profiles.Extensions;
+using Car.Api.Profiles.Models;
 using Contracts.Dtos;
-using Contracts.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Photo = Car.Dal.Models.Photo;
 
 namespace CarService.Controllers;
 
@@ -28,6 +25,9 @@ public class CarController(Car.App.Services.CarService carService, IMapper mappe
         var car = await carService.CreateCarAsync(dto);
         
         var response = mapper.Map<CarResponse>(car);
+        
+        if (car.Photo?.Content != null)
+            response.StandardParameters!.PhotoBase64 = await car.Photo.Content.ToBase64StringAsync(ct);
         
         return Ok(response);
     }

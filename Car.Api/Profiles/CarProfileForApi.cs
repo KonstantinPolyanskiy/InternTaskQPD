@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
+using Car.Api.Profiles.Models;
 using Car.App.Models;
 using CarService.Converters;
-using Contracts.Shared;
-using CarService.Models;
 using Contracts.Dtos;
+using Contracts.Shared;
 
 namespace CarService.Profiles;
 
-public class AutomapperCarProfile : Profile
+public class CarProfileForApi : Profile
 {
-    public AutomapperCarProfile()
+    public CarProfileForApi()
     {
         CreateMap<IFormFile, ApplicationPhotoModel>()
             .ConvertUsing<FormFileToApplicationPhotoConverter>();

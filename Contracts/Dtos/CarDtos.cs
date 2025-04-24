@@ -1,5 +1,5 @@
-﻿using Car.App.Models;
-using Contracts.Shared;
+﻿using Contracts.Shared;
+using Contracts.Types;
 
 namespace Contracts.Dtos;
 

@@ -1,4 +1,4 @@
-﻿namespace Car.App.Models;
+﻿namespace Contracts.Types;
 
 /// <summary>
 /// Возможные типы автомобилей

@@ -3,6 +3,7 @@ using Car.App.Models;
 using Car.Dal.Repository;
 using Contracts.Dtos;
 using Contracts.Shared;
+using Contracts.Types;
 
 namespace Car.App.Services;
 
@@ -23,14 +24,14 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
         // Создаем DTO для data layer с вычисленным типом
         var dataDto = mapper.Map<AddedCarDataLayerDto>(
             carServicesDto,
-            opts => opts.Items[nameof(CarTypes)] = carType);
+            opts => opts.Items["CarType"] = carType);
 
         var photoId = await SavePhotoAsync(dataDto.Photo, photoRepository);
 
         var carId = await carRepository.SaveCarAsync(dataDto, photoId);
-
+        
         // Получаем сохраненную машину и возвращаем
-        return mapper.Map<ICar>(GetCarByIdAsync(carId));
+        return mapper.Map<ICar>(await GetCarByIdAsync(carId));
     }
 
     /// <summary>
@@ -43,10 +44,13 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
     {
         var carEntity = await carRepository.GetCarByIdAsync(carId);
         if (carEntity is null) throw new ApplicationException("Car could not be found");
-
+        
         var car = mapper.Map<ICar>(carEntity);
         if (car is null) throw new ApplicationException("fail convert entity to business object ");
-
+        
+        if (carEntity.PhotoId is not null)
+            car.Photo = await photoRepository.GetPhotoAsync((int)carEntity.PhotoId);
+        
         return car;
     }
 
@@ -94,7 +98,7 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
     private static CarTypes DetectCarType(AddedCarServicesDto carServicesDto)
     {
         // Есть владелец и пробег больше 0 - БУ
-        if (string.IsNullOrWhiteSpace(carServicesDto.CurrentOwner) || carServicesDto.Mileage <= 0) return CarTypes.UsedCar;
+        if (!string.IsNullOrWhiteSpace(carServicesDto.CurrentOwner) && carServicesDto.Mileage <= 0) return CarTypes.UsedCar;
         
         // Во всех остальных случаях - новая машина
         return CarTypes.NewCar;

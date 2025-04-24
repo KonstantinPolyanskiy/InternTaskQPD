@@ -1,2 +1,2 @@
-﻿namespace CarService.Models;
+﻿namespace Car.Api.Profiles.Models;
 

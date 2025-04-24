@@ -1,4 +1,4 @@
-﻿namespace CarService.Extensions;
+﻿namespace Car.Api.Profiles.Extensions;
 
 public static class StreamExtension
 {

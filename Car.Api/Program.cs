@@ -1,7 +1,10 @@
+using AutoMapper;
 using Car.Dal.Repository;
 using Car.Dal.Repository.EntityFrameworkRepository;
 using Car.App.Extensions;
+using Car.App.Profiles;
 using Car.Dal;
+using CarService.Profiles;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,9 +26,9 @@ builder.Services.AddScoped<ICarRepository, PostgresCarRepository>();
 builder.Services.AddScoped<IPhotoRepository, PostgresPhotoRepository>();
 
 // Domain Layer
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(CarProfileForApi).Assembly);
+builder.Services.AddAutoMapper(typeof(CarProfileForApp).Assembly);
 builder.Services.AddApp();
-
 
 // Api Layer
 builder.Services.AddControllers();
