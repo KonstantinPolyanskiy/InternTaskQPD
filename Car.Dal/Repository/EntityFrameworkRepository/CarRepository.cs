@@ -29,7 +29,7 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 
     public async Task<Models.Car?> GetCarByIdAsync(int id)
     {
-        var car = await dbContext.Cars.Include(c => c.Photo).FirstOrDefaultAsync(x => x.Id == id);
+        var car = await dbContext.Cars.FirstOrDefaultAsync(x => x.Id == id);
         return car;
     }
 
