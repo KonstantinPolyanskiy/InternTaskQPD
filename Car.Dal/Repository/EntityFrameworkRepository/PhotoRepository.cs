@@ -1,54 +1,51 @@
-﻿using Car.Dal.Models;
-using Contracts.Shared;
+﻿using Car.App.Models;
+using Car.App.Services.Repositories;
+using Car.Dal.Models;
 
 namespace Car.Dal.Repository.EntityFrameworkRepository;
 
 public class PostgresPhotoRepository(AppDbContext dbContext) : IPhotoRepository
 {
-    public async Task<int> SavePhotoAsync(ICarPhoto photo, CancellationToken ct = default)
+    private StorageType storage => StorageType.Database;
+    public async Task<PhotoResult> SavePhotoAsync(PhotoData data, CancellationToken ct = default)
     {
-        if (photo.Model?.Content is null) throw new ArgumentNullException(nameof(photo.Model.Content), "photo memory is null");
-        
-        await using var ms = new MemoryStream();
-        await photo.Model.Content.CopyToAsync(ms, ct);
-
-        var entity = new Photo(ms.ToArray(), photo.Model.FileExtension!);
-        
+        var entity = new Photo(data.Bytes, data.Extension);
         dbContext.Photos.Add(entity);
         await dbContext.SaveChangesAsync(ct);
-    
-        return entity.Id;
-    }
 
-    public async Task<ICarPhoto> GetPhotoAsync(int id, CancellationToken ct = default)
-    {
-        CarPhoto result = new CarPhoto();
-        
-        var entity = await dbContext.Photos.FindAsync([id], ct);
-        if (entity?.PhotoBytes != null)
+        return new PhotoResult
         {
-            result.Id = entity.Id;
-            result.Model = new ApplicationPhotoModel
-            {
-                Content = new MemoryStream(entity.PhotoBytes),
-                FileExtension = entity.Extension,
-                Length = entity.PhotoBytes.Length,
-            };
-
-            // считаем, что если имени - не хранится в бд
-            result.PhotoName = null;
-        }
-
-        return result;
+            Id = entity.Id,
+            Extension = entity.Extension,
+            Storage = storage
+        };
     }
 
-    public async Task<bool> DeletePhotoAsync(int id, CancellationToken ct = default)
+    public async Task<PhotoResult> GetPhotoAsync(string searchTerm, CancellationToken ct = default)
     {
-        dbContext.Photos.Remove(new Photo(id));
+        if (int.TryParse(searchTerm, out var photoId) is false)
+            throw new ArgumentException("Search term must be a number for database photo storage");
+     
+        var entity = await dbContext.Photos.FindAsync([photoId], ct) ?? throw new ArgumentException("No photo found");
+
+        return new PhotoResult
+        {
+            Id = entity.Id,
+            Extension = entity.Extension,
+            Storage = storage
+        };
+    }
+
+    public async Task<bool> DeletePhotoAsync(string searchTerm, CancellationToken ct = default)
+    {
+        if (int.TryParse(searchTerm, out var photoId) is false)
+            throw new ArgumentException("Search term must be a number for database photo storage");   
+        
+        dbContext.Photos.Remove(new Photo(photoId));
         await dbContext.SaveChangesAsync(ct);
         
-        var photo = await GetPhotoAsync(id, ct);
+        var photo = await GetPhotoAsync(photoId.ToString(), ct);
 
-        return photo.Id is null;
+        return true;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Car.App.Models;
-using Car.Dal.Models;
 using Contracts.Shared;
 using Contracts.Types;
 

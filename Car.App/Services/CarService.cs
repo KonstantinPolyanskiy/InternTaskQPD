@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Car.App.Models;
-using Car.Dal.Models;
-using Car.Dal.Repository;
+using Car.App.Services.Repositories;
 using Contracts.Dtos;
 using Contracts.Shared;
 using Contracts.Types;

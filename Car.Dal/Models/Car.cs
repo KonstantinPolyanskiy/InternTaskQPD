@@ -3,8 +3,14 @@
 /// <summary>
 /// Таблица Car
 /// </summary>
-public class Car
+public class Car()
 {
+    public Car(string brand, string color, decimal price, byte carType, string photoIdTerm) : this()
+    {
+    }
+    
+    public Photo(int id) : this() => Id = id;
+    
     public int Id { get; set; }
     
     public string Brand { get; set; }
@@ -23,10 +29,6 @@ public class Car
     /// </summary>
     public int? PhotoId { get; set; }
 
-    public int? Mileage { get; set; }
-    
-    public string? CurrentOwner { get; set; }
-    
     /// <summary>
     /// Фото
     /// </summary>

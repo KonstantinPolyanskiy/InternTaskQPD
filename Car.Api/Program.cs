@@ -3,6 +3,7 @@ using Car.Dal.Repository;
 using Car.Dal.Repository.EntityFrameworkRepository;
 using Car.App.Extensions;
 using Car.App.Profiles;
+using Car.App.Services.Repositories;
 using Car.Dal;
 using CarService.Profiles;
 using Microsoft.EntityFrameworkCore;

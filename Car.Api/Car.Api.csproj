@@ -21,7 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Car.App\Car.App.csproj" />
-      <ProjectReference Include="..\Contracts\Contracts.csproj" />
+      <ProjectReference Include="..\Models.Bridge\Models.Bridge.csproj" />
     </ItemGroup>
 
 </Project>

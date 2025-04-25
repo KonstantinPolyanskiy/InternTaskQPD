@@ -1,11 +1,40 @@
-﻿using Car.Dal.Models;
+﻿using Car.App.Models;
+using Car.App.Services.Repositories;
+using Car.Dal.Models;
 using Contracts.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Car.Dal.Repository.EntityFrameworkRepository;
 
-
 public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
+{
+    public Task<CarResult> SaveCarAsync(CarData data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<CarResult> GetCarByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeleteCarByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<CarResult>> GetAllCarsAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<CarResult> UpdateCarAsync(CarData dto, int id)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+/*public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 {
     public async Task<int> SaveCarAsync(AddCarEntity dto, int? photoId)
     {
@@ -62,4 +91,4 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 
         return car;
     }
-}
+}*/

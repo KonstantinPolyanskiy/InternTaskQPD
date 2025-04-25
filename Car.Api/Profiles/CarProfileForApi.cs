@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
-using Car.App.Models;
-using CarService.Converters;
-using CarService.Models;
-using Contracts.Dtos;
-using Contracts.Shared;
+using Models.Bridge.Photo;
 
 namespace CarService.Profiles;
 
@@ -11,17 +7,17 @@ public class CarProfileForApi : Profile
 {
     public CarProfileForApi()
     {
-        CreateMap<IFormFile, ApplicationPhotoModel>()
-            .ConvertUsing<FormFileToApplicationPhotoConverter>();
-        
-         // creation request -> DTO Add Car Domain
-         CreateMap<AddCarRequest, AddCarDomain>()
-             .ForMember(dst => dst.Photo,
-                 opt => opt.MapFrom(src => src.Photo));
-         
-         // patch request -> DTO Update Car Domain 
-         CreateMap<PatchCarRequest, PatchCarDomain>();
-
-         CreateMap<DomainCar, CarResponse>();
+        CreateMap<IFormFile, PhotoData>()
+            .ConvertUsing((src, dest, ctx) =>
+            {
+                if (src is null)
+                    throw new ArgumentNullException(nameof(src));
+            
+                return new PhotoData
+                {
+                    Content       = src.OpenReadStream(),
+                    FileExtension = Path.GetExtension(src.FileName)
+                };
+            });
     }
 }

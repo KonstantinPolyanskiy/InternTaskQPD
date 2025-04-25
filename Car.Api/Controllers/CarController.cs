@@ -1,9 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using AutoMapper;
-using Car.Api.Profiles.Extensions;
+﻿using AutoMapper;
 using CarService.Models;
-using Contracts.Dtos;
-using Contracts.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService.Controllers;
@@ -16,9 +12,7 @@ public class CarController(Car.App.Services.CarService carService, IMapper mappe
     [HttpPost]
     public async Task<IActionResult> AddCar([FromForm] AddCarRequest request, CancellationToken ct = default)
     {
-        var dto = mapper.Map<AddCarDomain>(request);
-        
-        var carId = await carService.CreateCarAsync(dto);
+        var carId = await carService.CreateCarAsync(request);
 
         return Ok(new
         {
