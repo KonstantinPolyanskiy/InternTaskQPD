@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Car.Api.Profiles.Models;
 using Car.App.Models;
 using CarService.Converters;
+using CarService.Models;
 using Contracts.Dtos;
 using Contracts.Shared;
 
@@ -15,19 +15,13 @@ public class CarProfileForApi : Profile
             .ConvertUsing<FormFileToApplicationPhotoConverter>();
         
          // creation request -> DTO Add Car Domain
-         CreateMap<AddCarRequest, AddedCarServicesDto>()
+         CreateMap<AddCarRequest, AddCarDomain>()
              .ForMember(dst => dst.Photo,
                  opt => opt.MapFrom(src => src.Photo));
          
          // patch request -> DTO Update Car Domain 
-         CreateMap<PatchCarRequest, PatchCarServicesDto>()
-             .ForMember(d => d.Mileage,
-                 o => o.MapFrom(s => s.UsedParameters!.Mileage))
-             .ForMember(d => d.CurrentOwner,
-                 o => o.MapFrom(s => s.UsedParameters!.CurrentOwner));
-         
-         // Domain car -> created response
-         CreateMap<ICar, CarResponse>()
-             .ConvertUsing<DomainCarToResponseCarConverter>();
+         CreateMap<PatchCarRequest, PatchCarDomain>();
+
+         CreateMap<DomainCar, CarResponse>();
     }
 }

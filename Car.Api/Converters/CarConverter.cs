@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Car.Api.Profiles.Models;
 using Car.App.Models;
+using CarService.Models;
 using Contracts.Shared;
 
 namespace CarService.Converters;
@@ -32,40 +32,3 @@ public class FormFileToApplicationPhotoConverter
     }
 }
 
-public class DomainCarToResponseCarConverter 
-    : ITypeConverter<ICar, CarResponse>
-{
-    /// <summary>
-    /// Конвертирует Domain object <see cref="ICar"/> в <see cref="CarResponse"/>
-    /// </summary>
-    /// <param name="src"> Общий интерфейс для машин <see cref="ICar"/> </param>
-    /// <param name="_"> Для совместимости </param>
-    /// <param name="ctx"> Контекст операции </param>
-    public CarResponse Convert(ICar src, 
-        CarResponse? _, ResolutionContext ctx)
-    {
-        var response = new CarResponse
-        {
-            Id = (int)src.Id!,
-            CarType = nameof(src.CarType),
-            
-            StandardParameters = new StandardCarParameters
-            {
-                Brand = src.Brand,
-                Color = src.Color,
-                Price = src.Price,
-            }
-        };
-
-        if (src is UsedCar u)
-        {
-            response.UsedParameters = new UsedCarParameters
-            {
-                Mileage = u.Mileage,
-                CurrentOwner = u.CurrentOwner,
-            };
-        }
-
-        return response;
-    }
-}

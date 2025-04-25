@@ -6,8 +6,10 @@ namespace Contracts.Dtos;
 /// <summary>
 /// DTO добавляемой машины для сервиса
 /// </summary>
-public class AddedCarServicesDto
+public class AddCarDomain : ICar, IUsedCar
 {
+    public ApplicationPhotoModel? Photo { get; set; }
+
     #region Обязательные поля для создания
 
     public string? Brand { get; set; }
@@ -16,8 +18,6 @@ public class AddedCarServicesDto
     
     public decimal? Price { get; set; }
     
-    public ApplicationPhotoModel? Photo { get; set; }
-
     #endregion
     
     #region Опциональные поля для БУ машины
@@ -30,20 +30,19 @@ public class AddedCarServicesDto
 }
 
 /// <summary>
-/// DTO обновляемой машины для сервиса
-/// </summary>
-public class PatchCarServicesDto : AddedCarServicesDto {}
-
-/// <summary>
 /// DTO сохраняемой машины в слое данных
 /// </summary>
-public class AddedCarDataLayerDto
+public class AddCarEntity : ICar, IUsedCar
 {
+    #region #region Обязательные поля для создания
+
     public required string Brand { get; set; }
     
     public required string Color { get; set; }
     
-    public required decimal Price { get; set; }
+    public required decimal? Price { get; set; }
+    
+    #endregion
     
     public ApplicationPhotoModel? Photo { get; set; }
     
@@ -55,20 +54,54 @@ public class AddedCarDataLayerDto
 }
 
 /// <summary>
-/// DTO обновляемой машины в слое данных  
+/// DTO обновляемой машины для сервиса (фото обновляется отдельным методом)
 /// </summary>
-public class UpdatedCarDataLayerDto
+public class PatchCarDomain : ICar, IUsedCar
 {
+    #region Обязательные поля для создания
+
     public string? Brand { get; set; }
     
     public string? Color { get; set; }
     
     public decimal? Price { get; set; }
     
-    public ApplicationPhotoModel? Photo { get; set; }
+    #endregion
     
+    #region Опциональные поля для БУ машины
+
     public int? Mileage { get; set; }
     
     public string? CurrentOwner { get; set; }
-    public CarTypes? CarType { get; set; }
+    
+    #endregion
+}
+
+/// <summary>
+/// DTO обновляемой машины в слое данных  
+/// </summary>
+public class PatchCarEntity : ICar, IUsedCar
+{
+    /// <summary>
+    /// Id обновляемой машины
+    /// </summary>
+    public int Id { get; set; }
+    
+    #region Обязательные поля для создания
+
+    public string? Brand { get; set; }
+    
+    public string? Color { get; set; }
+    
+    public decimal? Price { get; set; }
+    
+    #endregion
+    
+    #region Опциональные поля для БУ машины
+
+    public int? Mileage { get; set; }
+    
+    public string? CurrentOwner { get; set; }
+    
+    #endregion
 }

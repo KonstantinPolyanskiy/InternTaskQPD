@@ -1,17 +1,28 @@
-﻿namespace Car.Dal.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Contracts.Shared;
+
+namespace Car.Dal.Models;
 
 /// <summary>
 /// Таблица Photo для непосредственного хранения фото 
 /// </summary>
-public class Photo
+public class Photo()
 {
-    public int Id {get; set;}
+    public Photo(byte[] bytes, string ext) : this()
+    {
+        PhotoBytes = bytes;
+        Extension = ext;
+    }
     
-    public byte[]? PhotoBytes { get; set; }
+    public Photo(int id) : this() => Id = id;
     
-    public string? FileName { get; set; }
+    public int Id {get; init;}
     
-    public string? Extension { get; set; }
+    public byte[]? PhotoBytes { get; init; }
     
-    public Car? Car { get; set; }
+    [StringLength(20)]
+    public string? Extension { get; init; }
+    
+    public Car? Car { get; init; }
 }
+

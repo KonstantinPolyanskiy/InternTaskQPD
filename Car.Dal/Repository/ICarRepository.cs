@@ -7,7 +7,7 @@ public interface ICarRepository
     /// <summary>
     /// Сохранить машину в хранилище
     /// </summary>
-    public Task<int> SaveCarAsync(AddedCarDataLayerDto dto, int? photoId = null);
+    public Task<int> SaveCarAsync(AddCarEntity dto, int? photoId = null);
     
     /// <summary>
     /// Получить машину по id
@@ -32,5 +32,5 @@ public interface ICarRepository
     /// <param name="dto">Поля для обновления (должны быть не null для обновления)</param>
     /// <param name="id">id обновляемой машины</param>
     /// <returns>Обновленная машина, null - если такой нет</returns>
-    public Task<Models.Car?> UpdateCarAsync(UpdatedCarDataLayerDto dto, int id);
+    public Task<Models.Car?> UpdateCarAsync(PatchCarEntity dto, int id);
 }

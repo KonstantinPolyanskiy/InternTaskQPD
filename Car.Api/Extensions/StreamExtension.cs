@@ -12,13 +12,7 @@ public static class StreamExtension
     {
         await using (stream)
         {
-            if (stream is MemoryStream ms && ms.TryGetBuffer(out var buffer))
-                return Convert.ToBase64String(buffer);
             
-            await using var copy = new MemoryStream();
-            
-            await stream.CopyToAsync(copy, ct);
-            return Convert.ToBase64String(copy.GetBuffer(), 0, (int)copy.Length);
         }
     }
 }

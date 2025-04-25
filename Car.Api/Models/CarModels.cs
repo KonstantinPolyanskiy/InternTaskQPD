@@ -1,15 +1,15 @@
-﻿using System.Buffers.Text;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Car.App.Models;
+using Contracts.Shared;
+using Contracts.Types;
 
-namespace Car.Api.Profiles.Models;
+namespace CarService.Models;
 
 /// <summary>
 /// Описывает запрос с данными на добавление новой машины
 /// </summary>
-public class AddCarRequest
+public class AddCarRequest : ICar, IUsedCar
 {
     #region Обязательные поля для создания
 
@@ -23,12 +23,12 @@ public class AddCarRequest
     
     [Required]
     [JsonPropertyName("price")]
-    public required decimal Price { get; set; }
+    public required decimal? Price { get; set; }
+    
+    #endregion
     
     [JsonPropertyName("photo")]
     public IFormFile? Photo { get; set; }
-
-    #endregion
     
     #region Опциональные поля для БУ машины
 
@@ -44,56 +44,47 @@ public class AddCarRequest
 /// <summary>
 /// Описывает ответ с машиной
 /// </summary>
-public class CarResponse
+public class CarResponse : ICar, IUsedCar, ICarType
 {
     [JsonPropertyName("id")]
     public required int Id { get; init; }
     
     [JsonPropertyName("car_type")]
-    public required string CarType { get; init; }
-    
-    [JsonPropertyName("standard_car_parameters")]
-    public StandardCarParameters? StandardParameters { get; init; }
-    
-    [JsonPropertyName("used_car_parameters")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public UsedCarParameters? UsedParameters { get; set; }
-}
+    public CarTypes? CarType { get; set; }
 
-/// <summary>
-/// Значения свойственные всем машинам
-/// </summary>
-public class StandardCarParameters
-{
+    #region Стандартные хар-ки машины
+    
     [JsonPropertyName("brand")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Brand { get; set; }
     
     [JsonPropertyName("color")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Color { get; set; }
     
     [JsonPropertyName("price")]
-    public decimal Price { get; set; }
-    
-    [JsonPropertyName("photo")]
-    public string? PhotoBase64 { get; set; }
-}
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? Price { get; set; }
 
-/// <summary>
-/// Значения свойственные БУ машинам
-/// </summary>
-public class UsedCarParameters
-{
+    #endregion
+
+    #region Хар-ки БУ машины
+    
     [JsonPropertyName("mileage")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Mileage { get; set; }
     
     [JsonPropertyName("current_owner")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CurrentOwner { get; set; }
+
+    #endregion
 }
 
 /// <summary>
 /// Описывает запрос в данными для обновления машины
 /// </summary>
-public class PatchCarRequest
+public class PatchCarRequest : ICar, IUsedCar
 {
     [JsonPropertyName("brand")]
     public string? Brand { get; set; }
@@ -104,8 +95,9 @@ public class PatchCarRequest
     [JsonPropertyName("price")]
     public decimal? Price { get; set; }
     
-    [JsonPropertyName("photo")]
-    public IFormFile? Photo { get; set; }
+    [JsonPropertyName("mileage")]
+    public int? Mileage { get; set; }
     
-    public UsedCarParameters? UsedParameters { get; init; }
+    [JsonPropertyName("current_owner")]
+    public string? CurrentOwner { get; set; }
 }

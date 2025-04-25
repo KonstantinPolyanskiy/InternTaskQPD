@@ -7,14 +7,13 @@ namespace Car.Dal.Repository.EntityFrameworkRepository;
 
 public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 {
-    public async Task<int> SaveCarAsync(AddedCarDataLayerDto dto, int? photoId)
+    public async Task<int> SaveCarAsync(AddCarEntity dto, int? photoId)
     {
-        // TODO: add mapper
         var entity = new Models.Car()
         {
             Brand = dto.Brand,
             Color = dto.Color,
-            Price = dto.Price,
+            Price = (decimal)dto.Price!,
             CarType = (byte)dto.CarType,
             Mileage = dto.Mileage,
             CurrentOwner = dto.CurrentOwner,
@@ -51,7 +50,7 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
         return await dbContext.Cars.ToListAsync();
     }
 
-    public async Task<Models.Car?> UpdateCarAsync(UpdatedCarDataLayerDto updatingCar, int carId)
+    public async Task<Models.Car?> UpdateCarAsync(PatchCarEntity updatingCar, int carId)
     {
         var car = await dbContext.Cars
             .Include(c => c.Photo)

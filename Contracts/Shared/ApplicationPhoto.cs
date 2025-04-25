@@ -1,7 +1,7 @@
 ﻿namespace Contracts.Shared;
 
 /// <summary>
-/// Класс для работы с изображениями но уровне бизнес-логики
+/// Данные файла для сохранения
 /// </summary>
 public class ApplicationPhotoModel
 {  
@@ -17,3 +17,29 @@ public class ApplicationPhotoModel
     /// <summary> Размер фото </summary>
     public long Length { get; set; }
 }
+
+/// <summary>
+/// Фотография автомобиля
+/// </summary>
+public interface ICarPhoto
+{
+    public int? Id { get; set; }
+    public string? PhotoName { get; set; }
+    /// <summary> Фото </summary>
+    public ApplicationPhotoModel? Model { get; set; }
+}
+
+/// <summary>
+/// Способ получить фото (ссылку, хук на подготовку и скачивание, в base64 etc)
+/// </summary>
+public interface IPhotoGetter
+{
+    public string WayToGet { get; set; }
+}
+
+public class CarPhoto : ICarPhoto
+{
+    public int? Id { get; set; }
+    public string? PhotoName { get; set; }
+    public ApplicationPhotoModel? Model { get; set; }
+} 
