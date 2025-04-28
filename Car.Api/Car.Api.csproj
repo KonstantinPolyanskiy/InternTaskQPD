@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="14.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
           <PrivateAssets>all</PrivateAssets>
@@ -23,6 +24,10 @@
       <ProjectReference Include="..\Car.App\Car.App.csproj" />
       <ProjectReference Include="..\Car.Dal\Car.Dal.csproj" />
       <ProjectReference Include="..\Models.Bridge\Models.Bridge.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\AdminApi\" />
     </ItemGroup>
 
 </Project>

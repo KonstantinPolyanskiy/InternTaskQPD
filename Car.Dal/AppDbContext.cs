@@ -68,26 +68,26 @@ public class AppDbContext : DbContext
                     v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions?)null) ??
                          new()
                 );
-        
-            b.Entity<Photo>(photoEntity =>
-            {
-                photoEntity.ToTable("photos");
+        });
 
-                // PK
-                photoEntity.HasKey(e => e.Id);
-                photoEntity.Property(e => e.Id)
-                    .HasColumnName("id");
+        b.Entity<Models.Photo>(photoEntity =>
+        {
+            photoEntity.ToTable("photos");
 
-                // Содержимое фото
-                photoEntity.Property(e => e.PhotoBytes)
-                    .HasColumnName("photo_bytes")
-                    .HasColumnType("bytea");
+            // PK
+            photoEntity.HasKey(e => e.Id);
+            photoEntity.Property(e => e.Id)
+                .HasColumnName("id");
 
-                // Расширение
-                photoEntity.Property(e => e.Extension)
-                    .HasColumnName("extension")
-                    .HasMaxLength(20);
-            });
+            // Содержимое фото
+            photoEntity.Property(e => e.PhotoBytes)
+                .HasColumnName("photo_bytes")
+                .HasColumnType("bytea");
+
+            // Расширение
+            photoEntity.Property(e => e.Extension)
+                .HasColumnName("extension")
+                .HasMaxLength(20);
         });
     }
 }
