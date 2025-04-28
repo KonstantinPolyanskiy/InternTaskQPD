@@ -1,4 +1,4 @@
-﻿namespace Models.Bridge.Car;
+﻿namespace Car.App.Models.CarModels;
 
 public interface ICarDetail {}
 

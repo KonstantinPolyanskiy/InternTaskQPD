@@ -1,4 +1,4 @@
-﻿namespace Models.Bridge.Photo;
+﻿namespace Car.App.Models.Photo;
 
 /// <summary>Метод получения фотографии</summary>
 public enum PhotoMethod
@@ -10,4 +10,3 @@ public enum PhotoMethod
     // Асинхронная ссылка на скачивание
     Webhook = 3
 }
-

@@ -1,11 +1,9 @@
-using AutoMapper;
-using Car.Dal.Repository;
-using Car.Dal.Repository.EntityFrameworkRepository;
 using Car.App.Extensions;
 using Car.App.Profiles;
-using Car.App.Services.Repositories;
+using Car.App.Repositories;
+using Car.App.Services;
 using Car.Dal;
-using CarService.Profiles;
+using Car.Dal.Repository.EntityFrameworkRepository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // TODO: логгер
 
 // Data Layer
-builder.Services.AddDbContext<AppDbContext>((sp, opt) =>
+builder.Services.AddDbContext<AppDbContext>((_, opt) =>
 {
     var conn = "Host=localhost;Port=5313;Database=main_db;Username=admin;Password=password";
 
@@ -27,8 +25,8 @@ builder.Services.AddScoped<ICarRepository, PostgresCarRepository>();
 builder.Services.AddScoped<IPhotoRepository, PostgresPhotoRepository>();
 
 // Domain Layer
-builder.Services.AddAutoMapper(typeof(CarProfileForApi).Assembly);
 builder.Services.AddAutoMapper(typeof(CarProfileForApp).Assembly);
+builder.Services.AddScoped<PhotoProcessor>();
 builder.Services.AddApp();
 
 // Api Layer

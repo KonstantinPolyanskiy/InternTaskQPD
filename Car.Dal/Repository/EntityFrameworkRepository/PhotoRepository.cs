@@ -1,38 +1,51 @@
 ﻿using Car.App.Models;
-using Car.App.Services.Repositories;
+using Car.App.Models.CarModels;
+using Car.App.Models.PhotoModels;
+using Car.App.Repositories;
 using Car.Dal.Models;
 
 namespace Car.Dal.Repository.EntityFrameworkRepository;
 
 public class PostgresPhotoRepository(AppDbContext dbContext) : IPhotoRepository
 {
-    private StorageType storage => StorageType.Database;
-    public async Task<PhotoResult> SavePhotoAsync(PhotoData data, CancellationToken ct = default)
+    private PhotoStorageType PhotoStorage => PhotoStorageType.Database;
+    public async Task<PhotoResult> SavePhotoAsync(PhotoData request, CancellationToken ct = default)
     {
-        var entity = new Photo(data.Bytes, data.Extension);
+        byte[] bytes;
+        await using (var ms = new MemoryStream())
+        {
+            await request.Content!.CopyToAsync(ms, ct);
+            bytes = ms.ToArray();
+        }
+
+        var entity = new Photo(bytes, request.Extension);
+        
         dbContext.Photos.Add(entity);
         await dbContext.SaveChangesAsync(ct);
 
         return new PhotoResult
         {
-            Id = entity.Id,
+            Id = Convert.ToInt32(entity.Id),
             Extension = entity.Extension,
-            Storage = storage
+            PhotoStorage = PhotoStorage
         };
     }
 
-    public async Task<PhotoResult> GetPhotoAsync(string searchTerm, CancellationToken ct = default)
+    public async Task<PhotoResult?> GetPhotoAsync(string searchTerm)
     {
         if (int.TryParse(searchTerm, out var photoId) is false)
             throw new ArgumentException("Search term must be a number for database photo storage");
-     
-        var entity = await dbContext.Photos.FindAsync([photoId], ct) ?? throw new ArgumentException("No photo found");
+
+        var entity = await dbContext.Photos.FindAsync(photoId);
+        if (entity is null)
+            return null;
 
         return new PhotoResult
         {
-            Id = entity.Id,
+            Id = Convert.ToInt32(entity.Id),
             Extension = entity.Extension,
-            Storage = storage
+            Bytes = entity.PhotoBytes,
+            PhotoStorage = PhotoStorage
         };
     }
 
@@ -41,11 +54,15 @@ public class PostgresPhotoRepository(AppDbContext dbContext) : IPhotoRepository
         if (int.TryParse(searchTerm, out var photoId) is false)
             throw new ArgumentException("Search term must be a number for database photo storage");   
         
-        dbContext.Photos.Remove(new Photo(photoId));
+        dbContext.Photos.Remove(new Photo
+        {
+            Id = photoId
+        });
+        
         await dbContext.SaveChangesAsync(ct);
         
-        var photo = await GetPhotoAsync(photoId.ToString(), ct);
-
-        return true;
+        var photo = await GetPhotoAsync(searchTerm);
+        
+        return photo is null;
     }
 }

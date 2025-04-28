@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Contracts.Shared;
-
 namespace Car.Dal.Models;
 
 /// <summary>
@@ -13,8 +11,11 @@ public class Photo()
         PhotoBytes = bytes;
         Extension = ext;
     }
-    
-    public Photo(int id) : this() => Id = id;
+
+    public Photo(int id) : this()
+    {
+        Id = id;
+    }
     
     public int Id {get; init;}
     

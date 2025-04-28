@@ -1,32 +1,28 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using Models.Bridge.Photo;
+﻿using Car.App.Models.PhotoModels;
 
-namespace Models.Bridge.Car;
+namespace Car.App.Models.CarModels;
 
-public class Car 
+public class Car
 {
     #region Стандартные данные
-    
+
     public int Id { get; set; }
 
     /// <summary> Марка </summary>
     public string? Brand { get; set; }
-    
+
     /// <summary> Цвет </summary>
     public string? Color { get; set; }
-    
+
     /// <summary> Цена </summary>
     public decimal? Price { get; set; }
 
     #endregion
-    
-    /// <summary>
-    /// Фото
-    /// </summary>
+
     public CarPhoto? Photo { get; set; }
-    
-    public Priority Priority { get; set; }
-    public Condition Condition { get; set; }
+
+    public CarPrioritySale PrioritySale { get; set; }
+    public CarCondition CarCondition { get; set; }
 
     private readonly IList<ICarDetail?> _details = new List<ICarDetail?>();
 

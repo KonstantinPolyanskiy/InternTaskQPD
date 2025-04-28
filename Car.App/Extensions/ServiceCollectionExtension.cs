@@ -1,4 +1,5 @@
-﻿using Car.App.Services;
+﻿using Car.App.Repositories;
+using Car.App.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Car.App.Extensions;
@@ -10,5 +11,9 @@ public static class ServiceCollectionExtension
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddApp(this IServiceCollection services) => services.AddScoped<CarService>();
+    public static IServiceCollection AddApp(this IServiceCollection services)
+    {
+        services.AddScoped<CarService>();
+        return services;
+    }
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
-using CarService.Models;
+using Car.App.Models.CarModels;
+using Car.App.Models.PhotoModels;
+using Car.App.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService.Controllers;
@@ -8,63 +10,101 @@ namespace CarService.Controllers;
 [Route("api/car")]
 public class CarController(Car.App.Services.CarService carService, IMapper mapper) : ControllerBase
 {
-    /// <summary> HTTP API для создания машины <see cref="Car.App.Services.CarService.CreateCarAsync"/> </summary>
+    /// <summary> HTTP API для создания машины <see cref="CarService.CreateCarAsync"/> </summary>
     [HttpPost]
-    public async Task<IActionResult> AddCar([FromForm] AddCarRequest request, CancellationToken ct = default)
+    public async Task<IActionResult> AddCar([FromBody] CarRequest carRequest) => Ok(new
     {
-        var carId = await carService.CreateCarAsync(request);
+        car_id = await carService.CreateCarAsync(carRequest)
+    });
+
+    [HttpPost("photo/{carId}")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> AddCarPhoto(IFormFile file, int carId)
+    {
+        if (file.Length == 0)
+            return BadRequest("Файл не передан");
+        
+        var photoRequest = new PhotoRequest
+        {
+            CarId = carId,
+            Content = file.OpenReadStream(),
+            Extension = Path.GetExtension(file.FileName).TrimStart('.')
+        };
+
+        var photo = await carService.AddPhotoToCarAsync(photoRequest);
 
         return Ok(new
         {
-            car_id = carId,
+            id = photo.Id,
+            car_id = photo.Data?.CarId,
+            
+            name = photo.PhotoName, 
+            
+            method = photo.Method.ToString(),
+            value = photo.Value,
+            
+            ext = photo.Data?.Extension
         });
     }
-    
-    /// <summary> HTTP API для получения машины по Id <see cref="Car.App.Services.CarService.GetCarByIdAsync"/> </summary>
+
+    /// <summary> HTTP API для получения машины по Id <see cref="CarService.GetCarByIdAsync"/> </summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCar(int id, CancellationToken ct = default)
     {
         var car = await carService.GetCarByIdAsync(id);
-        
-        var response = mapper.Map<CarResponse>(car);
-        
+
         return Ok(new
         {
-            car_property = response,
-            photo_id = car.PhotoId,
+            id = car.Id,
+            brand = car.Brand,
+            color = car.Color,
+            price = car.Price,
+            car_photo = new
+            {
+                id = Convert.ToInt32(car.Photo?.Id),
+                name = car.Photo?.PhotoName,
+                access_method = car.Photo?.Method.ToString(),
+                access_value = car.Photo?.Value,
+            }
         });
     }
-    
-    /// <summary> Обновляет машину по id <see cref="Car.App.Services.CarService.UpdateCarAsync"/> </summary>
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> Patch(PatchCarRequest request, int id)
+
+    /// <summary> Обновляет машину по id <see cref="CarService.UpdateCarAsync"/> </summary>
+    [HttpPatch("{carId}")]
+    public async Task<IActionResult> Patch(CarRequest request, int carId) => Ok(new
     {
-        var dto = mapper.Map<PatchCarDomain>(request);
+        updated = await carService.UpdateCarAsync(request, carId)
+    });
+
+    /// <summary> HTTP API для получения всех машин <see cref="CarService.GetCarsAsync"/> </summary>
+    [HttpGet("cars")]
+    public async Task<IActionResult> GetCars(CancellationToken ct = default)
+    {
+        var cars = await carService.GetCarsAsync();
         
-        var updatedCar = await carService.UpdateCarAsync(dto, id);
-        
-        var response = mapper.Map<CarResponse>(updatedCar);
-        
-        return Ok(response);
+        var result = cars.Select(car => new
+            {
+                id           = car.Id,
+                brand        = car.Brand,
+                color        = car.Color,
+                price        = car.Price,
+                car_photo    = car.Photo is null
+                    ? null
+                    : new
+                    {
+                        id             = Convert.ToInt32(car.Photo.Id),
+                        name           = car.Photo.PhotoName,
+                        access_method  = car.Photo.Method.ToString(),
+                        access_value   = car.Photo.Value
+                    }
+            })
+            .ToList();
+
+        return Ok(result);
     }
     
-    /// <summary> HTTP API для получения всех машин <see cref="Car.App.Services.CarService.GetCarsAsync"/> </summary>
-    [HttpGet("cars")]
-    public async Task<IActionResult> GetCars(CancellationToken ct = default) => Ok(await carService.GetCarsAsync());
-    /*{
-        IList<CarResponse> response = new List<CarResponse>();
 
-        foreach (var car in await carService.GetCarsAsync())
-        {
-            var r = mapper.Map<CarResponse>(car);
-            
-            response.Add(r);            
-        }
-        
-        return Ok(response);
-    }*/
-
-    /// <summary> HTTP API для hard удаления машины <see cref="Car.App.Services.CarService.DeleteCarByIdAsync"/> </summary>
+    /// <summary> HTTP API для hard удаления машины <see cref="CarService.DeleteCarByIdAsync"/> </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCar(int id) => Ok(await carService.DeleteCarByIdAsync(id));
 }

@@ -1,6 +1,7 @@
 ﻿using Car.App.Models;
+using Car.App.Models.PhotoModels;
 
-namespace Car.App.Services.Repositories;
+namespace Car.App.Repositories;
 
 public interface IPhotoRepository
 {
@@ -9,7 +10,7 @@ public interface IPhotoRepository
     
     /// <summary>Получить фото по id </summary>
     /// <param name="searchTerm">Признак по которому ищется фото: id(int), batch+id, и тд</param>
-    public Task<PhotoResult> GetPhotoAsync(string searchTerm, CancellationToken ct = default);
+    public Task<PhotoResult?> GetPhotoAsync(string searchTerm);
     
     /// <summary> Удаляет фото по id </summary>
     public Task<bool> DeletePhotoAsync(string searchTerm, CancellationToken ct = default);

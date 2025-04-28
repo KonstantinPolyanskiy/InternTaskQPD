@@ -1,6 +1,7 @@
 ﻿using Car.App.Models;
+using Car.App.Models.CarModels;
 
-namespace Car.App.Services.Repositories;
+namespace Car.App.Repositories;
 
 public interface ICarRepository 
 {
@@ -12,7 +13,7 @@ public interface ICarRepository
     /// <summary>
     /// Получить машину по id
     /// </summary>
-    public Task<CarResult> GetCarByIdAsync(int id);
+    public Task<CarResult?> GetCarByIdAsync(int id);
     
     /// <summary>
     /// Удалить машину по id
@@ -32,5 +33,5 @@ public interface ICarRepository
     /// <param name="dto">Поля для обновления (должны быть не null для обновления)</param>
     /// <param name="id">id обновляемой машины</param>
     /// <returns>Обновленная машина, null - если такой нет</returns>
-    public Task<CarResult> UpdateCarAsync(CarData dto, int id);
+    public Task<CarResult?> UpdateCarAsync(CarData dto, int id);
 }
