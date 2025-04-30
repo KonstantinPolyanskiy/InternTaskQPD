@@ -1,5 +1,6 @@
 ﻿using Car.App.Repositories;
 using Car.App.Services;
+using Car.App.Services.CarService;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Car.App.Extensions;

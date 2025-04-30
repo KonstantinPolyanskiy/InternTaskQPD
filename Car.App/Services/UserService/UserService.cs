@@ -2,6 +2,7 @@
 using Car.App.Models.UserModels;
 using Microsoft.AspNetCore.Identity;
 using Models.Bridge.Auth;
+using Models.Shared.User;
 
 namespace Car.App.Services.UserService;
 
@@ -15,7 +16,13 @@ public class UserService(IMapper mapper,
         if (await um.FindByEmailAsync(request.Email) != null) 
             throw new Exception($"User with email {request.Email} already exists.");
 
-        var applicationUser = mapper.Map<ApplicationUser>(request);
+        var applicationUser = new ApplicationUser
+        {
+            UserName = request.Login,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+        };  
         
         var userResult = await um.CreateAsync(applicationUser, request.Password);
         if (!userResult.Succeeded)
@@ -26,6 +33,22 @@ public class UserService(IMapper mapper,
         
         await um.AddToRoleAsync(applicationUser, applicationUserRole.ToString());
         
-        return mapper.Map<UserRegistrationServiceResponse>(userResult);
+        return new UserRegistrationServiceResponse
+        {
+            Login = applicationUser.UserName,
+            Email = applicationUser.Email,
+            Id = applicationUser.Id,
+        };
+    }
+
+    public async Task<LoginServiceResponse> FindUserByLoginAndCheckPassword(UserLoginRequest request)
+    {
+        var user = await um.FindByNameAsync(request.Login);
+        if (user is null)
+            return new LoginServiceResponse{User = null};
+        
+        var isValid = await um.CheckPasswordAsync(user, request.Password);
+
+        return new LoginServiceResponse{User = user, PasswordIsValid = isValid};
     }
 }

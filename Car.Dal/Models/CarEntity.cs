@@ -1,36 +1,39 @@
-﻿using Car.App.Models;
+﻿using System.ComponentModel.DataAnnotations;
 using Car.App.Models.CarModels;
+using Car.App.Models.Dto;
 
 namespace Car.Dal.Models;
 
 /// <summary>
 /// Таблица Car
 /// </summary>
-public class Car()
+public class CarEntity()
 {
     #region Конструктор
 
-    public Car(CarData data) : this()
+    public CarEntity(CarDto dto) : this()
     {
-        Brand = data.Brand;
-        Color = data.Color;
-        Price = (decimal)data.Price;
+        Brand = dto.Brand!;
+        Color = dto.Color!;
+        Price = (decimal)dto.Price!;
 
-        PrioritySale = (CarPrioritySale)data.PrioritySale; 
-        CarCondition = (CarCondition)data.Condition;
+        PrioritySale = (CarPrioritySale)dto.PrioritySale!; 
+        CarCondition = (CarCondition)dto.Condition!;
     }
     
-    public Car(int id) : this() => Id = id;
+    public CarEntity(int id) : this() => Id = id;
 
     #endregion
     
     #region Поля
     
-    public int Id { get; set; }
+    public int Id { get; init; }
     
-    public string Brand { get; set; }
+    [MaxLength(200)]
+    public string? Brand { get; set; }
     
-    public string Color { get; set; }
+    [MaxLength(200)]
+    public string? Color { get; set; }
     
     public decimal Price { get; set; }
     
@@ -61,13 +64,13 @@ public class Car()
     /// <summary>
     /// Фото
     /// </summary>
-    public Photo? Photo { get; set; }
+    public PhotoEntity? Photo { get; init; }
     
     /// <summary>
     /// Любые дополнительные детали (UsedCarDetail, ManufacturingDetail, ManagerDetail и т.д.)
     /// будет храниться в виде JSON
     /// </summary>
-    public Dictionary<string, object>? Details { get; set; }
+    public Dictionary<string, object>? Details { get; init; }
 
     #endregion
 }

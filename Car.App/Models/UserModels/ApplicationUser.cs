@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Models.Shared.User;
 
 namespace Car.App.Models.UserModels;
 
-public class ApplicationUser : IdentityUser
+public class LoginServiceResponse
 {
-    public string FirstName { get; set; } = null!;
-    public string LastName  { get; set; } = null!;
-}
+    public ApplicationUser? User { get; set; }
+    public bool PasswordIsValid { get; set; }
+} 

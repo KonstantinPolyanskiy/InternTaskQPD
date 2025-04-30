@@ -1,5 +1,8 @@
 ﻿namespace Models.Bridge.Auth;
 
+/// <summary>
+/// Настройки jwt токена
+/// </summary>
 public class JwtSettings
 {
     public string Issuer { get; set; }                = null!;

@@ -21,7 +21,7 @@ namespace Car.Dal.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Car.Dal.Models.Car", b =>
+            modelBuilder.Entity("Car.Dal.Models.CarEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,7 +33,8 @@ namespace Car.Dal.Migrations
 
                     b.Property<string>("Brand")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("brand");
 
                     b.Property<string>("CarCondition")
@@ -44,7 +45,8 @@ namespace Car.Dal.Migrations
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("color");
 
                     b.Property<string>("Details")
@@ -76,7 +78,7 @@ namespace Car.Dal.Migrations
                     b.ToTable("cars", (string)null);
                 });
 
-            modelBuilder.Entity("Car.Dal.Models.Photo", b =>
+            modelBuilder.Entity("Car.Dal.Models.PhotoEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,6 +86,9 @@ namespace Car.Dal.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Extension")
                         .HasMaxLength(20)
@@ -99,18 +104,18 @@ namespace Car.Dal.Migrations
                     b.ToTable("photos", (string)null);
                 });
 
-            modelBuilder.Entity("Car.Dal.Models.Car", b =>
+            modelBuilder.Entity("Car.Dal.Models.CarEntity", b =>
                 {
-                    b.HasOne("Car.Dal.Models.Photo", "Photo")
+                    b.HasOne("Car.Dal.Models.PhotoEntity", "Photo")
                         .WithOne("Car")
-                        .HasForeignKey("Car.Dal.Models.Car", "PhotoId")
+                        .HasForeignKey("Car.Dal.Models.CarEntity", "PhotoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_car_photo");
 
                     b.Navigation("Photo");
                 });
 
-            modelBuilder.Entity("Car.Dal.Models.Photo", b =>
+            modelBuilder.Entity("Car.Dal.Models.PhotoEntity", b =>
                 {
                     b.Navigation("Car");
                 });

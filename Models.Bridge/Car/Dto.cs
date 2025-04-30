@@ -1,8 +1,32 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Models.Bridge.Car;
 
+/// <summary>
+/// Запрос на добавление новой машины
+/// </summary>
+public record AddCarRequest
+{
+    [Required]
+    public required string Brand { get; init; }
+    
+    [Required]
+    public required string Color { get; init; }
+    
+    [Required]
+    public required decimal Price { get; init; }
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public UsedCarDetailDto? UsedCarDetail { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ManufacturingDetailDto? ManufacturingDetail { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ManagerDetailDto? ManagerDetail { get; set; }
+    
+}
 
 public class UsedCarDetailDto
 {

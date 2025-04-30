@@ -8,7 +8,5 @@ public class UserProfileForApp : Profile
 {
     public UserProfileForApp()
     {
-        CreateMap<ApplicationUser, UserRegistrationRequest>();
-        CreateMap<UserRegistrationServiceResponse, ApplicationUser>();
     }
 }

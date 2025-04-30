@@ -1,22 +1,23 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Models.Bridge.Auth;
+﻿using Models.Bridge.Auth;
+using Models.Shared.User;
 
 namespace Car.App.Services.TokenService;
 
-public interface ITokenService 
+public interface ITokenService
 {
-    /// <summary>
-    /// Генерирует новый набор токенов (access + refresh) для пользователя
-    /// </summary>
-    Task<TokenResponse> GenerateTokensAsync(IdentityUser user, string? password = null);
+    /// <summary> Инвалидировать все access и refresh токены пользователя </summary>
+    Task<bool> LogoutAllAsync(string userId);
 
-    /// <summary>
-    /// Валидирует и обновляет access по refresh-токену
-    /// </summary>
-    Task<TokenResponse> RefreshAsync(string refreshToken);
+    /// <summary> Инвалидировать последний refresh и текущий access </summary>
+    Task<bool> LogoutCurrentAsync(string userId, string? jti, string? exp);
+    
+    /// <summary> Обновить пару access и refresh токенов </summary> 
+    Task<TokenPairResponse> RefreshTokenAsync(string refreshToken);
+    
+    /// <summary> Генерирует новый набор токенов (access + refresh) для пользователя </summary>
+    Task<TokenPairResponse> GenerateTokensAsync(ApplicationUser user, string? password = null);
 
-    /// <summary>
-    /// Отозвать (удалить) refresh-токен
-    /// </summary>
-    Task RevokeRefreshTokenAsync(string refreshToken);
+    
+    /// <summary> Есть ли access токен в чс </summary>
+    public Task<bool> AccessTokenInBlackList(string jti);
 }

@@ -1,18 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Car.App.Models.Dto;
+
 namespace Car.Dal.Models;
 
 /// <summary>
 /// Таблица Photo для непосредственного хранения фото 
 /// </summary>
-public class Photo()
+public class PhotoEntity()
 {
-    public Photo(byte[] bytes, string ext) : this()
+    public PhotoEntity(PhotoDataDto data) : this()
     {
-        PhotoBytes = bytes;
-        Extension = ext;
+        PhotoBytes = data.PhotoBytes;
+        Extension = data.Extension;
     }
 
-    public Photo(int id) : this()
+    public PhotoEntity(int id) : this()
     {
         Id = id;
     }
@@ -24,6 +26,8 @@ public class Photo()
     [StringLength(20)]
     public string? Extension { get; init; }
     
-    public Car? Car { get; init; }
+    public int CarId { get; init; }
+    
+    public CarEntity? Car { get; init; }
 }
 

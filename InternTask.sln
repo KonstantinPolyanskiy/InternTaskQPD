@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car.Dal", "Car.Dal\Car.Dal.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models.Bridge", "Models.Bridge\Models.Bridge.csproj", "{4E696795-5694-498C-A0BD-3E8CCA1396CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models.Shared.User", "Models.Shared.User\Models.Shared.User.csproj", "{968E7620-EE0C-44D5-B3B1-5FA03EB917D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{4E696795-5694-498C-A0BD-3E8CCA1396CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E696795-5694-498C-A0BD-3E8CCA1396CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E696795-5694-498C-A0BD-3E8CCA1396CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{968E7620-EE0C-44D5-B3B1-5FA03EB917D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{968E7620-EE0C-44D5-B3B1-5FA03EB917D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{968E7620-EE0C-44D5-B3B1-5FA03EB917D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{968E7620-EE0C-44D5-B3B1-5FA03EB917D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

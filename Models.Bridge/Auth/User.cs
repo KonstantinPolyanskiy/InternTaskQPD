@@ -26,3 +26,12 @@ public class UserRegistrationServiceResponse
     public required string Login { get; set; }
     public required string Email { get; set; }
 }
+
+/// <summary>
+/// Запрос на авторизацию пользователя
+/// </summary>
+public class UserLoginRequest
+{
+    public required string Login { get; set; }
+    public required string Password { get; set; }
+}

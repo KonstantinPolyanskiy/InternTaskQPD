@@ -9,8 +9,8 @@ namespace Car.Dal;
 
 public class AppDbContext : DbContext
 {
-    public DbSet<Models.Car> Cars => Set<Models.Car>();
-    public DbSet<Photo> Photos => Set<Photo>();
+    public DbSet<CarEntity> Cars => Set<CarEntity>();
+    public DbSet<PhotoEntity> Photos => Set<PhotoEntity>();
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -18,7 +18,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(b);
 
-        b.Entity<Models.Car>(carEntity =>
+        b.Entity<CarEntity>(carEntity =>
         {
             carEntity.ToTable("cars");
             
@@ -55,7 +55,7 @@ public class AppDbContext : DbContext
             
             carEntity.HasOne(e => e.Photo)
                 .WithOne(p => p.Car)
-                .HasForeignKey<Models.Car>(c => c.PhotoId)
+                .HasForeignKey<CarEntity>(c => c.PhotoId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("fk_car_photo");
 
@@ -70,7 +70,7 @@ public class AppDbContext : DbContext
                 );
         });
 
-        b.Entity<Models.Photo>(photoEntity =>
+        b.Entity<Models.PhotoEntity>(photoEntity =>
         {
             photoEntity.ToTable("photos");
 

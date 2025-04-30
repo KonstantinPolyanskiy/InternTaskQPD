@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="14.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
@@ -15,14 +16,12 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.1" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Car.App\Car.App.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extensions\" />
+      <ProjectReference Include="..\Models.Shared.User\Models.Shared.User.csproj" />
     </ItemGroup>
 
 </Project>
