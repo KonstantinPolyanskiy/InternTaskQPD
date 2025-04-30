@@ -10,6 +10,8 @@ public record PhotoDataDto
     public required byte[] PhotoBytes { get; set; }
     public required string Extension {get; set;}
     
+    public bool UseOnlyPriorityStorage { get; set; }
+    
     public PhotoStorageType? PriorityPhotoStorage {get; set;}
 }
 
