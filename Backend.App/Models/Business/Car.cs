@@ -18,3 +18,12 @@ public class Car
     public PrioritySale PrioritySale { get; set; }
     public CarCondition Condition { get; set; }
 }
+
+public record CarPage
+{
+    public List<Car> Cars { get; set; } = [];
+    
+    public int TotalCount { get; init; }
+    public int PageNumber { get; init; }
+    public int PageSize { get; init; }
+}

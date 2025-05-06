@@ -1,6 +1,7 @@
 ﻿using Backend.App.Models.Dto;
 using Backend.App.Repositories;
 using Backend.Dal.Models;
+using Enum.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Dal.Repository.PostgresRepository;
@@ -73,6 +74,58 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
                 PrioritySale = entity.PrioritySale,
             })
             .ToListAsync();
+
+    public async Task<CarPageDto> GetCarsByQueryAsync(CarQueryDto dto)
+    {
+        var query = dbContext.Cars.AsNoTracking().AsQueryable();
+        
+        if (dto.Brands is not null && dto.Brands.Length > 0)
+            query = query.Where(c => dto.Brands.Contains(c.Brand.ToLower()));
+        
+        if (dto.Colors is not null && dto.Colors.Length > 0)
+            query = query.Where(c => dto.Colors.Contains(c.Color.ToLower()));
+        
+        if (dto.Condition is not null)
+            query = query.Where(c => c.CarCondition == dto.Condition.Value);
+
+        switch (dto.SortTerm)
+        {
+            case CarSortTerm.Price:
+                query = dto.Direction == SortDirection.Ascending ? query.OrderBy(c => c.Price) : query.OrderByDescending(c => c.Price);
+                break;
+            case CarSortTerm.Mileage:
+                query = query.Where(c => c.Mileage.HasValue && c.Mileage > 0);
+                query = dto.Direction == SortDirection.Ascending ? query.OrderBy(c => c.Mileage!.Value) : query.OrderByDescending(c => c.Mileage!.Value);
+                break;
+            case CarSortTerm.Id:
+                query = dto.Direction == SortDirection.Ascending ? query.OrderBy(c => c.Id) : query.OrderByDescending(c => c.Id);
+                break;
+            default: throw new ApplicationException("Unknown SortTerm");
+        }
+        
+        var result = await query.Skip((dto.PageNumber - 1) * dto.PageSize).Take(dto.PageSize)
+            .Select(c => new CarDto
+            {
+                Id = c.Id,
+                PhotoMetadataId = c.PhotoMetadataId,
+                Brand = c.Brand,
+                Color = c.Color,
+                Price = c.Price,
+                CurrentOwner = c.CurrentOwner,
+                Mileage = c.Mileage,
+                Condition = c.CarCondition,
+                PrioritySale = c.PrioritySale
+            })
+            .ToListAsync();
+
+        return new CarPageDto
+        {
+            Cars = result,
+            TotalCount = await query.CountAsync(),
+            PageNumber = dto.PageNumber,
+            PageSize = dto.PageSize,
+        };
+    }
 
     public async Task<CarDto?> UpdateCarAsync(CarDto dto)
     {

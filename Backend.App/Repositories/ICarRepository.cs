@@ -15,6 +15,9 @@ public interface ICarRepository
     
     /// <summary> Получить все машины </summary>
     public Task<List<CarDto>> GetAllCarsAsync();
+
+    /// <summary> Получить машины по параметрам и фильтрам </summary>
+    public Task<CarPageDto> GetCarsByQueryAsync(CarQueryDto dto);
     
     /// <summary> Обновить машину </summary>
     public Task<CarDto?> UpdateCarAsync(CarDto dto);

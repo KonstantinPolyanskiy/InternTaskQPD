@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enum.Common", "Enum.Common\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings.Common", "Settings.Common\Settings.Common.csproj", "{D1F42D81-4048-42E5-B41C-B880E128BED1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilityScripts.CarFilling", "UtilityScripts.CarFilling\UtilityScripts.CarFilling.csproj", "{DC20C8C0-C08A-4B18-8F96-E8C375399772}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{D1F42D81-4048-42E5-B41C-B880E128BED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1F42D81-4048-42E5-B41C-B880E128BED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1F42D81-4048-42E5-B41C-B880E128BED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC20C8C0-C08A-4B18-8F96-E8C375399772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC20C8C0-C08A-4B18-8F96-E8C375399772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC20C8C0-C08A-4B18-8F96-E8C375399772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC20C8C0-C08A-4B18-8F96-E8C375399772}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

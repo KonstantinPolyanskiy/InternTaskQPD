@@ -33,10 +33,25 @@ public record UpdateCarCommand
     public PrioritySale? PrioritySale { get; init; }
 }
 
-public record SearchCarCommand
+public record SearchCarByIdCommand
 {
     public required int CarId { get; init; }
     public bool NeedPhoto { get; init; }
+}
+
+public record SearchCarByQueryCommand
+{
+    public string[]? Brands { get; init; }
+    public string[]? Colors { get; init; }
+    
+    public CarCondition? Condition { get; init; }
+    
+    public CarSortTerm? SortTerm { get; init; }
+    public PhotoHavingTerm PhotoTerm { get; init; } = PhotoHavingTerm.NoMatter;
+    public SortDirection Direction { get; init; } = SortDirection.Ascending;
+    
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }
 
 public record DeleteCarCommand

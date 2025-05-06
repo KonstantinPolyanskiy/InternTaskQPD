@@ -33,3 +33,15 @@ public record PatchCarRequest
     public CarCondition? Condition { get; init; }
     public PrioritySale? PrioritySale { get; init; }
 }
+
+public record CarQueryRequest
+{
+    public string[]? Brands { get; init; }
+    public string[]? Colors { get; init; }
+    public CarCondition? Condition { get; init; }
+    public CarSortTerm? SortTerm { get; init; }
+    public PhotoHavingTerm? PhotoTerm { get; init; }
+    public SortDirection? Direction { get; init; }
+    public int? PageNumber { get; init; }
+    public int? PageSize { get; init; }
+}

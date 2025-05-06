@@ -29,20 +29,19 @@ public class CarProfileForApp : Profile
         CreateMap<PhotoDto, Photo>()
             .ForMember(dest => dest.Id,
                 opt => opt.MapFrom(src => src.Id ?? Guid.Empty))
-
             .ForMember(dest => dest.Storage,
                 opt => opt.MapFrom(src => src.StorageType ?? PhotoStorageType.NotExists))
-
             .ForMember(dest => dest.Data,
                 opt => opt.MapFrom(src => new PhotoData 
                     {
                     Data = src.Data ?? Array.Empty<byte>(),
                     Extension = src.Extension ?? PhotoFileExtension.EmptyOrUnknown,
                 }))
-
             .ForMember(dest => dest.PhotoAccessor,
                 opt => opt.Ignore());
 
         CreateMap<UpdateCarCommand, CarDto>();
+
+        CreateMap<SearchCarByQueryCommand, CarQueryDto>();
     }
 }

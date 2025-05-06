@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿    using AutoMapper;
 using Backend.App.Models.Business;
 using Backend.App.Models.Commands;
 using Backend.App.Models.Dto;
@@ -18,9 +18,10 @@ public class CarService(IMapper mapper,
     /// <summary> Создать (добавить) машину </summary>
     public async Task<Car> CreateCarAsync(CreateCarCommand cmd)
     {
-        var condition = string.IsNullOrWhiteSpace(cmd.CurrentOwner) || cmd.Mileage > 0
+        var condition = !string.IsNullOrWhiteSpace(cmd.CurrentOwner) && cmd.Mileage!.Value > 0
             ? CarCondition.Used
             : CarCondition.New;
+        if (cmd.Mileage!.Value > 1000) condition = CarCondition.NotWorking;
 
         var carDto = new CarDto
         {
@@ -30,14 +31,21 @@ public class CarService(IMapper mapper,
             CurrentOwner = cmd.CurrentOwner,
             Mileage = cmd.Mileage,
             Condition = condition,
-            PrioritySale = condition == CarCondition.Used ? PrioritySale.High : PrioritySale.Medium,
+            PrioritySale = condition switch
+            {
+                CarCondition.New => PrioritySale.High,
+                CarCondition.Used => PrioritySale.Medium,
+                CarCondition.NotWorking => PrioritySale.Low,
+                CarCondition.Unknown or _ => PrioritySale.Unknown,
+            },
         };
 
         var savedCar = await carRepository.SaveCarAsync(carDto);
 
         return mapper.Map<Car>(savedCar);
     }
-
+    
+    /// <summary> Добавить к машине фото </summary>
     public async Task<Car> AddPhotoToCarAsync(SetPhotoToCarCommand cmd)
     {
         // Проверяем есть ли вообще такая машина
@@ -56,7 +64,7 @@ public class CarService(IMapper mapper,
     }
 
     /// <summary> Получить машину по ее id </summary>
-    public async Task<Car> GetCarByIdAsync(SearchCarCommand cmd)
+    public async Task<Car> GetCarByIdAsync(SearchCarByIdCommand cmd)
     {
         var carDto = await carRepository.GetCarByIdAsync(cmd.CarId);
         if (carDto is null) throw new ArgumentException($"Машина с Id - {cmd.CarId} не найдена");
@@ -110,6 +118,52 @@ public class CarService(IMapper mapper,
             cars.Add(mapper.Map<Car>(carResult));
 
         return cars;
+    }
+
+    public async Task<CarPage> GetCarsByQueryAsync(SearchCarByQueryCommand cmd)
+    {
+        // Формируем запрос и приводим все к lowcase
+        var query = mapper.Map<CarQueryDto>(cmd);
+        query.Brands = cmd.Brands?.Select(b => b.ToLower()).ToArray();
+        query.Colors = cmd.Colors?.Select(c => c.ToLower()).ToArray();
+        
+        var carPageDto = await carRepository.GetCarsByQueryAsync(mapper.Map<CarQueryDto>(cmd));
+        
+        var cars = carPageDto.Cars.Select(mapper.Map<Car>).ToList();
+        var page = new CarPage
+        {
+            Cars = cars,
+            PageNumber = carPageDto.PageNumber,
+            PageSize = carPageDto.PageSize,
+            TotalCount = carPageDto.TotalCount
+        };
+
+        if (cmd.PhotoTerm is PhotoHavingTerm.WithoutPhoto) return page;
+        
+        // Фото запрошены
+        List<Car> carsWithPhoto = [];
+
+        foreach (var cd in carPageDto.Cars)
+        {
+            if (cd.PhotoMetadataId.HasValue)
+            {
+                var photo = await photoService.GetPhotoByMetadataIdAsync(new SearchPhotoByMetadataIdCommand { MetadataId = (int)cd.PhotoMetadataId });
+                if (photo is not null)
+                {
+                    var car = mapper.Map<Car>(cd);
+                    car.Photo = photo;
+                    carsWithPhoto.Add(car);
+                }
+            }
+        }
+        
+        return new CarPage
+        {
+            Cars = carsWithPhoto,
+            TotalCount = carPageDto.TotalCount,
+            PageNumber = carPageDto.PageNumber,
+            PageSize = carPageDto.PageSize
+        };
     }
 }
 

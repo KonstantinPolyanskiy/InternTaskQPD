@@ -59,7 +59,7 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetCar(int id, CancellationToken ct = default)
     {
-        var car = await carService.GetCarByIdAsync(new SearchCarCommand {CarId = id});
+        var car = await carService.GetCarByIdAsync(new SearchCarByIdCommand {CarId = id});
 
         return Ok(mapper.Map<CarResponse>(car));
     }
@@ -78,11 +78,22 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
 
     /// <summary> HTTP API для получения всех машин <see cref="CarService.GetCarsAsync"/> </summary>
     [HttpGet("cars")]
-    public async Task<IActionResult> GetCars(CancellationToken ct = default)
+    public async Task<IActionResult> GetCarQuery([FromQuery] CarQueryRequest request, CancellationToken ct = default)
     {
-        var cars = await carService.GetCarsAsync();
+        var cmd = mapper.Map<SearchCarByQueryCommand>(request);
+        var page = await carService.GetCarsByQueryAsync(cmd);
 
-        return Ok(cars.Select(mapper.Map<CarResponse>));
+        if (cmd.PhotoTerm is PhotoHavingTerm.WithPhoto || request.PhotoTerm is PhotoHavingTerm.NoMatter)
+        {
+            foreach (var car in page.Cars)
+            {
+                if (car.Photo is not null)
+                    car.Photo.PhotoAccessor = photoProcessor.ProcessPhoto(car.Photo, PhotoMethod.DirectLink);
+            }
+        }
+        
+
+        return Ok(page);
     }
 
 
