@@ -19,10 +19,7 @@ public class UserProfileForApi : Profile
             .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.UserName));
         
         CreateMap<LoginRequest, LoginUserCommand>();
-        
-        CreateMap<ApplicationUser, GenerateTokenPairCommand>()
-            .ForMember(dest => dest.Password, opt => opt.Ignore());
-        
+
         CreateMap<TokenPair, TokenPairResponse>();
         CreateMap<RefreshTokenPairRequest, RefreshTokenPairCommand>();
     }

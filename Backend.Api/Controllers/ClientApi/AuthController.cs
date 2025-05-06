@@ -14,13 +14,15 @@ namespace Backend.Api.Controllers.ClientApi;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IMapper mapper, 
-    ITokenService tokenService, IUserService userService) : ControllerBase
+public class AuthController(ITokenService tokenService, IUserService userService,
+    IMapper mapper, ILogger<AuthController> log) : ControllerBase
 {
     /// <summary> Регистрация пользователя с ролью Client </summary>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
     {
+        log.LogDebug("Запрос на регистрацию клиента, данные запроса - {request}", request);
+        
         var cmd = mapper.Map<CreateUserCommand>(request);
         cmd.Role = ApplicationUserRole.Client;
         
@@ -36,6 +38,8 @@ public class AuthController(IMapper mapper,
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
+        log.LogDebug("Запрос на вход, данные запроса - {request}", request);
+        
         var cmd = mapper.Map<LoginUserCommand>(request);
         
         var user = await userService.FindUserByLoginAsync(cmd);
@@ -47,7 +51,7 @@ public class AuthController(IMapper mapper,
         if (passwordIsValid is false)
             return Unauthorized("invalid password");
 
-        var pairCmd = mapper.Map<GenerateTokenPairCommand>(user);
+        var pairCmd = new GenerateTokenPairCommand { User = user };
 
         var token = await tokenService.GenerateTokensAsync(pairCmd);
         
@@ -59,10 +63,14 @@ public class AuthController(IMapper mapper,
     [Authorize]
     public async Task<IActionResult> Logout([FromQuery] bool all = false)
     {
+        
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
+        log.LogDebug("Запрос на выход, id пользователя - {userId}, глобально - {global}", userId, all ? "да" : "нет");
+
+        
         bool logoutSuccess;
 
         var cmd = new LogoutCommand { UserId = userId };
@@ -92,6 +100,8 @@ public class AuthController(IMapper mapper,
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenPairRequest request)
     {
+        log.LogDebug("Запрос на обновление пары токенов, данные запроса - {request}", request);
+        
         var newPair = await tokenService.RefreshTokenAsync(mapper.Map<RefreshTokenPairCommand>(request));
         
         return Ok(mapper.Map<TokenPairResponse>(newPair));

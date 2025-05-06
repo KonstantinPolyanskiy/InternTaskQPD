@@ -7,36 +7,46 @@ using Backend.App.Models.Commands;
 using Backend.App.Models.Dto;
 using Backend.App.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using Settings.Common;
 using static System.Int64;
 
 namespace Backend.App.Services.TokenService;
 
 public class SimpleTokenService(
-    IOptions<JwtSettings> opts,
+    IOptions<JwtSettings> opts, ILogger<SimpleTokenService> log,
     UserManager<ApplicationUser> um,
-    IRefreshTokenRepository refreshTokenRepository,
-    IBlacklistTokenRepository blacklistTokenRepository) : ITokenService
+    IRefreshTokenRepository refreshTokenRepository, IBlacklistTokenRepository blacklistTokenRepository) : ITokenService
 {
     public const string IdentitySecurityStamp = "stp";
 
     public async Task<bool> LogoutAsync(LogoutCommand cmd)
     {
+        log.LogDebug("Данные для выхода пользователя - {data}", cmd);
+
         var user = await um.FindByIdAsync(cmd.UserId);
         if (user is null) return false;
 
         if (cmd.LogoutAll)
         {
+            log.LogInformation("Попытка глобального выхода пользователя - {login}", user.UserName);
+            
             // Отзываем все refresh
             await RevokeAllRefreshTokenAsync(user.Id);
+            log.LogDebug("Для пользователя {login} отозваны все refresh токены", user.UserName);
         
             // Инвалидируем SecurityStamp 
             await um.UpdateSecurityStampAsync(user);
+            log.LogDebug("Для пользователя {login} инвалидированы все access токены", user.UserName);
         
+            log.LogInformation("Успешный глобальный выход пользователя {login}", user.UserName);
             return true;
         }
+        
+        log.LogInformation("Попытка локального выхода пользователя - {login}", user.UserName);
         
         if (string.IsNullOrWhiteSpace(cmd.RawExpiration) || string.IsNullOrEmpty(cmd.Jti)) return false;
         
@@ -44,17 +54,22 @@ public class SimpleTokenService(
         if (refreshByAccess?.RefreshToken is null) return false;
         
         await RevokeRefreshTokenByTokenAsync(refreshByAccess.RefreshToken);
+        log.LogDebug("Для пользователя {login} отозван refresh токен {token}", user.UserName, refreshByAccess.RefreshToken);
         
         // Вносим в черный список access
         TryParse(cmd.RawExpiration, out var expSeconds);
-        
         await RevokeAccessTokenAsync(cmd.Jti, DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime);
+        log.LogDebug("Для пользователя {login} внесен в ЧС access токен с jti {jti}", user.UserName, cmd.Jti);
         
+        log.LogInformation("Успешный локальный выход пользователя {login}", user.UserName);
         return true;
     }
 
     public async Task<TokenPair> RefreshTokenAsync(RefreshTokenPairCommand cmd)
     {
+        log.LogInformation("Попытка выдача обновленной пары токенов");
+        log.LogDebug("Данные для обновления токена - {data}", cmd);
+        
         // Есть ли такой токен вообще
         var currentRefresh = await GetRefreshTokenAsync(cmd.RefreshToken);
         if (currentRefresh is null) throw new SecurityTokenException("Неизвестный refresh токен");
@@ -69,7 +84,10 @@ public class SimpleTokenService(
         if (user is null) throw new SecurityTokenException("Неизвестный пользователь");
         
         var pair = await GenerateTokensAsync(new GenerateTokenPairCommand {User = user});
-
+        
+        log.LogInformation("Новая пара токенов для пользователя {login} успешно выдана", user.UserName);
+        log.LogDebug("Выдаваемая пара токенов - {pair}", pair);
+        
         return new TokenPair
         {
             AccessToken = pair.AccessToken,
@@ -79,6 +97,9 @@ public class SimpleTokenService(
     
     public async Task<TokenPair> GenerateTokensAsync(GenerateTokenPairCommand cmd)
     {
+        log.LogInformation("Попытка сгенерировать пару");
+        log.LogDebug("Данные для генерации токена - {data}", cmd);
+        
         var now = DateTime.UtcNow;
 
         var jti = Guid.NewGuid().ToString();
@@ -106,11 +127,12 @@ public class SimpleTokenService(
             expires: now.AddMinutes(opts.Value.AccessTokenLifetimeMinutes),
             signingCredentials: creds
         );
-
-
+        
         var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        
+        log.LogDebug("Созданный jwt- {jwt}, access - {access}, refresh - {refresh}", jwtToken, accessToken, refreshToken);
         
         var refreshDto = new RefreshTokenDto
         {
@@ -120,6 +142,8 @@ public class SimpleTokenService(
             ExpiresUtc = now.AddDays(opts.Value.RefreshTokenLifetimeDays)
         };
         await refreshTokenRepository.SaveRefreshTokenAsync(refreshDto);
+        
+        log.LogInformation("Пара токенов для пользователя {login} сгенерирована", cmd.User.UserName);
 
         return new TokenPair
         {
@@ -129,7 +153,7 @@ public class SimpleTokenService(
     }
     
     public async Task<bool> AccessTokenInBlackList(string jti) =>
-        await blacklistTokenRepository.InBlackList(jti);
+        await blacklistTokenRepository.InBlackList(jti);   
 
 
     #region Вспомогательные методы

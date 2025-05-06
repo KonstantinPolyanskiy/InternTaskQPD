@@ -12,7 +12,8 @@ namespace Backend.Api.Controllers.ClientApi;
 
 [ApiController]
 [Route("api/car")]
-public class CarController(CarService carService, IMapper mapper, PhotoProcessor photoProcessor) : ControllerBase
+public class CarController(CarService carService, PhotoProcessor photoProcessor,
+    IMapper mapper, ILogger<CarController> log) : ControllerBase
 {
     /// <summary> HTTP API для создания машины <see cref="CarService.CreateCarAsync"/> </summary>
     [HttpPost]
@@ -20,6 +21,8 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+        
+        log.LogDebug("Запрос на добавление машины, данные - {request}", addRequest);
         
         var cmd = mapper.Map<CreateCarCommand>(addRequest);
         
@@ -40,6 +43,8 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
         await using var ms = new MemoryStream();
         await request.Photo.CopyToAsync(ms);
         var data = ms.ToArray();
+        
+        log.LogDebug("Запрос на установку фото машине, id машины - {carId}, расширение фото - {extension}, размер фото (в МБ)- {data}", carId, extension, data.Length / 1024 / 1024);
 
         var cmd = new SetPhotoToCarCommand
         {
@@ -68,6 +73,8 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
     [HttpPatch("{carId:int}")]
     public async Task<IActionResult> PatchCar(PatchCarRequest patchCarRequest, int carId)
     {
+        log.LogDebug("Запрос на изменение машины, id машины - {carId}, данные запроса - {request}", carId, patchCarRequest);
+        
         var cmd = mapper.Map<UpdateCarCommand>(patchCarRequest);
         cmd.Id = carId;
         
@@ -80,6 +87,7 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
     [HttpGet("cars")]
     public async Task<IActionResult> GetCarQuery([FromQuery] CarQueryRequest request, CancellationToken ct = default)
     {
+        log.LogDebug("Параметризованный запрос машин, данные запроса - {request}", request);
         var cmd = mapper.Map<SearchCarByQueryCommand>(request);
         var page = await carService.GetCarsByQueryAsync(cmd);
 
@@ -92,6 +100,9 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
             }
         }
         
+        var list = mapper.Map<List<CarResponse>>(page.Cars);
+        
+        
 
         return Ok(page);
     }
@@ -101,7 +112,9 @@ public class CarController(CarService carService, IMapper mapper, PhotoProcessor
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCar(int id)
     {
+        log.LogDebug("Запрос на удаление машины, id машины - {carId}", id);
         var cmd = new DeleteCarCommand { Id = id, HardDelete = true };
+        
         return Ok(new
         {
             is_deleted = await carService.DeleteCarByIdAsync(cmd)

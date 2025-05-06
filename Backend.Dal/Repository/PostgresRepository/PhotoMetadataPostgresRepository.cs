@@ -24,6 +24,15 @@ public class PhotoMetadataPostgresRepository(AppDbContext dbContext) : IPhotoMet
         };
     }
 
+    public async Task DeleteMetadataAsync(int metadataId)
+    {
+        var entity = await dbContext.PhotosMetadata.FindAsync(metadataId);
+        if (entity is null) return;
+        
+        dbContext.PhotosMetadata.Remove(entity);
+        await dbContext.SaveChangesAsync();
+    }
+
     public async Task<PhotoMetadataDto?> GetPhotoMetadataAsync(int metadataId)
     {
         var entity = await dbContext.PhotosMetadata.FirstOrDefaultAsync(m => m.Id == metadataId);

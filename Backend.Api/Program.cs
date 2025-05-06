@@ -1,4 +1,6 @@
+using System.Text.Json.Serialization;
 using Backend.Api.Extensions;
+using Backend.Api.Middlewares;
 using Backend.Api.Models.Responses;
 using Backend.Api.Processors;
 using Backend.Api.Profiles;
@@ -18,6 +20,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Minio;
 using Npgsql;
+using Serilog;
+using Serilog.Events;
 using Settings.Common;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
 // TODO: logging
 
 builder.Services.AddHttpContextAccessor();
+builder.Logging.ClearProviders(); 
 
 #region Minio
 
@@ -81,6 +86,18 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 #endregion
 
+#region Logger
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.WithProperty("BackendCarService", builder.Environment.ApplicationName)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+
+#endregion
+
 #region Repositories
 
 builder.Services.AddScoped<ICarRepository, PostgresCarRepository>();
@@ -119,7 +136,10 @@ builder.Services.Configure<JwtSettings>(
 builder.Services.AddAutoMapper(typeof(UserProfileForApi).Assembly);
 builder.Services.AddAutoMapper(typeof(CarProfileForApi).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opts =>
+{
+    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 
 #region SwaggerSecurity
@@ -174,6 +194,15 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
 #region AppUse's
+
+app.UseMiddleware<CorrelationIdMiddleware>();      
+app.UseSerilogRequestLogging(opts =>
+{
+    opts.GetLevel = (ctx, _, ex) =>
+        ex != null || ctx.Response.StatusCode >= 500
+            ? LogEventLevel.Error
+            : LogEventLevel.Information;
+});
 
 app.UseRouting();
 

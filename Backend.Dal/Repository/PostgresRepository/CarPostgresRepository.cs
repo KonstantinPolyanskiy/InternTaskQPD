@@ -1,6 +1,8 @@
-﻿using Backend.App.Models.Dto;
+﻿using Backend.App.Models;
+using Backend.App.Models.Dto;
 using Backend.App.Repositories;
 using Backend.Dal.Models;
+using Backend.Dal.QueryFilters;
 using Enum.Common;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +10,14 @@ namespace Backend.Dal.Repository.PostgresRepository;
 
 public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 {
-    public async Task<CarDto > SaveCarAsync(CarDto dto)
+    public async Task<CarDto> CreateCarAsync(CarDto dto)
     {
-        var entity = new CarEntity(dto);
-
-        await dbContext.Cars.AddAsync(entity);
+        await dbContext.Cars.AddAsync(new CarEntity
+        {
+            Id = dto.Id,
+            
+        });
+        
         await dbContext.SaveChangesAsync();
 
         return new CarDto
@@ -49,7 +54,11 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
         };
     }
 
-
+    public async Task<bool> Exists(int id)
+    {
+        return await dbContext.Cars.AnyAsync(x => x.Id == id);
+    }
+    
     public async Task DeleteCarByIdAsync(int id)
     {
         var entity  = await dbContext.Cars.FindAsync(id);
@@ -77,31 +86,11 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
 
     public async Task<CarPageDto> GetCarsByQueryAsync(CarQueryDto dto)
     {
-        var query = dbContext.Cars.AsNoTracking().AsQueryable();
-        
-        if (dto.Brands is not null && dto.Brands.Length > 0)
-            query = query.Where(c => dto.Brands.Contains(c.Brand.ToLower()));
-        
-        if (dto.Colors is not null && dto.Colors.Length > 0)
-            query = query.Where(c => dto.Colors.Contains(c.Color.ToLower()));
-        
-        if (dto.Condition is not null)
-            query = query.Where(c => c.CarCondition == dto.Condition.Value);
-
-        switch (dto.SortTerm)
-        {
-            case CarSortTerm.Price:
-                query = dto.Direction == SortDirection.Ascending ? query.OrderBy(c => c.Price) : query.OrderByDescending(c => c.Price);
-                break;
-            case CarSortTerm.Mileage:
-                query = query.Where(c => c.Mileage.HasValue && c.Mileage > 0);
-                query = dto.Direction == SortDirection.Ascending ? query.OrderBy(c => c.Mileage!.Value) : query.OrderByDescending(c => c.Mileage!.Value);
-                break;
-            case CarSortTerm.Id:
-                query = dto.Direction == SortDirection.Ascending ? query.OrderBy(c => c.Id) : query.OrderByDescending(c => c.Id);
-                break;
-            default: throw new ApplicationException("Unknown SortTerm");
-        }
+        var query = dbContext.Cars.AsNoTracking().AsQueryable()
+            .FilterByBrands(dto.Brands)
+            .FilterByColors(dto.Colors)
+            .FilterByCondition(dto.Condition)
+            .FilterBySortingTermination(dto.SortTerm, dto.Direction);
         
         var result = await query.Skip((dto.PageNumber - 1) * dto.PageSize).Take(dto.PageSize)
             .Select(c => new CarDto
@@ -125,6 +114,32 @@ public class PostgresCarRepository(AppDbContext dbContext) : ICarRepository
             PageNumber = dto.PageNumber,
             PageSize = dto.PageSize,
         };
+    }
+
+    public async Task UpdateCarAsync(int id, CarData dto)
+    {
+        var updatedCar = dbContext.Update(new CarEntity
+        {
+            Id = id,
+            Brand = dto.Brand,
+            Color = dto.Color,
+            Price = dto.Price,
+            CurrentOwner = dto.CurrentOwner,
+            Mileage = dto.Millage
+        });
+        
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteMetadataAsync(int id)
+    {
+        var entity = await dbContext.Cars.SingleOrDefaultAsync(x => x.Id == id);
+        if (entity is null) return;
+        
+        entity.PhotoMetadataId = null;
+        entity.PhotoMetadata = null;
+        
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<CarDto?> UpdateCarAsync(CarDto dto)

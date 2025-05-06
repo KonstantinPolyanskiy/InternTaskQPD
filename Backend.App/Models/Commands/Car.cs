@@ -10,10 +10,24 @@ public record CreateCarCommand
     
     public required decimal Price { get; init; }
     
+    public string? CurrentOwner { get; init; }
+    
+    public int? Mileage { get; init; }
+}
+
+public record CreateCarWithPhotoCommand
+{
+    public required string Brand { get; init; }
+    
+    public required string Color { get; init; }
+    
+    public required decimal Price { get; init; }
     
     public string? CurrentOwner { get; init; }
     
     public int? Mileage { get; init; }
+    
+    public SetPhotoToCarCommand PhotoCmd {get; init; }
 }
 
 public record UpdateCarCommand

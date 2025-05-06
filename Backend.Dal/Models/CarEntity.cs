@@ -9,25 +9,6 @@ namespace Backend.Dal.Models;
 /// </summary>
 public class CarEntity()
 {
-    #region Конструктор
-
-    public CarEntity(CarDto dto) : this()
-    {
-        Brand = dto.Brand!;
-        Color = dto.Color!;
-        Price = (decimal)dto.Price!;
-        
-        CurrentOwner = dto.CurrentOwner!;
-        Mileage = dto.Mileage!;
-        
-        PrioritySale = (PrioritySale)dto.PrioritySale!; 
-        CarCondition = (CarCondition)dto.Condition!;
-    }
-    
-    public CarEntity(int id) : this() => Id = id;
-
-    #endregion
-    
     #region Поля
     
     public int Id { get; init; }
