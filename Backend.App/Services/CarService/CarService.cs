@@ -169,7 +169,7 @@ public class CarService(ICarRepository carRepository, InternalPhotoService photo
     {
         log.LogInformation("Попытка получить машины по параметрам");
         
-        // Формируем запрос и приводим все к lowcase
+        // Формируем запрос и приводимx` все к lowcase
         var query = mapper.Map<CarQueryDto>(cmd);
         query.Brands = cmd.Brands?.Select(b => b.ToLower()).ToArray();
         query.Colors = cmd.Colors?.Select(c => c.ToLower()).ToArray();
