@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Public.Models.CommonModels;
 using Public.Models.Extensions;
@@ -60,9 +61,12 @@ public class UserUseCase
         if (token.IsSuccess is not true)
             return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(token);
         
-        var confirmEmail = await _mailSenderService.
+        var url = new Uri($"some/confirm-email?uid={userId}&code={WebUtility.UrlEncode(token.Value)}");
+
+        var confirmEmail = await _mailSenderService.SendConfirmationEmailAsync(user.Value.Email!, url.ToString());
+
         
-        
+
     }
 
     public async Task<ApplicationExecuteLogicResult<UserEmailConfirmationResponse>> ConfirmEmailAsync(Guid userId, string confirmToken)
