@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Public.Models.CommonModels;
 
 /// <summary> Различные уровни ошибок </summary>
@@ -14,7 +16,7 @@ public enum ErrorSeverity
 public sealed class ApplicationError
 {
     /// <summary> Http код который необходимо отдать </summary>
-    public int? HttpStatusCode { get; } = null!;
+    public HttpStatusCode? HttpStatusCode { get; } = null!;
     
     public Enum ErrorType { get; }
     
@@ -27,7 +29,7 @@ public sealed class ApplicationError
         string title,
         string message,
         ErrorSeverity severity,
-        int? httpStatusCode = null)
+        HttpStatusCode? httpStatusCode = null)
     {
         ErrorType = errorType;
         Title           = title;

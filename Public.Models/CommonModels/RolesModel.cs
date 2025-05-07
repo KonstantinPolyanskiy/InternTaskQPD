@@ -1,5 +1,6 @@
 namespace Public.Models.CommonModels;
 
+
 /// <summary> Роли пользователей </summary>
 public enum ApplicationUserRole
 {

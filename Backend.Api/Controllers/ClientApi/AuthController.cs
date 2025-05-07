@@ -77,6 +77,7 @@ public class AuthController(ITokenService tokenService, IUserService userService
 
         if (!all)
         {
+            User
             cmd.LogoutAll = false;
             cmd.Jti = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
             cmd.RawExpiration = User.FindFirstValue(JwtRegisteredClaimNames.Exp);

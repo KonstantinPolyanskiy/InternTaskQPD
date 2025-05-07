@@ -16,19 +16,5 @@ public record UserEmailConfirmationResponse
     public string Message { get; set; } = string.Empty;
 }
 
-public record DataForUserRegistration
-{
-    public required string FirstName { get; init; }
-    public required string LastName { get; init; }
-    
-    public required string Login { get; init; }
-    public required string Password { get; init; }
 
-    public ApplicationUserRole RequestedUserRole { get; set; } = ApplicationUserRole.Client;
-}
 
-public record DataForCreateUser
-{
-    // Пока поля совпадают - можно просто встроить, не создавая ненужный маппинг
-    public required DataForUserRegistration Data { get; init; }
-}

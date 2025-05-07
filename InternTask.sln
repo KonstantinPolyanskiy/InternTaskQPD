@@ -18,6 +18,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Models", "Public.Mod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Services", "Private.Services\Private.Services.csproj", "{F81E7EC0-924F-44BC-922A-DFDE849311E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.ServicesInterfaces", "Private.ServicesInterfaces\Private.ServicesInterfaces.csproj", "{D732C11B-2B20-4638-B2DD-053849E3E98A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.StorageModels", "Private.StorageModels\Private.StorageModels.csproj", "{894A6AF3-624C-47A9-B150-8E06DCA12C06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Storages", "Private.Storages\Private.Storages.csproj", "{5CC80A04-0FF2-4674-87A2-41317A3FC10A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +66,18 @@ Global
 		{F81E7EC0-924F-44BC-922A-DFDE849311E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F81E7EC0-924F-44BC-922A-DFDE849311E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F81E7EC0-924F-44BC-922A-DFDE849311E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D732C11B-2B20-4638-B2DD-053849E3E98A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D732C11B-2B20-4638-B2DD-053849E3E98A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D732C11B-2B20-4638-B2DD-053849E3E98A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D732C11B-2B20-4638-B2DD-053849E3E98A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{894A6AF3-624C-47A9-B150-8E06DCA12C06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{894A6AF3-624C-47A9-B150-8E06DCA12C06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{894A6AF3-624C-47A9-B150-8E06DCA12C06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{894A6AF3-624C-47A9-B150-8E06DCA12C06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

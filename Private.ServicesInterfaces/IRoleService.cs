@@ -1,6 +1,6 @@
-using Public.Models.CommonModels;
+﻿using Public.Models.CommonModels;
 
-namespace Public.UseCase.Services;
+namespace Private.ServicesInterfaces;
 
 /// <summary> Сервис для управления ролями пользователей </summary>
 public interface IRoleService

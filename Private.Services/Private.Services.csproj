@@ -7,8 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="RoleService\" />
-      <Folder Include="TokenService\" />
+      <ProjectReference Include="..\Private.ServicesInterfaces\Private.ServicesInterfaces.csproj" />
+      <ProjectReference Include="..\Private.StorageModels\Private.StorageModels.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
     </ItemGroup>
 
 </Project>

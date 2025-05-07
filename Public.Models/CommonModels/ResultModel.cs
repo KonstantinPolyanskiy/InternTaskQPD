@@ -7,8 +7,8 @@ public sealed class ApplicationExecuteLogicResult<T>
 {
     private readonly List<ApplicationError> _errors = [];
 
-    public T? Value { get; }
-    
+    public T? Value { get; set; }
+
     public IList<ApplicationError> GetWarnings => _errors.Where(e => e.Severity is ErrorSeverity.NotImportant).ToList();
     
     public IList<ApplicationError> GetCriticalErrors => _errors.Where(e => e.Severity is ErrorSeverity.Critical).ToList();
@@ -38,6 +38,12 @@ public sealed class ApplicationExecuteLogicResult<T>
         _errors.Add(error);
         return this;
     }
+
+    private ApplicationExecuteLogicResult<T> WithErrors(IEnumerable<ApplicationError> errors)
+    {
+        _errors.AddRange(errors);
+        return this;
+    }
     
     public ApplicationExecuteLogicResult<T> WithWarning(ApplicationError warning)
     {
@@ -47,8 +53,29 @@ public sealed class ApplicationExecuteLogicResult<T>
         WithError(warning);
         return this;
     }
+    
+    public ApplicationExecuteLogicResult<T> WithPossiblyWarning(ApplicationError? warning)
+    {
+        if (warning is null) return this;
+        
+        if (warning.Severity is not ErrorSeverity.Critical || warning.HttpStatusCode is not null)
+            throw new InvalidErrorSeverityException("Попытка добавить Warning ошибку с недопустимым уровнем или c not-null HttpStatusCod'ом");
+        
+        WithError(warning);
+        return this;
+    }
+    
+    public ApplicationExecuteLogicResult<T> WithWarnings(IEnumerable<ApplicationError> warnings)
+    {
+        var applicationErrors = warnings.ToList();
+        if (applicationErrors.Any(e => e.Severity is not ErrorSeverity.Critical || e.HttpStatusCode is not null))
+            throw new InvalidErrorSeverityException("Попытка добавить Warning ошибку с недопустимым уровнем или c not-null HttpStatusCod'ом");
+        
+        WithErrors(applicationErrors);
+        return this;
+    }
 
-    public ApplicationExecuteLogicResult<T> WithCritical(ApplicationError criticalError)   // критическая
+    public ApplicationExecuteLogicResult<T> WithCritical(ApplicationError criticalError) 
     {
         if (criticalError.Severity is not ErrorSeverity.Critical 
             || criticalError.HttpStatusCode is null ||
