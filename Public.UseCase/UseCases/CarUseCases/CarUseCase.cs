@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Private.ServicesInterfaces;
 using Public.Models.ApplicationErrors;
+using Public.Models.BusinessModels.CarModels;
+using Public.Models.BusinessModels.PhotoModels;
 using Public.Models.BusinessModels.StorageModels;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.CarDtoModels;
@@ -59,7 +61,7 @@ public class CarUseCase
         };
         
         // Сохраняем фото
-        // TODO на mapper 
+        // TODO: на mapper 
         if (dataCar.AddingPhoto is null)
         {
             return ApplicationExecuteLogicResult<CarAddedResponse>.Success(result).WithWarning(new ApplicationError(
@@ -160,6 +162,125 @@ public class CarUseCase
         _logger.LogInformation("Попытка поиска машин по параметрам");
         _logger.LogDebug("Параметры - {@data}", dataSearch);
         
+        // TODO: add automapper
+        var queryForCars = new DtoForSearchCars
+        {
+            Brands = dataSearch.Brands,
+            Colors = dataSearch.Colors, 
+            Condition = dataSearch.Condition,
+            SortTerm = dataSearch.SortTerm,
+            Direction = dataSearch.Direction ?? SortDirection.Ascending,
+            PageNumber = dataSearch.PageNumber ?? 1,
+            PageSize = dataSearch.PageSize ?? 10,
+        };
         
+        var domainCars = await _carService.GetCarsAsync(queryForCars);
+        if (domainCars.IsSuccess is not true)
+            return ApplicationExecuteLogicResult<GetCarsResponse>.Failure().Merge(domainCars);
+        
+        // Фото не нужны, возвращаем ответ 
+        if (dataSearch.PhotoTerm is HavePhotoTermination.WithoutPhoto)
+        {
+            var cars = domainCars.Value!.DomainCars
+                .Select(c => new CarGetResponse
+                {
+                    CarId        = c.Id,
+                    Brand        = c.Brand!,               
+                    Color        = c.Color!,              
+                    Price        = c.Price!.Value,              
+                    CurrentOwner = c.CurrentOwner,
+                    Mileage      = c.Mileage,
+                    Condition    = c.CarCondition,
+                    PrioritySale = c.PrioritySale,
+                    Photo        = null                
+                })
+                .ToArray();
+
+            return ApplicationExecuteLogicResult<GetCarsResponse>.Success(new GetCarsResponse
+            {
+                Cars       = cars,
+                PageNumber = domainCars.Value.PageNumber,
+                PageSize   = domainCars.Value.PageSize,
+            });
+        }
+        
+        // Отгружаем с фото
+        var domainCarsWithPhoto = await GetCarsWithPhoto(domainCars.Value!.DomainCars.ToArray(), dataSearch.PhotoTerm ?? HavePhotoTermination.NoMatter);
+        if (!domainCarsWithPhoto.IsSuccess)
+            return ApplicationExecuteLogicResult<GetCarsResponse>.Failure().Merge(domainCarsWithPhoto);
+
+
+        domainCarsWithPhoto.Value!.PageNumber = domainCars.Value.PageNumber;
+        domainCarsWithPhoto.Value!.PageSize   = domainCars.Value.PageSize;
+
+        return domainCarsWithPhoto;
     }
+
+    #region Вспомогательные методы
+
+    private async Task<ApplicationExecuteLogicResult<GetCarsResponse>> GetCarsWithPhoto(DomainCar[] cars, HavePhotoTermination photoTerm)
+    {
+        var carsWithMeta = cars.Where(c => c.Photo != null).ToArray();
+        var metaIds      = carsWithMeta.Select(c => c.Photo!.Id).Distinct().ToArray();
+        
+        Dictionary<int, DomainPhoto> photoDict = new();
+
+        if (metaIds.Length > 0)
+        {
+            var photos = await _photoService.GetPhotosByMetadataIdAsync(metaIds);
+            if (!photos.IsSuccess)
+                return ApplicationExecuteLogicResult<GetCarsResponse>.Failure().Merge(photos);
+
+            photoDict = photos.Value!.ToDictionary(p => p.Id);
+        }
+        
+        IEnumerable<DomainCar> carsForResponse =
+            photoTerm is HavePhotoTermination.WithPhoto
+                ? carsWithMeta               
+                : cars;   
+        
+        var mappedCars = carsForResponse.Select(c =>
+        {
+            PhotoResponse? photoResp = null;
+
+            if (c.Photo != null && photoDict.TryGetValue(c.Photo.Id, out var fullPhoto))
+            {
+                photoResp = new PhotoResponse
+                {
+                    Metadata = new PhotoMetadataResponse
+                    {
+                        Id = fullPhoto.Id,
+                        Extension = fullPhoto.Extension,
+                    },
+                    Image = new PhotoDataResponse
+                    {
+                        Id = fullPhoto.PhotoDataId,
+                        Data = fullPhoto.PhotoData,
+                    }
+                };
+            }
+
+            return new CarGetResponse
+            {
+                CarId        = c.Id,
+                Brand        = c.Brand!,
+                Color        = c.Color!,
+                Price        = c.Price!.Value,
+                CurrentOwner = c.CurrentOwner,
+                Mileage      = c.Mileage,
+                Condition    = c.CarCondition,
+                PrioritySale = c.PrioritySale,
+                Photo        = photoResp 
+            };
+        }).ToArray();
+        
+        return ApplicationExecuteLogicResult<GetCarsResponse>.Success(new GetCarsResponse
+        {
+            Cars       = mappedCars,
+            PageNumber = 0,
+            PageSize   = 0
+        });
+    }
+
+    #endregion
 }

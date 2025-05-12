@@ -45,6 +45,23 @@ public class PhotoMetadataRepository(AppDbContext db, ILogger<PhotoMetadataRepos
         }
     }
 
+    public async Task<ApplicationExecuteLogicResult<List<PhotoMetadataEntity>>> GetPhotosMetadataByIdsAsync(int[] ids)
+    {
+        try
+        {
+            var entities = await db.PhotoMetadatas.Where(x => ids.Contains(x.Id)).ToListAsync();
+            if (entities.Count == 0)
+                return ApplicationExecuteLogicResult<List<PhotoMetadataEntity>>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+
+            return ApplicationExecuteLogicResult<List<PhotoMetadataEntity>>.Success(entities);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<List<PhotoMetadataEntity>>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+        }
+    }
+
     public async Task<ApplicationExecuteLogicResult<PhotoMetadataEntity>> GetPhotoMetadataByPhotoIdAsync(Guid photoId)
     {
         try

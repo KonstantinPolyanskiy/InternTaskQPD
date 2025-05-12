@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Private.StorageModels;
 using Public.Models.BusinessModels.CarModels;
@@ -6,8 +8,11 @@ using Public.Models.BusinessModels.StorageModels;
 
 namespace Private.Storages.DbContexts;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRole, string>
 {
+    public DbSet<BlackListTokenAccessEntity> BlackListTokens => Set<BlackListTokenAccessEntity>();
+    public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
+    public DbSet<ApplicationUserEntity> ApplicationUsers => Set<ApplicationUserEntity>();
     public DbSet<EmailConfirmationTokenEntity> EmailConfirmationTokens { get; set; }
     
     public DbSet<PhotoEntity> Photos { get; set; }
@@ -21,11 +26,74 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);
+        
+        b.Entity<RefreshTokenEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            
+            e.Property(x => x.UserId)
+                .HasColumnName("user_id")
+                .HasComment("FK на таблицу пользователей")
+                .IsRequired();
+
+            e.Property(x => x.RefreshTokenBody)
+                .HasColumnName("refresh_token_body")
+                .HasComment("Тело refresh токена, передаваемое в запросах")
+                .IsRequired();
+            
+            e.Property(x => x.Jti)
+                .HasColumnName("jti")
+                .HasComment("Jti связанного с этим refresh токеном access токена")
+                .IsRequired();
+            
+            e.Property(x => x.ExpiresAtUtc)
+                .HasColumnName("expires_at_utc")
+                .HasComment("Через сколько секунд истекает срок валидности refresh токена")
+                .IsRequired();
+            
+            e.HasIndex(x => x.RefreshTokenBody).IsUnique();
+            e.HasIndex(x => x.Jti).IsUnique();
+            
+            e.HasOne(rt => rt.ApplicationUser)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        b.Entity<BlackListTokenAccessEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.Jti)
+                .HasColumnName("jti")
+                .HasComment("уникальный jwt id")
+                .IsRequired();
+
+            e.Property(x => x.Reason)
+                .HasColumnName("reason")
+                .HasComment("Почему токен внесен в чс")
+                .HasDefaultValue("Unknown")
+                .IsRequired();
+            
+            e.Property(x => x.ExpiresAtUtc)
+                .HasColumnName("expires_at_utc")
+                .HasComment("Через сколько секунд истекает срок валидности access токена")
+                .IsRequired();
+            
+            e.HasIndex(x => x.Reason).IsUnique();
+        });
+
+        b.Entity<ApplicationUserEntity>(e =>
+        {
+            e.HasOne(u => u.EmailConfirmationToken)
+                .WithOne(t => t.User)
+                .HasForeignKey<EmailConfirmationTokenEntity>(t => t.UserId)
+                .IsRequired(false)                   
+                .OnDelete(DeleteBehavior.Cascade);   
+        });
 
         b.Entity<EmailConfirmationTokenEntity>(e =>
         {
-            e.ToTable("email_confirmation_token");
-            
             e.HasKey(x => x.Id);
             
             e.Property(x => x.TokenBody)
@@ -47,8 +115,6 @@ public class AppDbContext : DbContext
 
         b.Entity<PhotoEntity>(e =>
         {
-            e.ToTable("photo");
-            
             e.HasKey(x => x.Id);
             
             e.Property(x => x.PhotoBytes)
@@ -59,8 +125,6 @@ public class AppDbContext : DbContext
 
         b.Entity<PhotoMetadataEntity>(e =>
         {
-            e.ToTable("photo_metadata");
-
             e.HasKey(x => x.Id);
 
             e.Property(x => x.Id)
@@ -90,8 +154,6 @@ public class AppDbContext : DbContext
 
         b.Entity<CarEntity>(e =>
         {
-            e.ToTable("cars");
-
             e.HasKey(c => c.Id);
 
             e.Property(c => c.Id)

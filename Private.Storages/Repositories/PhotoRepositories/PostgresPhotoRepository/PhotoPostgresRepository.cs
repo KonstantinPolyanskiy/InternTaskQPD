@@ -45,6 +45,23 @@ public class PhotoPostgresRepository(AppDbContext db, ILogger<PhotoPostgresRepos
         }
     }
 
+    public async Task<ApplicationExecuteLogicResult<List<PhotoEntity>>> GetPhotosByIdsAsync(Guid[] ids)
+    {
+        try
+        {
+            var entities = await db.Photos.Where(x => ids.Contains(x.Id)).ToListAsync();
+            if (entities.Count == 0)
+                return ApplicationExecuteLogicResult<List<PhotoEntity>>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+            
+            return ApplicationExecuteLogicResult<List<PhotoEntity>>.Success(entities);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<List<PhotoEntity>>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
+    }
+
     public async Task<ApplicationExecuteLogicResult<Unit>> DeletePhotoByIdAsync(Guid id)
     {
         try

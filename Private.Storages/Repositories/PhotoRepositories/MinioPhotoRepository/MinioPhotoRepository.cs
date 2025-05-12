@@ -17,6 +17,11 @@ public class MinioPhotoRepository(ILogger<MinioPhotoRepository> logger) : IPhoto
         throw new NotImplementedException();
     }
 
+    public Task<ApplicationExecuteLogicResult<List<PhotoEntity>>> GetPhotosByIdsAsync(Guid[] ids)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<ApplicationExecuteLogicResult<Unit>> DeletePhotoByIdAsync(Guid id)
     {
         throw new NotImplementedException();

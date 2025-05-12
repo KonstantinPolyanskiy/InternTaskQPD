@@ -12,7 +12,7 @@ public record DataForAddCar
     public string? CurrentOwner { get; init; }
     public int? Mileage { get; init; }
     
-    public DataForAddPhoto? AddingPhoto { get; init; }
+    public DataForAddPhoto? AddingPhoto { get; set; }
 }
 
 public record DataForSearchCars
@@ -62,6 +62,6 @@ public record GetCarsResponse
 {
     public CarGetResponse[] Cars { get; init; } = null!;
     
-    public int PageNumber { get; init; } = 1;
-    public int PageSize { get; init; } = 10;
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 }

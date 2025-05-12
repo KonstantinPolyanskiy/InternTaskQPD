@@ -1,11 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend.Api", "Backend.Api\Backend.Api.csproj", "{C0CECAC4-7B2A-4DB1-927D-4616491072BF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend.App", "Backend.App\Backend.App.csproj", "{66CA5C40-1135-4F61-BEA1-E24953CA85A2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend.Dal", "Backend.Dal\Backend.Dal.csproj", "{C7E14332-8FDF-42F6-A73B-2A188607F64D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enum.Common", "Enum.Common\Enum.Common.csproj", "{212FC957-6927-461A-9691-A61FC7187666}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings.Common", "Settings.Common\Settings.Common.csproj", "{D1F42D81-4048-42E5-B41C-B880E128BED1}"
@@ -24,24 +18,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.StorageModels", "Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Private.Storages", "Private.Storages\Private.Storages.csproj", "{5CC80A04-0FF2-4674-87A2-41317A3FC10A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Api", "Public.Api\Public.Api.csproj", "{19EE7E92-712A-45C7-8385-829CA9535EF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C0CECAC4-7B2A-4DB1-927D-4616491072BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66CA5C40-1135-4F61-BEA1-E24953CA85A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7E14332-8FDF-42F6-A73B-2A188607F64D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{212FC957-6927-461A-9691-A61FC7187666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{212FC957-6927-461A-9691-A61FC7187666}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{212FC957-6927-461A-9691-A61FC7187666}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,6 +62,10 @@ Global
 		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CC80A04-0FF2-4674-87A2-41317A3FC10A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19EE7E92-712A-45C7-8385-829CA9535EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19EE7E92-712A-45C7-8385-829CA9535EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19EE7E92-712A-45C7-8385-829CA9535EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19EE7E92-712A-45C7-8385-829CA9535EF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

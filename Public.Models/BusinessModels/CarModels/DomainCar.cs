@@ -19,3 +19,12 @@ public class DomainCar
     
     public DomainPhoto? Photo { get; set; }
 }
+
+public class DomainCarsPage
+{
+    public List<DomainCar> DomainCars = [];
+    
+    public int TotalCount { get; init; }
+    public int PageNumber { get; init; }
+    public int PageSize { get; init; }
+}

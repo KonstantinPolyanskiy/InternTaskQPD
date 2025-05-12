@@ -53,10 +53,12 @@ public sealed class ApplicationExecuteLogicResult<T>
     
     public ApplicationExecuteLogicResult<T> WithWarning(ApplicationError warning)
     {
-        if (warning.Severity is not ErrorSeverity.Critical || warning.HttpStatusCode is not null)
-            throw new InvalidErrorSeverityException("Попытка добавить Warning ошибку с недопустимым уровнем или c not-null HttpStatusCod'ом");
-        
-        WithError(warning);
+        if (warning.Severity is not ErrorSeverity.NotImportant      
+            || warning.HttpStatusCode is not null)
+            throw new InvalidErrorSeverityException(
+                "Попытка добавить Warning ошибку с недопустимым уровнем или c not-null HttpStatusCod'ом");
+
+        _errors.Add(warning);
         return this;
     }
     

@@ -8,13 +8,18 @@ namespace Private.ServicesInterfaces;
 public interface IUserService
 {
     /// <summary> Создать и сохранить пользователя </summary>
-    public Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> CreateUserAsync(DtoForCreateUser data);
+    public Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> CreateUserAsync(DataForCreateUser data);
     
     /// <summary> Получить пользователя по его логину </summary>
     public Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UserByLoginAsync(string login);
     
-    /// <summary> Получить пользователя по его Id</summary>
+    /// <summary> Получить пользователя по его Id </summary>
     public Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UserByIdAsync(Guid userId);
+    
+    /// <summary> Получить всех пользователей </summary>
+    public Task<ApplicationExecuteLogicResult<List<ApplicationUserEntity>>> UsersAll();
+    
+    public Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> SaveUserAsync(ApplicationUserEntity user);
     
     /// <summary> Валиден ли пароль для пользователя </summary>
     public Task<ApplicationExecuteLogicResult<bool>> CheckPasswordForUserAsync(ApplicationUserEntity user, string password);
@@ -27,4 +32,10 @@ public interface IUserService
     
     /// <summary> Получить роли пользователя </summary>
     public Task<ApplicationExecuteLogicResult<List<string>>> GetRolesByUser(ApplicationUserEntity user);
+    
+    /// <summary> Назначить роли пользователю </summary>
+    public Task<ApplicationExecuteLogicResult<Unit>> AddRolesToUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles);
+    
+    /// <summary> Убрать роли пользователя </summary>
+    public Task<ApplicationExecuteLogicResult<Unit>> RemoveRolesFromUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles);
 }

@@ -22,7 +22,7 @@ public class IdentityRoleService : IRoleService
     public async Task<ApplicationExecuteLogicResult<bool>> RoleExistAsync(ApplicationUserRole role)
     {
         _logger.LogInformation("Проверка существования роли {role}", role);
-
+        
         var exist = await _roleManager.RoleExistsAsync(role.ToString());
         if (exist is not true)
             return ApplicationExecuteLogicResult<bool>.Failure(new ApplicationError(

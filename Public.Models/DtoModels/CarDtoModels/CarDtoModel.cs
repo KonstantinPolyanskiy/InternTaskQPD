@@ -19,8 +19,7 @@ public record DtoForSearchCars
     public string[]? Colors { get; init; }
     public CarConditionTypes? Condition { get; init; }
     public CarSortTermination? SortTerm { get; init; }
-    public HavePhotoTermination? PhotoTerm { get; init; }
-    public SortDirection? Direction { get; init; }
-    public int? PageNumber { get; init; }
-    public int? PageSize { get; init; }
+    public SortDirection Direction { get; init; } = SortDirection.Ascending;
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

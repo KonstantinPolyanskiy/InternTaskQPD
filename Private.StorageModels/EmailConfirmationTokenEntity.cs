@@ -12,7 +12,7 @@ public class EmailConfirmationTokenEntity
     
     public DateTime? ConfirmedAt { get; set; }
     
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
     
     public ApplicationUserEntity User { get; set; } = null!;
 }

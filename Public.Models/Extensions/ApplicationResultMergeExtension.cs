@@ -22,6 +22,9 @@ public static class ApplicationExecuteLogicResultExtensions
             if (!target.ContainsError(critical.ErrorType))
                 target.WithCritical(critical);
         }
+        
+        if (target.Value == null && source.Value is TTarget v)
+            target.Value = v;
 
         return target;
     }

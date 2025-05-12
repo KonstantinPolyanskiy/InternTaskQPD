@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Private.ServicesInterfaces;
 using Private.StorageModels;
@@ -22,41 +23,41 @@ public class IdentityUserService : IUserService
         _logger = logger;
     }
     
-    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> CreateUserAsync(DtoForCreateUser dto)
+    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> CreateUserAsync(DataForCreateUser dto)
     {
-        _logger.LogInformation("Попытка создать пользователя c логином {login}", dto.Data.Login);
+        _logger.LogInformation("Попытка создать пользователя c логином {login}", dto.Login);
         _logger.LogDebug("Входные данные - {@data}", dto);
         
         // Логин не занят
-        var userByName = await _userManager.FindByNameAsync(dto.Data.Login);
+        var userByName = await _userManager.FindByNameAsync(dto.Login);
         if (userByName is not null)
         {
-            _logger.LogWarning("Аккаунт с логином {login} уже существует", dto.Data.Login);
+            _logger.LogWarning("Аккаунт с логином {login} уже существует", dto.Login);
             return ApplicationExecuteLogicResult<ApplicationUserEntity>.Failure(new ApplicationError(
                 UserErrors.LoginIsBusy, "Логин занят",
-                $"Пользователь с логином {dto.Data.Login} уже существует", ErrorSeverity.Critical, HttpStatusCode.BadRequest));
+                $"Пользователь с логином {dto.Login} уже существует", ErrorSeverity.Critical, HttpStatusCode.BadRequest));
         }
         
         // Почта не занята
-        var userByEmail = await _userManager.FindByEmailAsync(dto.Data.Email);
+        var userByEmail = await _userManager.FindByEmailAsync(dto.Email);
         if (userByEmail is not null)
         {
-            _logger.LogWarning("Аккаунт с почтой {email} уже существует", dto.Data.Email);
+            _logger.LogWarning("Аккаунт с почтой {email} уже существует", dto.Email);
             return ApplicationExecuteLogicResult<ApplicationUserEntity>.Failure(new ApplicationError(
                 UserErrors.EmailIsBusy, "Почта занята",
-                $"Пользователь с почтой {dto.Data.Email} уже существует", ErrorSeverity.Critical, HttpStatusCode.BadRequest));
+                $"Пользователь с почтой {dto.Email} уже существует", ErrorSeverity.Critical, HttpStatusCode.BadRequest));
         }
         
         // Сохраняем в БД 
         var user = new ApplicationUserEntity
         {
-            UserName = dto.Data.Login,
-            Email = dto.Data.Email,
-            FirstName = dto.Data.FirstName,
-            LastName = dto.Data.LastName,
+            UserName = dto.Login,
+            Email = dto.Email,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
         };
         
-        var saved = await _userManager.CreateAsync(user, dto.Data.Password);
+        var saved = await _userManager.CreateAsync(user, dto.Password);
         if (saved.Succeeded is not true)
         {
             _logger.LogError("Не получилось сохранить пользователя в хранилище, ошибки - {@errors}", saved.Errors);
@@ -107,6 +108,20 @@ public class IdentityUserService : IUserService
         _logger.LogInformation("Пользователь по логину {@id} успешно найден", userId);
         _logger.LogDebug("Найденный пользователь - {user}", user);
 
+        return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<List<ApplicationUserEntity>>> UsersAll()
+    {
+        var users = await _userManager.Users.OrderBy(u => u.Id).ToListAsync();
+
+        return ApplicationExecuteLogicResult<List<ApplicationUserEntity>>.Success(users);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> SaveUserAsync(ApplicationUserEntity user)
+    {
+        await _userManager.UpdateAsync(user);
+        
         return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
     }
 
@@ -179,5 +194,39 @@ public class IdentityUserService : IUserService
         _logger.LogInformation("Для пользователя с id {id} найдено {count} ролей", user.Id, roles.Count);
 
         return ApplicationExecuteLogicResult<List<string>>.Success(roles.ToList());
+    }
+
+    public async Task<ApplicationExecuteLogicResult<Unit>> AddRolesToUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles)
+    {
+        if (!roles.Any())
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.NotFoundAnyRoleForUser, "Нет ролей для назначения", 
+                "Небыли переданы роли, которые необходимо назначить", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        
+        var res = await _userManager.AddToRolesAsync(user, roles.Select(r => r.ToString()));
+        if (res.Succeeded is not true)
+        {
+            _logger.LogError("Ошибка назначения ролей - {@err}", res.Errors);
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailSaveUser, "Роли не назначены",
+                "При назначении ролей возникла непредвиденная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        }
+        
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<Unit>> RemoveRolesFromUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles)
+    {
+        if (!roles.Any())
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.NotFoundAnyRoleForUser, "Нет ролей для удаления", 
+                "Небыли переданы роли, которые необходимо снять", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        
+        var res = await _userManager.RemoveFromRolesAsync(user, roles.Select(r => r.ToString()));
+        if (res.Succeeded is not true)
+        {
+            _logger.LogError("Ошибка назначения ролей - {@err}", res.Errors);
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailSaveUser, "Роли не сняты",
+                "При снятии ролей возникла непредвиденная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        }
+        
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
 }

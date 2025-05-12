@@ -2,7 +2,7 @@
 
 namespace Public.Models.DtoModels.UserDtoModels;
 
-public record DataForUserRegistration
+public record DataForConsumerRegistration
 {
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
@@ -15,9 +15,26 @@ public record DataForUserRegistration
     public ApplicationUserRole RequestedUserRole { get; set; } = ApplicationUserRole.Client;
 }
 
-
-public record DtoForCreateUser
+public record DataForCreateUser
 {
-    // Пока поля совпадают - можно просто встроить, не создавая ненужный маппинг
-    public required DataForUserRegistration Data { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    
+    public required string Login { get; init; } 
+
+    public required string Email { get; init; } 
+
+    public required string Password { get; init; }
+
+    public IReadOnlyCollection<ApplicationUserRole> InitialRoles { get; set; } = [];
+}
+
+public record DataForUpdateUser
+{
+    public required Guid UserId { get; init; }
+    
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+
+    public IReadOnlyCollection<ApplicationUserRole> NewRoles { get; init; } = [];
 }

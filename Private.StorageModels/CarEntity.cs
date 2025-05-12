@@ -24,3 +24,12 @@ public class CarEntity
     public int? PhotoMetadataId { get; set; }
     public PhotoMetadataEntity? PhotoMetadata { get; set; }
 }
+
+public class CarsEntityPage
+{
+    public List<CarEntity> Cars { get; init; } = [];
+    
+    public int TotalCount { get; init; }
+    public int PageNumber { get; init; }
+    public int PageSize { get; init; }
+}

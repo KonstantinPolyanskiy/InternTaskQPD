@@ -35,62 +35,6 @@ public class UserUseCase
         _logger = logger;
     }
     
-    /// <summary> Процесс регистрации клиента </summary>
-    public async Task<ApplicationExecuteLogicResult<UserRegistrationResponse>> RegistrationClientAsync(DataForUserRegistration data)
-    {
-        _logger.LogInformation("Попытка регистрации пользователя с логином {login}", data.Login);
-        
-        var warnings = new List<ApplicationError>();
-        
-        // Проверяем что запрашиваемая роль - Client
-        if (data.RequestedUserRole is not ApplicationUserRole.Client)
-            return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure(
-                Helper.ForbiddenRoleApplicationError());
-        
-        // Что такая роль существует, если нет - создаем
-        var existRole = await _roleService.RoleExistAsync(data.RequestedUserRole);
-        if (existRole.Value is not true || existRole.ContainsError(RoleErrors.RoleNotFound))
-        {
-           var role = await _roleService.RoleCreateAsync(data.RequestedUserRole);
-           if (role.IsSuccess is not true)
-               return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(role);
-           warnings.AddRange(role.GetWarnings);
-        }
-        warnings.AddRange(existRole.GetWarnings);
-        
-        
-        // Создаем аккаунт пользователя
-        var user = await _userService.CreateUserAsync(new DtoForCreateUser {Data = data});
-        if (user.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(user);
-        warnings.AddRange(user.GetWarnings);
-        
-        var userId = Guid.Parse(user.Value!.Id);
-        
-        // Создаем токен и отправляем на почту ссылку-подтверждение
-        var token = await _tokenService.GenerateConfirmEmailTokenAsync(userId, DateTime.UtcNow.AddHours(24));
-        if (token.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(token);
-        warnings.AddRange(user.GetWarnings);
-        
-        var url = new Uri($"some/confirm-email?uid={userId}&code={WebUtility.UrlEncode(token.Value)}");
-
-        var confirmEmail = await _mailSenderService.SendConfirmationEmailAsync(user.Value.Email!, url.ToString());
-        if (confirmEmail.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(confirmEmail);
-        warnings.AddRange(confirmEmail.GetWarnings);
-        
-        _logger.LogInformation("Успешная регистрация пользователя с логином {login}", user.Value.UserName);
-
-        var registrationResponse = new UserRegistrationResponse
-        {
-            Login = user.Value.UserName!,
-            Email = user.Value.Email!,
-        };
-
-        return ApplicationExecuteLogicResult<UserRegistrationResponse>.Success(registrationResponse).WithWarnings(warnings);
-    }
-    
     /// <summary> Процесс подтверждения почты клиентом </summary>
     public async Task<ApplicationExecuteLogicResult<UserEmailConfirmationResponse>> ConfirmEmailAsync(Guid userId, string confirmToken)
     {
@@ -162,7 +106,7 @@ public class UserUseCase
         // Генерируем пару токенов
         var authPair = await _tokenService.GenerateAuthTokensPairAsync(user.Value!, roles.Value!, 15);
         if (authPair.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
+            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(authPair);
         warnings.AddRange(user.GetWarnings);
         
         // Отправляем email о входе

@@ -20,9 +20,7 @@ internal static class ErrorHelper
             ErrorSeverity.Critical,
             HttpStatusCode.InternalServerError);
 
-        var dest = ApplicationExecuteLogicResult<TOut>.Failure(err);
-
-        return dest.Merge(source);
+        return ApplicationExecuteLogicResult<TOut>.Failure(err).Merge(source);
     }
 
     internal static ApplicationExecuteLogicResult<TOut> WrapNotFoundError<TIn, TOut>(
@@ -40,8 +38,6 @@ internal static class ErrorHelper
             ErrorSeverity.Critical,
             HttpStatusCode.NotFound);
         
-        var dest = ApplicationExecuteLogicResult<TOut>.Failure(err);
-        
-        return dest.Merge(source);
+       return ApplicationExecuteLogicResult<TOut>.Failure(err).Merge(source);
     }
 }

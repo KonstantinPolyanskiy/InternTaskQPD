@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Private.Services.ErrorHelpers;
 using Private.Services.Repositories;
@@ -6,6 +7,7 @@ using Private.StorageModels;
 using Public.Models.ApplicationErrors;
 using Public.Models.BusinessModels.CarModels;
 using Public.Models.BusinessModels.PhotoModels;
+using Public.Models.BusinessModels.StorageModels;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.CarDtoModels;
 
@@ -14,14 +16,18 @@ namespace Private.Services.CarServices;
 public class CarService : ICarService
 {
     private readonly ILogger<CarService> _logger;
+    private readonly IMapper _mapper;
+    
     private readonly ICarRepository _carRepository;
 
     private const string CarObjectName = "Car";
 
     // ReSharper disable once ConvertToPrimaryConstructor
-    public CarService(ILogger<CarService> logger, ICarRepository carRepository)
+    public CarService(ILogger<CarService> logger, IMapper mapper, ICarRepository carRepository)
     {
         _logger = logger;
+        _mapper = mapper;
+        
         _carRepository = carRepository;
     }
     
@@ -33,19 +39,9 @@ public class CarService : ICarService
         var condition = CalculateCarCondition(data.CurrentOwner, data.Mileage);
         var priority = CalculatePrioritySale(condition);
         
-        // TODO: добавить mapper
-        var entity = new CarEntity
-        {
-            Brand = data.Brand,
-            Color = data.Color,
-            Price = data.Price,
-            
-            CurrentOwner = data.CurrentOwner,
-            Mileage = data.Mileage,
-            
-            PrioritySale = priority,
-            CarCondition = condition,
-        };
+        var entity = _mapper.Map<CarEntity>(data);
+        entity.CarCondition = condition;
+        entity.PrioritySale = priority;
         
         var saved = await _carRepository.SaveCarAsync(entity);
         if (saved.IsSuccess is not true)
@@ -55,19 +51,8 @@ public class CarService : ICarService
         }
         
         _logger.LogInformation("Машина с id {id} успешно сохранена", saved.Value!.Id);
-
-        // TODO: добавить mapper
-        var car = new DomainCar
-        {
-            Id = saved.Value!.Id,
-            Brand = saved.Value!.Brand,
-            Color = saved.Value!.Color,
-            Price = saved.Value!.Price,
-            CurrentOwner = saved.Value!.CurrentOwner,
-            Mileage = saved.Value!.Mileage,
-        };
         
-        return ApplicationExecuteLogicResult<DomainCar>.Success(car);
+        return ApplicationExecuteLogicResult<DomainCar>.Success(_mapper.Map<DomainCar>(saved.Value!));
     }
 
     public async Task<ApplicationExecuteLogicResult<DomainCar>> GetCarAsyncById(int id)
@@ -83,22 +68,11 @@ public class CarService : ICarService
                 return ErrorHelper.WrapNotFoundError<CarEntity, DomainCar>(CarErrors.CarNotFound, CarObjectName, id.ToString(), entity);
         }
         
-        // TODO: добавить automapper
-        var car = new DomainCar
+        var car = _mapper.Map<DomainCar>(entity);
+        car.Photo = new DomainPhoto
         {
-            Id = entity.Value!.Id,
-            Brand = entity.Value!.Brand,
-            Color = entity.Value!.Color,
-            Price = entity.Value!.Price,
-            CurrentOwner = entity.Value!.CurrentOwner,
-            Mileage = entity.Value!.Mileage,
-            PrioritySale = entity.Value!.PrioritySale,
-            CarCondition = entity.Value!.CarCondition,
-            Photo = new DomainPhoto
-            {
-                CarId = entity.Value!.Id,
-                Id = (int)entity.Value!.PhotoMetadataId!
-            }
+            Id = (int)entity.Value!.PhotoMetadataId!,
+            CarId = entity.Value!.Id,
         };
         
         _logger.LogInformation("Машина с id {id} найдена", id);
@@ -107,9 +81,51 @@ public class CarService : ICarService
         return ApplicationExecuteLogicResult<DomainCar>.Success(car);
     }
 
-    public async Task<ApplicationExecuteLogicResult<List<DomainCar>>> GetCarsAsync(DtoForSearchCars data)
+    public async Task<ApplicationExecuteLogicResult<DomainCarsPage>> GetCarsAsync(DtoForSearchCars data)
     {
-        var entityCars = _carRepository.
+        _logger.LogInformation("Попытка найти машины по параметрам");
+        _logger.LogDebug("Параметры - {@params}", data);
+
+        var entityCars = await _carRepository.GetCarsByQueryAsync(data);
+        if (entityCars.IsSuccess is not true)
+        {
+            if (entityCars.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<CarsEntityPage, DomainCarsPage>(CarErrors.CarNotFound, entityCars);
+            if (entityCars.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<CarsEntityPage, DomainCarsPage>(CarErrors.CarNotFound, CarObjectName, "Query Search", entityCars);
+        }
+        
+        var domainCars = entityCars.Value!.Cars
+            .Select(car =>
+            {
+                var domainCar = _mapper.Map<DomainCar>(car);
+
+                if (car.PhotoMetadataId is not null)
+                {
+                    domainCar.Photo = new DomainPhoto
+                    {
+                        Id           = car.PhotoMetadataId.Value,
+                        CarId        = car.Id,
+                        Extension    = ImageFileExtensions.Jpg,
+                        PhotoDataId  = Guid.Empty,
+                        PhotoData    = []
+                    };
+                }
+
+                return domainCar;
+            })
+            .ToList();
+        
+        _logger.LogInformation("Успешный поиск по параметрам, всего - {count}", entityCars.Value!.Cars.Count);
+        _logger.LogInformation("Результат domain cars - {@result}", domainCars);
+
+        return ApplicationExecuteLogicResult<DomainCarsPage>.Success(new DomainCarsPage
+        {
+            DomainCars = domainCars,
+            TotalCount = entityCars.Value!.TotalCount,
+            PageNumber = entityCars.Value!.PageNumber,
+            PageSize = entityCars.Value!.PageSize,
+        });
     }
 
     public async Task<ApplicationExecuteLogicResult<DomainCar>> SetPhotoMetadataToCarAsync(DomainCar car, int photoMetadataId)

@@ -22,9 +22,9 @@ public class HandmadeTokenService : ITokenService
     private const string RefreshTokenTokenName = "RefreshToken";
     private const string AccessTokenTokenName = "AccessToken";
     
-    private const string IdentitySecurityStamp = "stp";
+    public const string IdentitySecurityStamp = "stp";
 
-    private const string SigningKey = "sdfRT34TG34T3T34TDDFSBBBBBBBASDADFrewerwe";
+    private const string SigningKey = "d1e4L3zb1b9qF/gmXLdmE1op6mYImVU4VfW+HjNh3iA=";
     private const int DaysRefreshTokenLive = 7;
     
     private readonly ILogger<HandmadeTokenService> _logger;
@@ -53,7 +53,7 @@ public class HandmadeTokenService : ITokenService
 
         var entity = new EmailConfirmationTokenEntity
         {
-            UserId = userId,
+            UserId = userId.ToString(),
             TokenBody = tokenHash,
             ExpiresAt = expiresAt,
         };
@@ -92,7 +92,7 @@ public class HandmadeTokenService : ITokenService
             warnings.Add(new ApplicationError(EmailTokenErrors.AlreadyConfirmed, "Токен уже подтвержден",
                 $"По переданному токену уже было подтверждение", ErrorSeverity.NotImportant));
 
-        if (entity.Value.UserId != userId || entity.Value.ExpiresAt > DateTime.UtcNow)
+        if (entity.Value.UserId != userId.ToString() || entity.Value.ExpiresAt > DateTime.UtcNow)
             return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(EmailTokenErrors.IncorrectUserOrExpired, "Некорректный токен",
                 $"Пользователи токена не совпадают либо токен уже истек", ErrorSeverity.Critical, HttpStatusCode.BadRequest))
                 .WithWarnings(warnings);
@@ -119,7 +119,7 @@ public class HandmadeTokenService : ITokenService
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.UserName!),
             new (JwtRegisteredClaimNames.Jti, jti),
             new (IdentitySecurityStamp, user.SecurityStamp!)
@@ -128,12 +128,15 @@ public class HandmadeTokenService : ITokenService
         foreach (var role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role));
         
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SigningKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SigningKey))
+        {
+            KeyId = "main-key"
+        };
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         
         var jwtToken = new JwtSecurityToken(
-            issuer: "InternTaskQPD.CarApplication",
-            audience: "UnknownAudience",
+            issuer: "car-service",
+            audience: "unknown",
             claims: claims,
             notBefore: now,
             expires: now.AddMinutes(ttlMinutes),
@@ -148,7 +151,8 @@ public class HandmadeTokenService : ITokenService
         var entity = new RefreshTokenEntity
         {
             Jti = jti,
-            UserId = Guid.Parse(user.Id),
+            UserId = user.Id,
+            RefreshTokenBody = refreshToken,
             ExpiresAtUtc = now.AddDays(DaysRefreshTokenLive),
         };
 
@@ -277,7 +281,7 @@ public class HandmadeTokenService : ITokenService
             if (entity.ContainsError(DatabaseErrors.DatabaseException))
                 return ErrorHelper.WrapDbExceptionError<BlackListTokenAccessEntity, bool>(AccessTokenErrors.TokenNotFound, entity);
             if (entity.ContainsError(DatabaseErrors.NotFound))
-                return ApplicationExecuteLogicResult<bool>.Success(true);
+                return ApplicationExecuteLogicResult<bool>.Success(false);
         }
 
         bool exist = entity.Value is not null;
@@ -322,6 +326,6 @@ public class HandmadeTokenService : ITokenService
         
         _logger.LogInformation("По refresh токену {token} получилось найти пользователя {userId}", refreshToken, refresh.Value!.UserId);
         
-        return ApplicationExecuteLogicResult<Guid>.Success(refresh.Value!.UserId);
+        return ApplicationExecuteLogicResult<Guid>.Success(Guid.Parse(refresh.Value!.UserId));
     }
 }

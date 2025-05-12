@@ -8,7 +8,7 @@ using Public.Models.CommonModels;
 
 namespace Private.Storages.Repositories.BlackListAccessTokenRepository;
 
-public class BlackListAccessTokenRepository(AuthDbContext db, ILogger<BlackListAccessTokenRepository> logger) : IBlackListAccessTokenRepository
+public class BlackListAccessTokenRepository(AppDbContext db, ILogger<BlackListAccessTokenRepository> logger) : IBlackListAccessTokenRepository
 {
     private const string EntityName = "AccessTokenInBlackList";
     

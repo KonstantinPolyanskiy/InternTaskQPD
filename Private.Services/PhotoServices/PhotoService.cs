@@ -44,7 +44,6 @@ public class PhotoService : IPhotoService
                 return ErrorHelper.WrapDbExceptionError<PhotoEntity, DomainPhoto>(PhotoImageErrors.ImageNotSaved, savedImage);
         }
         
-        // TODO: добавить mapper
         // сохранить метаданные
         var savedMetadata = await _photoMetadataRepository.SavePhotoMetadataAsync(new PhotoMetadataEntity
         {
@@ -109,5 +108,66 @@ public class PhotoService : IPhotoService
         _logger.LogDebug("Найденное по id {id} фото {@data}", id, domainPhoto);
         
         return ApplicationExecuteLogicResult<DomainPhoto>.Success(domainPhoto);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<List<DomainPhoto>>> GetPhotosByMetadataIdAsync(int[] ids)
+    {
+        _logger.LogInformation("Попытка подгрузить фото для {count} метаданных", ids.Length);
+
+        var photosMetadata = await _photoMetadataRepository.GetPhotosMetadataByIdsAsync(ids);
+        if (!photosMetadata.IsSuccess)
+        {
+            if (photosMetadata.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<List<PhotoMetadataEntity>, List<DomainPhoto>>(
+                    PhotoImageErrors.ImageNotFound, photosMetadata);
+
+            if (photosMetadata.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<List<PhotoMetadataEntity>, List<DomainPhoto>>(
+                    PhotoImageErrors.ImageNotFound, PhotoObjectName, "Many ids", photosMetadata);
+        }
+        
+        var photoDataIds = photosMetadata.Value!
+            .Select(m => m.PhotoDataId!.Value)
+            .Distinct()
+            .ToArray();
+
+        var photosData = await _photoRepository.GetPhotosByIdsAsync(photoDataIds);
+        if (!photosData.IsSuccess)
+        {
+            if (photosData.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<List<PhotoEntity>, List<DomainPhoto>>(
+                    PhotoImageErrors.ImageNotFound, photosData);
+
+            if (photosData.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<List<PhotoEntity>, List<DomainPhoto>>(
+                    PhotoImageErrors.ImageNotFound, PhotoObjectName, "Many ids", photosData);
+        }
+        
+        var photoDict   = photosData.Value!.ToDictionary(p => p.Id);
+        var domainPhotos = new List<DomainPhoto>(photosMetadata.Value!.Count);
+
+        foreach (var metadata in photosMetadata.Value)
+        {
+            if (!photoDict.TryGetValue(metadata.PhotoDataId!.Value, out var photoEntity))
+            {
+                // В теории этого не должно случиться, но если вдруг – корректно отработаем
+                return ErrorHelper.WrapNotFoundError<PhotoEntity, List<DomainPhoto>>(
+                    PhotoImageErrors.ImageNotFound, PhotoObjectName, metadata.PhotoDataId!.Value.ToString(), ApplicationExecuteLogicResult<PhotoEntity>.Failure());
+            }
+
+            domainPhotos.Add(new DomainPhoto
+            {
+                Id          = metadata.Id,
+                CarId       = metadata.CarId,
+                Extension   = metadata.Extension,
+                PhotoDataId = photoEntity.Id,
+                PhotoData   = photoEntity.PhotoBytes
+            });
+        }
+        
+        _logger.LogInformation("Успешно подгружено {count} фото", domainPhotos.Count);
+        _logger.LogDebug("Domain photos – {@photos}", domainPhotos);
+        
+        return ApplicationExecuteLogicResult<List<DomainPhoto>>.Success(domainPhotos);
     }
 }

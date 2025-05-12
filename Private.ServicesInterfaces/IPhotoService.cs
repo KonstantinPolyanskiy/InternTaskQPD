@@ -8,4 +8,5 @@ public interface IPhotoService
 {
     public Task<ApplicationExecuteLogicResult<DomainPhoto>> CreatePhotoAsync(DtoForCreatePhoto data);
     public Task<ApplicationExecuteLogicResult<DomainPhoto>> GetPhotoByMetadataIdAsync(int id);
+    public Task<ApplicationExecuteLogicResult<List<DomainPhoto>>> GetPhotosByMetadataIdAsync(int[] ids);
 }
