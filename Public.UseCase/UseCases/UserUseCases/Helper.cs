@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Net;
+using Private.StorageModels;
+using Public.Models.ApplicationErrors;
 using Public.Models.CommonModels;
-using Public.Models.ErrorEnums;
-using Public.Models.UserModels;
 
 namespace Public.UseCase.UseCases.UserUseCases;
 
@@ -32,9 +32,9 @@ internal static class Helper
         }
     }
 
-    internal static string ThanksForConfirmingEmailMessage(ApplicationUser user) => 
+    internal static string ThanksForConfirmingEmailMessage(ApplicationUserEntity user) => 
         $"Уважаемый {string.Join(" ", user.FirstName, user.LastName)} спасибо за подтверждение почты!";
     
-    internal static string AccountLoginEmailMessage(ApplicationUser user) => 
+    internal static string AccountLoginEmailMessage(ApplicationUserEntity user) => 
         $"Уважаемый {string.Join(" ", user.FirstName, user.LastName)}, в ваш аккаунт {user.Email} был совершен вход сегодня в {DateTime.Now}";
 }

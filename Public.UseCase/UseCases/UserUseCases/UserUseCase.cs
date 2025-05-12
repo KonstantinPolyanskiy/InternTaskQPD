@@ -3,12 +3,12 @@ using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Private.ServicesInterfaces;
+using Private.StorageModels;
+using Public.Models.ApplicationErrors;
 using Public.Models.BusinessModels.TokenModels;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.UserDtoModels;
 using Public.Models.Extensions;
-using Public.Models.ErrorEnums;
-using Public.Models.UserModels;
 using Public.UseCase.Models;
 
 namespace Public.UseCase.UseCases.UserUseCases;
@@ -68,7 +68,7 @@ public class UserUseCase
         var userId = Guid.Parse(user.Value!.Id);
         
         // Создаем токен и отправляем на почту ссылку-подтверждение
-        var token = await _tokenService.GenerateConfirmEmailTokenAsync(userId, 24);
+        var token = await _tokenService.GenerateConfirmEmailTokenAsync(userId, DateTime.UtcNow.AddHours(24));
         if (token.IsSuccess is not true)
             return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(token);
         warnings.AddRange(user.GetWarnings);
@@ -145,26 +145,30 @@ public class UserUseCase
         
         // Находим пользователя
         var user = await _userService.UserByLoginAsync(login);
-        if (user.IsSuccess is not true || user.Value is null)
+        if (user.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
         warnings.AddRange(user.GetWarnings);
-        
+
+        var roles = await _userService.GetRolesByUser(user.Value!);
+        if (user.IsSuccess is not true)
+            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(roles);
+            
         // Проверяем валиден ли пароль
-        var correctPassword = await _userService.CheckPasswordForUserAsync(user.Value, password);
+        var correctPassword = await _userService.CheckPasswordForUserAsync(user.Value!, password);
         if (correctPassword.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
         warnings.AddRange(user.GetWarnings);
         
         // Генерируем пару токенов
-        var authPair = await _tokenService.GenerateAuthTokensPairAsync(user.Value);
+        var authPair = await _tokenService.GenerateAuthTokensPairAsync(user.Value!, roles.Value!, 15);
         if (authPair.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
         warnings.AddRange(user.GetWarnings);
         
         // Отправляем email о входе
-        var loginMessage = Helper.AccountLoginEmailMessage(user.Value);
+        var loginMessage = Helper.AccountLoginEmailMessage(user.Value!);
         
-        var sending = await _mailSenderService.SendAccountLoginEmailAsync(user.Value.Email!, loginMessage);
+        var sending = await _mailSenderService.SendAccountLoginEmailAsync(user.Value!.Email!, loginMessage);
         warnings.AddRange(sending.GetWarnings); // Критические ошибки игнорируем, фактически вход совершен корректно
         
         _logger.LogInformation("Успешный вход в аккаунт {login}", user.Value.UserName);
@@ -178,9 +182,21 @@ public class UserUseCase
         _logger.LogInformation("Попытка создать свежую пару auth токенов по refresh токен {token}", refreshToken);
         
         var warnings = new List<ApplicationError>();
+
+        var userId = await _tokenService.GetUserIdByRefreshTokenBody(refreshToken);
+        if (userId.IsSuccess is not true)
+            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(userId);
+        
+        var user = await _userService.UserByIdAsync(userId.Value);
+        if (user.IsSuccess is not true)
+            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
+        
+        var roles = await _userService.GetRolesByUser(user.Value!);
+        if (user.IsSuccess is not true)
+            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(roles);
         
         // Создаем свежую пару auth токенов
-        var pair = await _tokenService.RegenerateAuthTokensPairAsync(refreshToken);
+        var pair = await _tokenService.RegenerateAuthTokensPairAsync(refreshToken, user.Value!, roles.Value!, 15);
         if (pair.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(pair);
         warnings.AddRange(pair.GetWarnings);
@@ -252,7 +268,7 @@ public class UserUseCase
 
     #region Вспомогательные методы
 
-    private async Task<ApplicationExecuteLogicResult<Unit>> LogoutGlobally(ApplicationUser user)
+    private async Task<ApplicationExecuteLogicResult<Unit>> LogoutGlobally(ApplicationUserEntity user)
     {
         var warnings = new List<ApplicationError>();
         

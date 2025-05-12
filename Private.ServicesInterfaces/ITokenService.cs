@@ -33,4 +33,7 @@ public interface ITokenService
     
     /// <summary> Получить refresh токен по связанному с ним jti access токена </summary>
     public Task<ApplicationExecuteLogicResult<string>> GetRefreshTokenByAccessJtiAsync(string jti);
+    
+    /// <summary> Получить Id пользователя с переданным refresh токеном </summary>
+    public Task<ApplicationExecuteLogicResult<Guid>> GetUserIdByRefreshTokenBody(string refreshToken);
 }

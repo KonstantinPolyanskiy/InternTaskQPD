@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Private.ServicesInterfaces;
 using Private.StorageModels;
+using Public.Models.ApplicationErrors;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.UserDtoModels;
-using Public.Models.ErrorEnums;
 
 namespace Private.Services.UserServices;
 
@@ -164,5 +164,20 @@ public class IdentityUserService : IUserService
         _logger.LogInformation("Метки безопасности пользователя с id {@id} теперь новые", user.Id);
         
         return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<List<string>>> GetRolesByUser(ApplicationUserEntity user)
+    {
+        _logger.LogInformation("Попытка получить роли пользователя с id {id}", user.Id);
+        
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Any())
+            return ApplicationExecuteLogicResult<List<string>>.Failure(new ApplicationError(
+                UserErrors.NotFoundAnyRoleForUser, "Роли не найдены",
+                $"Не найдено ни 1 роли для пользователя {user.UserName}", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        
+        _logger.LogInformation("Для пользователя с id {id} найдено {count} ролей", user.Id, roles.Count);
+
+        return ApplicationExecuteLogicResult<List<string>>.Success(roles.ToList());
     }
 }

@@ -15,6 +15,7 @@ public record DataForUserRegistration
     public ApplicationUserRole RequestedUserRole { get; set; } = ApplicationUserRole.Client;
 }
 
+
 public record DtoForCreateUser
 {
     // Пока поля совпадают - можно просто встроить, не создавая ненужный маппинг

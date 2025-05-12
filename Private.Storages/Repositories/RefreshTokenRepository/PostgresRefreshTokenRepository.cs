@@ -1,14 +1,17 @@
-﻿using System.Net;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Private.Services.Repositories;
 using Private.StorageModels;
 using Private.Storages.DbContexts;
+using Private.Storages.ErrorHelpers;
 using Public.Models.CommonModels;
-using Public.Models.ErrorEnums;
 
 namespace Private.Storages.Repositories.RefreshTokenRepository;
 
-public class PostgresRefreshTokenRepository(AuthDbContext db) : IRefreshTokenRepository
+public class PostgresRefreshTokenRepository(AuthDbContext db, ILogger<PostgresRefreshTokenRepository> logger) : IRefreshTokenRepository
 {
+    private const string EntityName = "RefreshToken";
+    
     public async Task<ApplicationExecuteLogicResult<RefreshTokenEntity>> SaveRefreshTokenAsync(RefreshTokenEntity refreshToken)
     {
         try
@@ -20,8 +23,8 @@ public class PostgresRefreshTokenRepository(AuthDbContext db) : IRefreshTokenRep
         }
         catch (Exception ex)
         {
-            return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(new ApplicationError(DatabaseErrors.SeeMessage, "Ошибка сохранения refresh",
-                ex.Message, ErrorSeverity.Critical, HttpStatusCode.InternalServerError)); 
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(ErrorHelper.PrepareStorageException(EntityName)); 
         }
     }
 
@@ -29,43 +32,93 @@ public class PostgresRefreshTokenRepository(AuthDbContext db) : IRefreshTokenRep
     {
         try
         {
-            var entity = db.RefreshTokens.SingleOrDefault(x => x.RefreshTokenBody == refreshTokenBody);
+            var entity = await db.RefreshTokens.FirstOrDefaultAsync(x => x.RefreshTokenBody == refreshTokenBody);
             if (entity == null)
-                return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(NotFoundError());
+                return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
 
             return ApplicationExecuteLogicResult<RefreshTokenEntity>.Success(entity);
         }
         catch (Exception ex)
         {
-            return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(new ApplicationError(DatabaseErrors.SeeMessage, "Ошибка получения refresh",
-                ex.Message, ErrorSeverity.Critical, HttpStatusCode.InternalServerError)); 
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(ErrorHelper.PrepareStorageException(EntityName)); 
         }
     }
 
-    public Task<ApplicationExecuteLogicResult<RefreshTokenEntity>> GetRefreshTokenByJtiAsync(string jti)
+    public async Task<ApplicationExecuteLogicResult<RefreshTokenEntity>> GetRefreshTokenByJtiAsync(string jti)
     {
         try
         {
+            var entity = await db.RefreshTokens.FirstOrDefaultAsync(x => x.Jti == jti);
+            if (entity == null)
+                return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
             
+            return ApplicationExecuteLogicResult<RefreshTokenEntity>.Success(entity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<RefreshTokenEntity>.Failure(ErrorHelper.PrepareStorageException(EntityName));
         }
     }
 
-    public Task<ApplicationExecuteLogicResult<Unit>> DeleteRefreshTokenByIdAsync(int refreshTokenId)
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteRefreshTokenByIdAsync(int refreshTokenId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var entity = await db.RefreshTokens.FirstOrDefaultAsync(x => x.Id == refreshTokenId);
+            if (entity == null)
+                return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+            
+            db.RefreshTokens.Remove(entity);
+            await db.SaveChangesAsync();
+            
+            return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
     }
 
-    public Task<ApplicationExecuteLogicResult<Unit>> DeleteRefreshTokenByBodyAsync(string refreshTokenBody)
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteRefreshTokenByBodyAsync(string refreshTokenBody)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var entity = await db.RefreshTokens.FirstOrDefaultAsync(x => x.RefreshTokenBody == refreshTokenBody);
+            if (entity == null)
+                return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+            
+            db.RefreshTokens.Remove(entity);
+            await db.SaveChangesAsync();
+            
+            return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
     }
 
-    public Task<ApplicationExecuteLogicResult<Unit>> DeleteAllUserRefreshTokensAsync(Guid userId)
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteAllUserRefreshTokensAsync(Guid userId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var entities = db.RefreshTokens.Where(x => x.UserId == userId);
+            if (!entities.Any())
+                return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+            
+            db.RefreshTokens.RemoveRange(entities);
+            await db.SaveChangesAsync();
+
+            return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
     }
-    
-    private ApplicationError NotFoundError() => new ApplicationError(
-        DatabaseErrors.NotFound, "Refresh не найден", "DbContext для сущности вернул null", ErrorSeverity.Critical, HttpStatusCode.NotFound);
-    
 }

@@ -1,0 +1,67 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Private.Services.Repositories;
+using Private.StorageModels;
+using Private.Storages.DbContexts;
+using Private.Storages.ErrorHelpers;
+using Public.Models.CommonModels;
+
+namespace Private.Storages.Repositories.PhotoRepositories.PostgresPhotoRepository;
+
+public class PhotoPostgresRepository(AppDbContext db, ILogger<PhotoPostgresRepository> logger) : IPhotoRepository
+{
+    private const string EntityName = "PhotoData";
+    
+    public async Task<ApplicationExecuteLogicResult<PhotoEntity>> SavePhotoAsync(PhotoEntity entity)
+    {
+        try
+        {
+            await db.Photos.AddAsync(entity);
+            await db.SaveChangesAsync();
+            
+            return ApplicationExecuteLogicResult<PhotoEntity>.Success(entity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<PhotoEntity>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
+    }
+
+    public async Task<ApplicationExecuteLogicResult<PhotoEntity>> GetPhotoByIdAsync(Guid id)
+    {
+        try
+        {
+            var entity = await db.Photos.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+                return ApplicationExecuteLogicResult<PhotoEntity>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+            
+            return ApplicationExecuteLogicResult<PhotoEntity>.Success(entity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<PhotoEntity>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
+    }
+
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeletePhotoByIdAsync(Guid id)
+    {
+        try
+        {
+            var entity = await db.Photos.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+                return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareNotFoundError(EntityName));
+            
+            db.Photos.Remove(entity);
+            await db.SaveChangesAsync();
+            
+            return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return ApplicationExecuteLogicResult<Unit>.Failure(ErrorHelper.PrepareStorageException(EntityName));
+        }
+    }
+}

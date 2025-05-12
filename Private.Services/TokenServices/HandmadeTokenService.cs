@@ -5,22 +5,27 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Private.Services.ErrorHelpers;
 using Private.Services.Repositories;
 using Private.ServicesInterfaces;
 using Private.StorageModels;
+using Public.Models.ApplicationErrors;
 using Public.Models.BusinessModels.TokenModels;
 using Public.Models.CommonModels;
-using Public.Models.ErrorEnums;
 using Public.Models.Extensions;
 
 namespace Private.Services.TokenServices;
 
 public class HandmadeTokenService : ITokenService
 {
-    public const string IdentitySecurityStamp = "stp";
+    private const string EmailTokenName = "EmailConfirmationToken";
+    private const string RefreshTokenTokenName = "RefreshToken";
+    private const string AccessTokenTokenName = "AccessToken";
+    
+    private const string IdentitySecurityStamp = "stp";
 
-    public const string SigningKey = "sdfRT34TG34T3T34TDDFSBBBBBBBASDADFrewerwe";
-    public const int DaysRefreshTokenLive = 7;
+    private const string SigningKey = "sdfRT34TG34T3T34TDDFSBBBBBBBASDADFrewerwe";
+    private const int DaysRefreshTokenLive = 7;
     
     private readonly ILogger<HandmadeTokenService> _logger;
     
@@ -42,49 +47,66 @@ public class HandmadeTokenService : ITokenService
     {
         _logger.LogInformation("Создание и сохранение токена для подтверждения почты для пользователя с id {id}", userId);
 
-        var tokenHash = Convert.ToBase64String(SHA256.Create().ComputeHash(RandomNumberGenerator.GetBytes(32)));
+        var tokenBody = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        var tokenHash = Convert.ToBase64String(
+            SHA256.HashData(Encoding.UTF8.GetBytes(tokenBody)));
+
+        var entity = new EmailConfirmationTokenEntity
+        {
+            UserId = userId,
+            TokenBody = tokenHash,
+            ExpiresAt = expiresAt,
+        };
 
         _logger.LogInformation("Сохранение токена в хранилище");
 
-        var created = await _emailConfirmationTokenRepository.SaveEmailConfirmationTokenAsync(userId, tokenHash, expiresAt);
+        var created = await _emailConfirmationTokenRepository.SaveEmailConfirmationTokenAsync(entity);
         if (created.IsSuccess is not true)
         {
-            _logger.LogWarning("Ошибка сохранения токена подтверждения почты в хранилище");
-            return ApplicationExecuteLogicResult<string>.Failure().Merge(created);
+            if (created.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<EmailConfirmationTokenEntity, string>(EmailTokenErrors.TokenNotCreated, created);
         }
         
         _logger.LogInformation("Токен подтверждения почты с id {id} был сохранен", created.Value!.Id);
 
-        return ApplicationExecuteLogicResult<string>.Success(created.Value!.TokenBody);
+        return ApplicationExecuteLogicResult<string>.Success(created.Value!.TokenBody).Merge(created);
     }
 
     public async Task<ApplicationExecuteLogicResult<Unit>> CheckEmailConfirmationTokenAsync(Guid userId, string token)
     {
         _logger.LogInformation("Проверка токена {token} для подтверждения почты для пользователя с id {id}", token, userId);
+     
+        var warnings = new List<ApplicationError>();
         
         var entity = await _emailConfirmationTokenRepository.GetEmailConfirmationTokenByBodyAsync(token);
-        if (entity.IsSuccess is not true || entity.Value is null)
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(EmailTokenErrors.TokenConfirmationNotFound, "Токен не найден",
-                $"Не получилось найти запись по телу токена {token}", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        if (entity.IsSuccess is not true)
+        {
+            if (entity.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<EmailConfirmationTokenEntity, Unit>(EmailTokenErrors.TokenNotFound, entity);
+            
+            if (entity.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<EmailConfirmationTokenEntity, Unit>(EmailTokenErrors.TokenNotFound, EmailTokenName, token, entity);
+        }
         
-        if (entity.Value.Confirmed)
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(EmailTokenErrors.AlreadyConfirmed, "Токен уже подтвержден",
+        if (entity.Value!.Confirmed)
+            warnings.Add(new ApplicationError(EmailTokenErrors.AlreadyConfirmed, "Токен уже подтвержден",
                 $"По переданному токену уже было подтверждение", ErrorSeverity.NotImportant));
 
         if (entity.Value.UserId != userId || entity.Value.ExpiresAt > DateTime.UtcNow)
             return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(EmailTokenErrors.IncorrectUserOrExpired, "Некорректный токен",
-                $"Пользователи токена не совпадают либо токен уже истек", ErrorSeverity.Critical, HttpStatusCode.BadRequest));
+                $"Пользователи токена не совпадают либо токен уже истек", ErrorSeverity.Critical, HttpStatusCode.BadRequest))
+                .WithWarnings(warnings);
         
         entity.Value.Confirmed = true;
         entity.Value.ConfirmedAt= DateTime.UtcNow;
         
         var updated = await _emailConfirmationTokenRepository.RewriteEmailConfirmationTokenAsync(entity.Value);
-        if (updated.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(updated);
+        if (updated.ContainsError(DatabaseErrors.DatabaseException))
+            return ErrorHelper.WrapDbExceptionError<EmailConfirmationTokenEntity, Unit>(EmailTokenErrors.TokenNotCreated, updated).WithWarnings(warnings);
 
         _logger.LogInformation("Проверка токена {token} для подтверждения почты для пользователя с id {id} успешна", token, userId);
         
-        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value).WithWarnings(warnings);
     }
 
     public async Task<ApplicationExecuteLogicResult<AuthTokensPair>> GenerateAuthTokensPairAsync(ApplicationUserEntity user, List<string> roles, int ttlMinutes)
@@ -123,14 +145,19 @@ public class HandmadeTokenService : ITokenService
         
         _logger.LogDebug("Созданный jwt- {jwt}, access - {access}, refresh - {refresh}", jwtToken, accessToken, refreshToken);
 
-        var saved  = await _refreshTokenRepository.SaveRefreshTokenAsync(new RefreshTokenEntity
-            {
-                Jti = jti,
-                UserId = Guid.Parse(user.Id),
-                ExpiresAtUtc = now.AddDays(DaysRefreshTokenLive),
-            });
+        var entity = new RefreshTokenEntity
+        {
+            Jti = jti,
+            UserId = Guid.Parse(user.Id),
+            ExpiresAtUtc = now.AddDays(DaysRefreshTokenLive),
+        };
+
+        var saved = await _refreshTokenRepository.SaveRefreshTokenAsync(entity);
         if (saved.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(saved);
+        {
+            if (saved.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<RefreshTokenEntity, AuthTokensPair>(RefreshTokenErrors.TokenNotCreated, saved);
+        }
         
         _logger.LogInformation("Пара токенов авторизации для пользователя {id} успешно создана", user.Id);
         
@@ -145,27 +172,34 @@ public class HandmadeTokenService : ITokenService
     {
         _logger.LogInformation("Перегенерация пары токенов авторизации для пользователя {id}", user.Id);
         
+        var warnings = new List<ApplicationError>();
+        
         // Ищем запись о переданном refresh 
         var refresh = await _refreshTokenRepository.GetRefreshTokenByBodyAsync(refreshToken);
-        if (refresh.IsSuccess is not true || refresh.Value is null)
-            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure(new ApplicationError(RefreshTokenErrors.TokenNotFound, "Refresh токен не найден",
-                "Не получилось найти запись о refresh токене", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        if (refresh.IsSuccess is not true)
+        {
+            if (refresh.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<RefreshTokenEntity, AuthTokensPair>(RefreshTokenErrors.TokenNotFound, refresh);
+            
+            if (refresh.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<RefreshTokenEntity, AuthTokensPair>(RefreshTokenErrors.TokenNotFound, RefreshTokenTokenName, refreshToken, refresh);
+        }
         
         // Истек ли refresh токен
-        if (refresh.Value.ExpiresAtUtc < DateTime.UtcNow)
+        if (refresh.Value!.ExpiresAtUtc < DateTime.UtcNow)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure(new ApplicationError(RefreshTokenErrors.TokenExpired, "Refresh токен истек",
                 "Refresh токен истек, необходимо повторно авторизоваться", ErrorSeverity.Critical, HttpStatusCode.BadRequest)).Merge(refresh);
         
         // Удаляем старый refresh токен
         var deleted = await _refreshTokenRepository.DeleteRefreshTokenByIdAsync(refresh.Value.Id);
         if (deleted.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure(new ApplicationError(RefreshTokenErrors.TokenNotDeleted, "Refresh токен не удален",
-                "По неизвестной причине refresh токен удалить не получилось", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+            if (refresh.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<RefreshTokenEntity, AuthTokensPair>(RefreshTokenErrors.TokenNotDeleted, refresh);
         
         // Создаем новую пару
         var pair = await GenerateAuthTokensPairAsync(user, roles, ttlMinutes);
         if (pair.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(deleted);
+            return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(pair);
         
         return ApplicationExecuteLogicResult<AuthTokensPair>.Success(pair.Value!); 
     }
@@ -176,8 +210,13 @@ public class HandmadeTokenService : ITokenService
         
         var deleted = await _refreshTokenRepository.DeleteAllUserRefreshTokensAsync(userId);
         if (deleted.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(RefreshTokenErrors.TokenNotDeleted, "Refresh токены не удалены",
-                "По неизвестной причине refresh токены удалить не получилось", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        {
+            if (deleted.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<Unit, Unit>(RefreshTokenErrors.TokenNotDeleted, deleted);
+            
+            if (deleted.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<Unit, Unit>(RefreshTokenErrors.TokenNotDeleted, RefreshTokenTokenName, userId.ToString(), deleted);
+        }
         
         _logger.LogInformation("Все refresh токены для {id} удалены", userId);
         
@@ -190,8 +229,13 @@ public class HandmadeTokenService : ITokenService
         
         var deleted = await _refreshTokenRepository.DeleteRefreshTokenByBodyAsync(refreshToken);
         if (deleted.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(RefreshTokenErrors.TokenNotDeleted, "Refresh токен не удален",
-                "По неизвестной причине refresh токен удалить не получилось", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        {
+            if (deleted.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<Unit, Unit>(RefreshTokenErrors.TokenNotDeleted, deleted);
+            
+            if (deleted.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<Unit, Unit>(RefreshTokenErrors.TokenNotDeleted, RefreshTokenTokenName, refreshToken, deleted);
+        }
         
         _logger.LogInformation("Запись о refresh токене {body} удалена", refreshToken);
         
@@ -201,15 +245,22 @@ public class HandmadeTokenService : ITokenService
     public async Task<ApplicationExecuteLogicResult<Unit>> RevokeAccessTokenByJtiAsync(string jti, DateTime expiration)
     {
         _logger.LogInformation("Попытка забанить access токен по jti {jti}", jti);
-        
-        var banned = await _blackListAccessTokenRepository.AddAccessTokenToBlackListAsync(new BlackListTokenAccessEntity
+
+        var entity = new BlackListTokenAccessEntity
         {
             Jti = jti,
             ExpiresAtUtc = expiration,
-        });
-        if (banned.IsSuccess is not true) 
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(AccessTokenErrors.TokenNotSaved, "Access токен не сохранен в ЧС",
-                "По неизвестной причине access токен не получилось внести в черный список", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        };
+        
+        var banned = await _blackListAccessTokenRepository.SaveAccessTokenInBlackListAsync(entity);
+        if (banned.IsSuccess is not true)
+        {
+            if (banned.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<BlackListTokenAccessEntity, Unit>(AccessTokenErrors.TokenNotBanned, banned);
+            
+            if (banned.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<BlackListTokenAccessEntity, Unit>(AccessTokenErrors.TokenNotBanned, AccessTokenTokenName, jti, banned);
+        }
         
         _logger.LogInformation("Попытка забанить access токен по jti {jti} успешна", jti);
         
@@ -222,8 +273,12 @@ public class HandmadeTokenService : ITokenService
 
         var entity = await _blackListAccessTokenRepository.GetAccessTokenByJtiAsync(jti);
         if (entity.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<bool>.Failure(new ApplicationError(AccessTokenErrors.UnknownError, "Access токен не найден",
-                "Неизвестная ошибка получения access токена", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        {
+            if (entity.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<BlackListTokenAccessEntity, bool>(AccessTokenErrors.TokenNotFound, entity);
+            if (entity.ContainsError(DatabaseErrors.NotFound))
+                return ApplicationExecuteLogicResult<bool>.Success(true);
+        }
 
         bool exist = entity.Value is not null;
         var warnExpired = entity.Value!.ExpiresAtUtc < DateTime.UtcNow
@@ -239,12 +294,34 @@ public class HandmadeTokenService : ITokenService
         _logger.LogInformation("Поиск refresh токена по связанному с ним jti access токена");
         
         var refresh = await _refreshTokenRepository.GetRefreshTokenByJtiAsync(jti);
-        if (refresh.IsSuccess is not true || refresh.Value is null)
-            return ApplicationExecuteLogicResult<string>.Failure(new ApplicationError(RefreshTokenErrors.TokenNotFound, "Refresh токен не найден",
-                "Не получилось найти запись о refresh токене", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        if (refresh.IsSuccess is not true)
+        {
+            if (refresh.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<RefreshTokenEntity, string>(RefreshTokenErrors.TokenNotFound, refresh);
+            if (refresh.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<RefreshTokenEntity, string>(RefreshTokenErrors.TokenNotFound, RefreshTokenTokenName, jti, refresh);
+        }
         
         _logger.LogInformation("Получилось найти токен {token} с jti {jti}", refresh.Value, jti);
         
-        return ApplicationExecuteLogicResult<string>.Success(refresh.Value.RefreshTokenBody);
+        return ApplicationExecuteLogicResult<string>.Success(refresh.Value!.RefreshTokenBody);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<Guid>> GetUserIdByRefreshTokenBody(string refreshToken)
+    {
+        _logger.LogInformation("Поиск user id по refresh токену");
+        
+        var refresh = await _refreshTokenRepository.GetRefreshTokenByBodyAsync(refreshToken);
+        if (refresh.IsSuccess is not true)
+        {
+            if (refresh.ContainsError(DatabaseErrors.DatabaseException))
+                return ErrorHelper.WrapDbExceptionError<RefreshTokenEntity, Guid>(RefreshTokenErrors.TokenNotFound, refresh);
+            if (refresh.ContainsError(DatabaseErrors.NotFound))
+                return ErrorHelper.WrapNotFoundError<RefreshTokenEntity, Guid>(RefreshTokenErrors.TokenNotFound, RefreshTokenTokenName, refreshToken, refresh);
+        }
+        
+        _logger.LogInformation("По refresh токену {token} получилось найти пользователя {userId}", refreshToken, refresh.Value!.UserId);
+        
+        return ApplicationExecuteLogicResult<Guid>.Success(refresh.Value!.UserId);
     }
 }

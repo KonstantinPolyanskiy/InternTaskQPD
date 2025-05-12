@@ -24,4 +24,7 @@ public interface IUserService
     
     /// <summary> Обновляет security stamp пользователя, побочно делая все выданные ранее access токены невалидными </summary>
     public Task<ApplicationExecuteLogicResult<Unit>> UpdateUserSecurityStampAsync(ApplicationUserEntity user);
+    
+    /// <summary> Получить роли пользователя </summary>
+    public Task<ApplicationExecuteLogicResult<List<string>>> GetRolesByUser(ApplicationUserEntity user);
 }

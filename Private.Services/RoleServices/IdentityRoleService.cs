@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Private.ServicesInterfaces;
+using Public.Models.ApplicationErrors;
 using Public.Models.CommonModels;
-using Public.Models.ErrorEnums;
 
 namespace Private.Services.RoleServices;
 
@@ -31,7 +31,7 @@ public class IdentityRoleService : IRoleService
         
         _logger.LogInformation("Роль {role} - {exist}", role, exist ? "Да" : "Нет");
         
-        return ApplicationExecuteLogicResult<bool>.Success(true);
+        return ApplicationExecuteLogicResult<bool>.Success(exist);
     }
 
     public async Task<ApplicationExecuteLogicResult<ApplicationUserRole>> RoleCreateAsync(ApplicationUserRole role)

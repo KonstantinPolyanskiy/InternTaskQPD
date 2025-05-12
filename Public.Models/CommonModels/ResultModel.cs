@@ -33,6 +33,12 @@ public sealed class ApplicationExecuteLogicResult<T>
         return r;
     }
 
+    public ApplicationExecuteLogicResult<T> DeleteError(Enum errorType)
+    {
+        _errors.RemoveAll(e => e.ErrorType.Equals(errorType));
+        return this;
+    }
+
     private ApplicationExecuteLogicResult<T> WithError(ApplicationError error)
     {
         _errors.Add(error);
