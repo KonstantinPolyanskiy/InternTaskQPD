@@ -26,6 +26,7 @@ public class ConsumerUseCases
         IMailSenderService mailSenderService, 
         ILogger<UserUseCase> logger)
     {
+        
         _userService = userService;
         _tokenService = tokenService;
         _mailSenderService = mailSenderService;
