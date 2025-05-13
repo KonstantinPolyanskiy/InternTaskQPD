@@ -1,4 +1,6 @@
-﻿namespace Public.Api.Models.Requests;
+﻿using Public.Models.CommonModels;
+
+namespace Public.Api.Models.Requests;
 
 public record ClientRegistrationRequest
 {
@@ -11,7 +13,13 @@ public record ClientRegistrationRequest
     public required string Password { get; init; }
 }
 
+public record UpdateUserRequest
+{
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
 
+    public IReadOnlyCollection<ApplicationUserRole> NewRoles { get; init; } = [];
+}
 
 public record ClientLoginRequest
 {

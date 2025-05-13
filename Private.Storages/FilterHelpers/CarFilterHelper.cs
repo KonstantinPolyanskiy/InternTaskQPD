@@ -26,7 +26,7 @@ public static class CarFilterHelper
     public static IQueryable<CarEntity> FilterByCondition(this IQueryable<CarEntity> query, CarConditionTypes? condition) 
         => condition is not null ? query.Where(c => c.CarCondition == condition) : query;
 
-    public static IQueryable<CarEntity> FilterBySortingTermination(this IQueryable<CarEntity> query, CarSortTermination? term, SortDirection direction)
+    public static IQueryable<CarEntity> FilterBySortingTermination(this IQueryable<CarEntity> query, CarSortTermination? term, SortDirection? direction)
         => term == null ? query : term switch
         {
             CarSortTermination.Id => direction is SortDirection.Ascending ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id), 

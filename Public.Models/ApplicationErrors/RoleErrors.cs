@@ -4,5 +4,6 @@ namespace Public.Models.ApplicationErrors;
 public enum RoleErrors
 {
     RoleNotFound,
+    DontHaveEnoughPermissions,
     FailSaveRole
 }

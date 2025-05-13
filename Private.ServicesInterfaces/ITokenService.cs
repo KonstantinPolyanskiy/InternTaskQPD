@@ -14,10 +14,10 @@ public interface ITokenService
     public Task<ApplicationExecuteLogicResult<Unit>> CheckEmailConfirmationTokenAsync(Guid userId, string token);
     
     /// <summary> Создать пару токенов для авторизации </summary>
-    public Task<ApplicationExecuteLogicResult<AuthTokensPair>> GenerateAuthTokensPairAsync(ApplicationUserEntity user, List<string> roles, int ttlMinutes);
+    public Task<ApplicationExecuteLogicResult<AuthTokensPair>> GenerateAuthTokensPairAsync(ApplicationUserEntity user, List<ApplicationUserRole> roles, int ttlMinutes);
     
     /// <summary> Выдать свежую пару токенов для авторизации </summary>
-    public Task<ApplicationExecuteLogicResult<AuthTokensPair>> RegenerateAuthTokensPairAsync(string refreshToken, ApplicationUserEntity user, List<string> roles, int ttlMinutes);
+    public Task<ApplicationExecuteLogicResult<AuthTokensPair>> RegenerateAuthTokensPairAsync(string refreshToken, ApplicationUserEntity user, List<ApplicationUserRole> roles, int ttlMinutes);
     
     /// <summary> Отозвать все refresh токены выданные пользователю </summary>
     public Task<ApplicationExecuteLogicResult<Unit>> RevokeAllUserRefreshTokensAsync(Guid userId);

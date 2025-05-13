@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Private.ServicesInterfaces;
+using Private.StorageModels;
 using Public.Models.ApplicationErrors;
 using Public.Models.CommonModels;
 
@@ -9,44 +10,64 @@ namespace Private.Services.RoleServices;
 
 public class IdentityRoleService : IRoleService
 {
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUserEntity> _userManager;
     private readonly ILogger<IdentityRoleService> _logger;
     
     // ReSharper disable once ConvertToPrimaryConstructor
-    public IdentityRoleService(RoleManager<IdentityRole> roleManager, ILogger<IdentityRoleService> logger)
+    public IdentityRoleService(UserManager<ApplicationUserEntity> userManager, ILogger<IdentityRoleService> logger)
     {
-        _roleManager = roleManager;
+        _userManager = userManager;
+        
         _logger = logger;
     }
 
-    public async Task<ApplicationExecuteLogicResult<bool>> RoleExistAsync(ApplicationUserRole role)
+    public async Task<ApplicationExecuteLogicResult<List<ApplicationUserRole>>> GetRolesByUser(ApplicationUserEntity user)
     {
-        _logger.LogInformation("Проверка существования роли {role}", role);
+        _logger.LogInformation("Попытка получить роли пользователя с id {id}", user.Id);
         
-        var exist = await _roleManager.RoleExistsAsync(role.ToString());
-        if (exist is not true)
-            return ApplicationExecuteLogicResult<bool>.Failure(new ApplicationError(
-                RoleErrors.RoleNotFound, "Роль не существует",
-                $"Роль по указанному названию {role.ToString()} не получилось найти", ErrorSeverity.NotImportant));
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Any())
+            return ApplicationExecuteLogicResult<List<ApplicationUserRole>>.Failure(new ApplicationError(
+                UserErrors.NotFoundAnyRoleForUser, "Роли не найдены",
+                $"Не найдено ни 1 роли для пользователя {user.UserName}", ErrorSeverity.Critical, HttpStatusCode.NotFound));
         
-        _logger.LogInformation("Роль {role} - {exist}", role, exist ? "Да" : "Нет");
-        
-        return ApplicationExecuteLogicResult<bool>.Success(exist);
+        _logger.LogInformation("Для пользователя с id {id} найдено {count} ролей", user.Id, roles.Count);
+
+        return ApplicationExecuteLogicResult<List<ApplicationUserRole>>
+            .Success(roles.Select(Enum.Parse<ApplicationUserRole>).ToList());
     }
 
-    public async Task<ApplicationExecuteLogicResult<ApplicationUserRole>> RoleCreateAsync(ApplicationUserRole role)
+    public async Task<ApplicationExecuteLogicResult<Unit>> AddRolesToUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles)
     {
-        _logger.LogInformation("Создание роли {role}", role);
-
-        var created = await _roleManager.CreateAsync(new IdentityRole(role.ToString()));
-        if (created.Succeeded is not true)
+        if (!roles.Any())
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.NotFoundAnyRoleForUser, "Нет ролей для назначения", 
+                "Небыли переданы роли, которые необходимо назначить", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        
+        var res = await _userManager.AddToRolesAsync(user, roles.Select(r => r.ToString()));
+        if (res.Succeeded is not true)
         {
-            _logger.LogError("Не получилось создать роль, ошибки - {@errors}", created.Errors);
-            return ApplicationExecuteLogicResult<ApplicationUserRole>.Failure(new ApplicationError(
-                RoleErrors.FailSaveRole, "Роль не создана", 
-                "В процессе создания роли возникла неизвестная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+            _logger.LogError("Ошибка назначения ролей - {@err}", res.Errors);
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailSaveUser, "Роли не назначены",
+                "При назначении ролей возникла непредвиденная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
         }
+        
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+    }
 
-        return ApplicationExecuteLogicResult<ApplicationUserRole>.Success(role);
+    public async Task<ApplicationExecuteLogicResult<Unit>> RemoveRolesFromUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles)
+    {
+        if (!roles.Any())
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.NotFoundAnyRoleForUser, "Нет ролей для удаления", 
+                "Небыли переданы роли, которые необходимо снять", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+        
+        var res = await _userManager.RemoveFromRolesAsync(user, roles.Select(r => r.ToString()));
+        if (res.Succeeded is not true)
+        {
+            _logger.LogError("Ошибка назначения ролей - {@err}", res.Errors);
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailSaveUser, "Роли не сняты",
+                "При снятии ролей возникла непредвиденная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        }
+        
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
 }

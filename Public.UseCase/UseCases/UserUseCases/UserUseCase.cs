@@ -7,7 +7,6 @@ using Private.StorageModels;
 using Public.Models.ApplicationErrors;
 using Public.Models.BusinessModels.TokenModels;
 using Public.Models.CommonModels;
-using Public.Models.DtoModels.UserDtoModels;
 using Public.Models.Extensions;
 using Public.UseCase.Models;
 
@@ -43,7 +42,7 @@ public class UserUseCase
         var warnings = new List<ApplicationError>();
         
         // Получаем пользователя, проверяем существует ли он вообще
-        var user = await _userService.UserByIdAsync(userId);
+        var user = await _userService.UserByLoginOrIdAsync(userId.ToString());
         if (user.IsSuccess is not true || user.Value is null)
             return ApplicationExecuteLogicResult<UserEmailConfirmationResponse>.Failure().Merge(user);
         warnings.AddRange(user.GetWarnings);
@@ -88,12 +87,12 @@ public class UserUseCase
         var warnings = new List<ApplicationError>();
         
         // Находим пользователя
-        var user = await _userService.UserByLoginAsync(login);
+        var user = await _userService.UserByLoginOrIdAsync(login);
         if (user.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
         warnings.AddRange(user.GetWarnings);
 
-        var roles = await _userService.GetRolesByUser(user.Value!);
+        var roles = await _roleService.GetRolesByUser(user.Value!);
         if (user.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(roles);
             
@@ -131,11 +130,11 @@ public class UserUseCase
         if (userId.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(userId);
         
-        var user = await _userService.UserByIdAsync(userId.Value);
+        var user = await _userService.UserByLoginOrIdAsync(userId.Value.ToString());
         if (user.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(user);
         
-        var roles = await _userService.GetRolesByUser(user.Value!);
+        var roles = await _roleService.GetRolesByUser(user.Value!);
         if (user.IsSuccess is not true)
             return ApplicationExecuteLogicResult<AuthTokensPair>.Failure().Merge(roles);
         
@@ -167,7 +166,7 @@ public class UserUseCase
             
             var userId = Guid.Parse(rawIdClaim.Value);
             
-            var user = await _userService.UserByIdAsync(userId);
+            var user = await _userService.UserByLoginOrIdAsync(userId.ToString());
             if (user.IsSuccess is not true)
                 return ApplicationExecuteLogicResult<Unit>.Failure().Merge(user);
             warnings.AddRange(user.GetWarnings);
@@ -212,7 +211,7 @@ public class UserUseCase
 
     #region Вспомогательные методы
 
-    private async Task<ApplicationExecuteLogicResult<Unit>> LogoutGlobally(ApplicationUserEntity user)
+    public async Task<ApplicationExecuteLogicResult<Unit>> LogoutGlobally(ApplicationUserEntity user)
     {
         var warnings = new List<ApplicationError>();
         

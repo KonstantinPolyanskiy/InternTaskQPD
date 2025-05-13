@@ -26,4 +26,11 @@ public class StubEmailSenderService(ILogger<StubEmailSenderService> _logger) : I
         
         return await Task.FromResult(ApplicationExecuteLogicResult<Unit>.Success(Unit.Value));
     }
+
+    public async Task<ApplicationExecuteLogicResult<Unit>> SendNoPhotoNotifyEmailAsync(string recipient, string managerLogin, int carId)
+    {
+        _logger.LogInformation("На почту {mail} отправлено сообщение о том что менеджер {manager} добавил машину {car} без фото", recipient, managerLogin, carId);
+        
+        return await Task.FromResult(ApplicationExecuteLogicResult<Unit>.Success(Unit.Value));
+    }
 }

@@ -9,7 +9,6 @@ using Private.Storages.Extensions;
 using Public.Api.Extensions;
 using Public.Api.Middlewares;
 using Public.Api.Seeder;
-using Public.Models.CommonModels;
 using Public.UseCase.Extensions;
 using Serilog;
 using Serilog.Events;

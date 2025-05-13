@@ -180,6 +180,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRol
 
             e.Property(c => c.Mileage)
                 .HasColumnName("mileage");
+            
+            e.Property(c => c.ResponsiveManagerId)
+                .HasColumnName("responsive_manager_id")
+                .HasComment("Id менеджера ответственного за машину")
+                .IsRequired();
 
             e.Property(c => c.PrioritySale)
                 .HasColumnName("priority_sale")
@@ -194,7 +199,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRol
             e.HasOne(c => c.PhotoMetadata)
                 .WithOne(pm => pm.Car)
                 .HasForeignKey<CarEntity>(c => c.PhotoMetadataId)
-                .OnDelete(DeleteBehavior.SetNull);  
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

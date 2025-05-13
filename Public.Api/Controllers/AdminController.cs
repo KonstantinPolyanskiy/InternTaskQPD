@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.Api.Extensions;
+using Public.Api.Models.Requests;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.UserDtoModels;
 using Public.UseCase.UseCases.AdminUseCases;
@@ -32,6 +33,22 @@ public class AdminController(AdminUseCases adminUseCases, ILogger<AdminControlle
         return this.ToApiResult(user);
     }
 
+    [HttpDelete("user/{id}")]
+    public async Task<IActionResult> DeleteUser([FromRoute] string id)
+    {
+        var deletedResult = await adminUseCases.DeleteUserByIdAsync(Guid.Parse(id));
+        
+        return this.ToApiResult(deletedResult);
+    }
+
+    [HttpPost("user/logout/{id}")]
+    public async Task<IActionResult> LogoutUser([FromRoute] string id)
+    {
+        var logoutResult = await adminUseCases.LogoutByUserId(id);
+        
+        return this.ToApiResult(logoutResult);
+    }
+
     [HttpGet("user/all")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -43,11 +60,19 @@ public class AdminController(AdminUseCases adminUseCases, ILogger<AdminControlle
     }
 
     [HttpPatch("user/{id}")]
-    public async Task<IActionResult> PatchUser(DataForUpdateUser req)
+    public async Task<IActionResult> PatchUser([FromBody]UpdateUserRequest req, [FromRoute] string id)
     {
         logger.LogInformation("Обновление пользователя с данными - {@req}", req);
+
+        var data = new DataForUpdateUser
+        {
+            UserId = Guid.Parse(id),
+            FirstName = req.FirstName,
+            LastName = req.LastName,
+            NewRoles = req.NewRoles,
+        };
         
-        var user = await adminUseCases.UpdateUserAsync(req);
+        var user = await adminUseCases.UpdateUserAsync(data);
         
         return this.ToApiResult(user);
     }

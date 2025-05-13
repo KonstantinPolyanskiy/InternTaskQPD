@@ -1,4 +1,5 @@
 using Public.Models.BusinessModels.PhotoModels;
+using Public.Models.BusinessModels.UserModels;
 
 namespace Public.Models.BusinessModels.CarModels;
 
@@ -16,6 +17,8 @@ public class DomainCar
     public CarConditionTypes CarCondition { get; set; }
     
     public PrioritySaleTypes PrioritySale { get; set; }
+    
+    public DomainEmployer? Manager { get; set; }
     
     public DomainPhoto? Photo { get; set; }
 }

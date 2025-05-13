@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.ComponentModel;
+using System.Net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using Private.StorageModels;
 using Public.Models.ApplicationErrors;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.UserDtoModels;
+using Public.Models.Extensions;
 
 namespace Private.Services.UserServices;
 
@@ -71,46 +73,47 @@ public class IdentityUserService : IUserService
         return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
     }
 
-    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UserByLoginAsync(string login)
+    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UserByLoginOrIdAsync(string userIdentifier)
     {
-        _logger.LogInformation("Попытка найти пользователя по логину {login}", login);
-        
+        _logger.LogInformation("Попытка найти пользователя по id/login {@id}", userIdentifier);
+
         // Ищем пользователя
-        var user = await _userManager.FindByNameAsync(login);
-        if (user is null)
+        var userById = await _userManager.FindByIdAsync(userIdentifier);
+        var userByLogin = await _userManager.FindByNameAsync(userIdentifier);
+
+        if (userById is null && userByLogin is null)
         {
-            _logger.LogWarning("Аккаунт с логином {login} не найден", login);
             return ApplicationExecuteLogicResult<ApplicationUserEntity>.Failure(new ApplicationError(
                 UserErrors.UserNotFound, "Пользователь не найден",
-                $"Пользователь с логином {login} не найден или не существует", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+                $"Пользователь с идентификатором {userIdentifier} не найден или не существует", ErrorSeverity.Critical, HttpStatusCode.NotFound));
         }
         
-        _logger.LogInformation("Пользователь по логину {login} успешно найден", login);
-        _logger.LogDebug("Найденный пользователь - {user}", user);
+        _logger.LogInformation("Пользователь по логину {@id} успешно найден", userIdentifier);
+        _logger.LogDebug("Найденный пользователь - {user}", userById);  
+        
+        var user = userById ?? userByLogin;
 
-        return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
+        return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user!);
     }
 
-    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UserByIdAsync(Guid userId)
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteUserByLoginOrIdAsync(string userIdentifier)
     {
-        _logger.LogInformation("Попытка найти пользователя по id {@id}", userId);
+        var userResult = await UserByLoginOrIdAsync(userIdentifier);
+        if (userResult.IsSuccess is not true || userResult.Value is null)
+            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(userResult);
+        var user = userResult.Value;
         
-        // Ищем пользователя
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user is null)
+        var deleted = await _userManager.DeleteAsync(user);
+        if (deleted.Succeeded is not true)
         {
-            _logger.LogWarning("Аккаунт с логином {@id} не найден", userId);
-            return ApplicationExecuteLogicResult<ApplicationUserEntity>.Failure(new ApplicationError(
-                UserErrors.UserNotFound, "Пользователь не найден",
-                $"Пользователь с id {userId.ToString()} не найден или не существует", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+            _logger.LogError("Ошибка при удалении пользователя - {@err}", deleted.Errors);
+            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailDeleteUser, "Пользователь не удален", 
+                "При удалении пользователя возникла неизвестная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
         }
         
-        _logger.LogInformation("Пользователь по логину {@id} успешно найден", userId);
-        _logger.LogDebug("Найденный пользователь - {user}", user);
-
-        return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
-
+    
     public async Task<ApplicationExecuteLogicResult<List<ApplicationUserEntity>>> UsersAll()
     {
         var users = await _userManager.Users.OrderBy(u => u.Id).ToListAsync();
@@ -177,55 +180,6 @@ public class IdentityUserService : IUserService
         }
         
         _logger.LogInformation("Метки безопасности пользователя с id {@id} теперь новые", user.Id);
-        
-        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
-    }
-
-    public async Task<ApplicationExecuteLogicResult<List<string>>> GetRolesByUser(ApplicationUserEntity user)
-    {
-        _logger.LogInformation("Попытка получить роли пользователя с id {id}", user.Id);
-        
-        var roles = await _userManager.GetRolesAsync(user);
-        if (!roles.Any())
-            return ApplicationExecuteLogicResult<List<string>>.Failure(new ApplicationError(
-                UserErrors.NotFoundAnyRoleForUser, "Роли не найдены",
-                $"Не найдено ни 1 роли для пользователя {user.UserName}", ErrorSeverity.Critical, HttpStatusCode.NotFound));
-        
-        _logger.LogInformation("Для пользователя с id {id} найдено {count} ролей", user.Id, roles.Count);
-
-        return ApplicationExecuteLogicResult<List<string>>.Success(roles.ToList());
-    }
-
-    public async Task<ApplicationExecuteLogicResult<Unit>> AddRolesToUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles)
-    {
-        if (!roles.Any())
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.NotFoundAnyRoleForUser, "Нет ролей для назначения", 
-                "Небыли переданы роли, которые необходимо назначить", ErrorSeverity.Critical, HttpStatusCode.NotFound));
-        
-        var res = await _userManager.AddToRolesAsync(user, roles.Select(r => r.ToString()));
-        if (res.Succeeded is not true)
-        {
-            _logger.LogError("Ошибка назначения ролей - {@err}", res.Errors);
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailSaveUser, "Роли не назначены",
-                "При назначении ролей возникла непредвиденная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
-        }
-        
-        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
-    }
-
-    public async Task<ApplicationExecuteLogicResult<Unit>> RemoveRolesFromUser(ApplicationUserEntity user, IReadOnlyList<ApplicationUserRole> roles)
-    {
-        if (!roles.Any())
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.NotFoundAnyRoleForUser, "Нет ролей для удаления", 
-                "Небыли переданы роли, которые необходимо снять", ErrorSeverity.Critical, HttpStatusCode.NotFound));
-        
-        var res = await _userManager.RemoveFromRolesAsync(user, roles.Select(r => r.ToString()));
-        if (res.Succeeded is not true)
-        {
-            _logger.LogError("Ошибка назначения ролей - {@err}", res.Errors);
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailSaveUser, "Роли не сняты",
-                "При снятии ролей возникла непредвиденная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
-        }
         
         return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }

@@ -75,11 +75,11 @@ public sealed class ApplicationExecuteLogicResult<T>
     
     public ApplicationExecuteLogicResult<T> WithWarnings(IEnumerable<ApplicationError> warnings)
     {
-        var applicationErrors = warnings.ToList();
-        if (applicationErrors.Any(e => e.Severity is not ErrorSeverity.Critical || e.HttpStatusCode is not null))
+        var warns = warnings.ToList();
+        if (warns.Any(e => e.Severity is not ErrorSeverity.NotImportant || e.HttpStatusCode is not null))
             throw new InvalidErrorSeverityException("Попытка добавить Warning ошибку с недопустимым уровнем или c not-null HttpStatusCod'ом");
         
-        WithErrors(applicationErrors);
+        WithErrors(warns);
         return this;
     }
 
@@ -93,4 +93,18 @@ public sealed class ApplicationExecuteLogicResult<T>
         WithError(criticalError);
         return this;
     }
+    
+    public ApplicationExecuteLogicResult<T> WithCriticals(IEnumerable<ApplicationError> criticalErrors) 
+    {
+        var criticals = criticalErrors.ToList();
+        if (criticals.Any(e => e.Severity is not ErrorSeverity.Critical
+            || e.HttpStatusCode is null
+            || string.IsNullOrWhiteSpace(e.Title)))
+            throw new InvalidErrorSeverityException("Попытка добавить Critical ошибку с недопустимым уровнем/без названия/без HttpStatusCode");
+
+        WithErrors(criticals);
+        return this;
+    }
+    
+    
 }

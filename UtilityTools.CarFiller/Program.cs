@@ -1,100 +1,176 @@
-﻿using System.Text.Json;
+﻿// PopulateService.cs — v2
+// Добавлены: camelCase‑сериализация, подробный лог исходящего JSON и флаг
+// для быстрой проверки single‑request через Swagger‑UI.
+
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using UtilityTools.CarFiller;
 
-const int allCarCount = 100;
-const int usedCarCount = 67;
+const string BASE_URL = "http://localhost:5117"; // ← твой host
+const bool SINGLE_TEST = false;                  // true → создаётся одна Lada
 
-const string endpointUrl = "http://localhost:5182/api/car/";
-
-var brandsWithNeedCount = new Dictionary<string, int>
+var http = new HttpClient { BaseAddress = new Uri(BASE_URL) };
+var rng  = new Random();
+JsonSerializerOptions s_json = new()
 {
-    ["Lada = 0"] = 27,
-    ["BMW"] = 20,
-    ["RollsRoyce"] = 11,
-    ["Ford"] = 5,
-    ["Skoda"] = 22,
-    ["ChanLi"] = 5,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    PropertyNameCaseInsensitive = true,   // <— для ответа {"data":{...}}
+    WriteIndented = false
 };
 
-var pricesRanges = new (decimal min, decimal max)[]
+// 1. Логинимся админом --------------------------------------------------------------------------
+string adminToken = await LoginAsync("admin", "Password1!");
+Console.WriteLine("Admin OK\n");
+
+// 2. Создаём менеджеров -------------------------------------------------------------------------
+var managers = new[]
 {
-    (5000, 10000),
-    (10000, 25000),
-    (25000, 900000)
+    new Manager("LadaManager",  "Manager1!", "Lada"),
+    new Manager("BmwManager",   "Manager1!", "Bmw"),
+    new Manager("SkodaManager", "Manager1!", "Skoda")
 };
 
-var mileagesRanges = new(int min, int max)[]
+foreach (var m in managers)
 {
-    (1, 900),
-    (900, 1000),
-    (1000, 10000),
-};
+    Console.WriteLine($"→ Создаём пользователя {m.Login}");
+    await PostJsonAsync("/api/admin/user", new DataForCreateUser(
+        FirstName:  m.Brand + " First",
+        LastName:   m.Brand + " Last",
+        Login:      m.Login,
+        Email:      $"{m.Login.ToLower()}@example.com",
+        Password:   m.Password,
+        InitialRoles: new[] { "Manager" }
+    ), adminToken);
+}
 
-string[] colors = ["Red", "Blue", "Green", "White", "Black"];
-
-var rand = new Random();
-
-var newCarsCount = allCarCount - usedCarCount;
-var requests = new List<CarRequest>(allCarCount);
-var client = new HttpClient
+if (SINGLE_TEST)
 {
-    BaseAddress = new Uri(endpointUrl)
-};
-client.DefaultRequestHeaders.Add("Accept", "application/json");
+    await FillCars(managers[0], adminToken, onlyOne:true);
+    return;
+}
 
-foreach (var (brand, count) in brandsWithNeedCount)
+// 3. Заполняем по 33 авто -----------------------------------------------------------------------
+foreach (var m in managers)
+    await FillCars(m, adminToken);
+
+Console.WriteLine("\nВсе данные созданы!");
+return;
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+async Task FillCars(Manager m, string adminJwt, bool onlyOne = false)
 {
-    for (int i = 0; i < count; i++)
+    Console.WriteLine($"\n== {m.Login} ({m.Brand}) ==");
+    string token = await LoginAsync(m.Login, m.Password);
+
+    int total = onlyOne ? 1 : 33;
+    for (int i = 0; i < total; i++)
     {
-        var price = Utils.RandomFromRange(pricesRanges, rand);
-        var color = colors[rand.Next(colors.Length)];
+        var car = new AddCarRequest
+        {
+            Brand  = m.Brand,
+            Color  = RandomFrom("Red","Blue","Green","Black","White","Silver","Yellow","Orange"),
+            Price  = rng.Next(5_000, 50_000),
+            Mileage       = rng.NextDouble() < 0.5 ? null : rng.Next(300, 30_001),
+            CurrentOwner  = rng.NextDouble() < 0.5 ? null : RandomFrom("Ivan","Maria","John","Alice","Olga","Peter")
+        };
 
-        int? mileage = null;                   
-        if (newCarsCount <= 0)                     
-        {
-            mileage = Utils.RandomFromRange(mileagesRanges, rand);
-        }
-        else
-        {
-            newCarsCount--;
-        }
+        await PostCarMultipartAsync(car, token);
+        Console.Write(".");
+    }
+    Console.WriteLine(" done");
+}
 
-        requests.Add(new CarRequest
-        {
-            Brand = brand,
-            Color = color,
-            Mileage = mileage,  
-            Price = price,
-            CurrentOwner = mileage == null ? null : $"Test User {price}",
-        });
+string RandomFrom(params string[] arr) => arr[rng.Next(arr.Length)];
+
+// ─── Http helpers ──────────────────────────────────────────────────────────────
+
+async Task<string> LoginAsync(string login, string password)
+{
+    var resp = await http.PostAsync($"/api/auth/login?Login={Uri.EscapeDataString(login)}&Password={Uri.EscapeDataString(password)}", null);
+    resp.EnsureSuccessStatusCode();
+
+    var env = await resp.Content.ReadFromJsonAsync<LoginEnvelope>(s_json);
+    return env?.Data?.AccessToken ?? throw new("accessToken missing");
+}
+
+async Task PostJsonAsync<T>(string url, T body, string? bearer = null)
+{
+    // Логируем исходящий JSON
+    string json = JsonSerializer.Serialize(body, s_json);
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.WriteLine($"\nPOST {url}\n{json}\n");
+    Console.ResetColor();
+
+    using var req = new HttpRequestMessage(HttpMethod.Post, url)
+    {
+        Content = JsonContent.Create(body, options: s_json) // JSON с PascalCase
+    };
+    if (!string.IsNullOrEmpty(bearer))
+        req.Headers.Authorization = new("Bearer", bearer);
+
+    var resp = await http.SendAsync(req);
+    if (!resp.IsSuccessStatusCode)
+    {
+        var err = await resp.Content.ReadAsStringAsync();
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"HTTP {(int)resp.StatusCode}: {resp.ReasonPhrase}\n{err}\n");
+        Console.ResetColor();
+        resp.EnsureSuccessStatusCode();
     }
 }
 
-Utils.EnsureAtLeastOnePerBin(requests, pricesRanges,  r => r.Price);
-Utils.EnsureAtLeastOnePerBin(requests.Where(r => r.Mileage != null).ToList(),
-    mileagesRanges, r => r.Mileage!.Value);
-
-
-Console.WriteLine("Начало отправки запросов");
-var tasks = requests.Select(async r =>
+async Task PostCarMultipartAsync(AddCarRequest car, string token)
 {
-    var json  = JsonSerializer.Serialize(r, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull});
-    var resp  = await client.PostAsync(string.Empty,
-        new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
-    resp.EnsureSuccessStatusCode();
-}).ToArray();
+    using var form = new MultipartFormDataContent();
 
-await Task.WhenAll(tasks);
-Console.WriteLine("Запросы отправлены");
+    form.Add(new StringContent(car.Brand),  nameof(car.Brand));
+    form.Add(new StringContent(car.Color),  nameof(car.Color));
+    form.Add(new StringContent(car.Price.ToString()), nameof(car.Price));
 
+    if (car.Mileage is not null)
+        form.Add(new StringContent(car.Mileage.ToString()), nameof(car.Mileage));
 
-record CarRequest
-{
-    public string Brand { get; set; } = null!;
-    public string Color { get; set; } = null!;
-    public decimal Price { get; init; }
-    
-    public string? CurrentOwner { get; set; }
-    public int? Mileage { get; init; } 
+    if (car.CurrentOwner is not null)
+        form.Add(new StringContent(car.CurrentOwner), nameof(car.CurrentOwner));
+
+    // Photo не добавляем → сервер получит null и пропустит
+
+    using var req = new HttpRequestMessage(HttpMethod.Post, "/api/car") { Content = form };
+    req.Headers.Authorization = new("Bearer", token);
+
+    var resp = await http.SendAsync(req);
+    if (!resp.IsSuccessStatusCode)
+    {
+        var err = await resp.Content.ReadAsStringAsync();
+        Console.WriteLine($"HTTP {(int)resp.StatusCode}: {resp.ReasonPhrase}\n{err}\n");
+        resp.EnsureSuccessStatusCode();
+    }
 }
+
+// Унифицированные Json‑настройки (camelCase как на бэке)
+// ─── Models (локальные дубликаты DTO) ──────────────────────────────────────────
+
+record Manager(string Login, string Password, string Brand);
+
+record DataForCreateUser(
+    string FirstName,
+    string LastName,
+    string Login,
+    string Email,
+    string Password,
+    IEnumerable<string> InitialRoles);
+
+class AddCarRequest
+{
+    public required string Brand  { get; init; }
+    public required string Color  { get; init; }
+    public required decimal Price { get; init; }
+    public string? CurrentOwner   { get; init; }
+    public int?    Mileage        { get; init; }
+    [JsonIgnore]   public object? Photo => null; // заглушка
+}
+
+class LoginEnvelope { public LoginData? Data { get; init; } }
+class LoginData { public string? AccessToken { get; init; } public string? RefreshToken { get; init; } }

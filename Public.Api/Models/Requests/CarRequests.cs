@@ -22,7 +22,28 @@ public record AddCarRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Mileage { get; init; }
     
-    public required IFormFile? Photo { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IFormFile? Photo { get; init; }
+}
+
+public record PatchCarRequest
+{
+    [Required]
+    public required string Brand { get; init; }
+    
+    [Required]
+    public required string Color { get; init; }
+    
+    [Required]
+    public required decimal Price { get; init; }
+    
+    [Required]
+    public required string CurrentOwner { get; init; }
+    
+    [Required]
+    public required int Mileage { get; init; }
+    
+    public string? NewManager { get; init; }
 }
 
 public record CarQueryRequest
@@ -33,6 +54,6 @@ public record CarQueryRequest
     public CarSortTermination? SortTerm { get; init; }
     public HavePhotoTermination? PhotoTerm { get; init; }
     public SortDirection? Direction { get; init; }
-    public int? PageNumber { get; init; }
-    public int? PageSize { get; init; }
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

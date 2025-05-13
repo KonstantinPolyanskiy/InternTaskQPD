@@ -13,4 +13,7 @@ public interface IMailSenderService
     
     /// <summary> Отправляет recipient письмо о входе в аккаунт </summary>
     public Task<ApplicationExecuteLogicResult<Unit>> SendAccountLoginEmailAsync(string recipient, string loginMessage);
+    
+    /// <summary> Отправляет recipient письмо о том, что менеджер добавил машину без фото </summary>
+    public Task<ApplicationExecuteLogicResult<Unit>> SendNoPhotoNotifyEmailAsync(string recipient, string managerLogin, int carId);
 }

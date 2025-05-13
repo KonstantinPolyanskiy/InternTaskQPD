@@ -21,6 +21,7 @@ public class CarEntity
     
     public CarConditionTypes CarCondition { get; set; }
     
+    public Guid ResponsiveManagerId { get; set; }
     public int? PhotoMetadataId { get; set; }
     public PhotoMetadataEntity? PhotoMetadata { get; set; }
 }

@@ -109,7 +109,7 @@ public class HandmadeTokenService : ITokenService
         return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value).WithWarnings(warnings);
     }
 
-    public async Task<ApplicationExecuteLogicResult<AuthTokensPair>> GenerateAuthTokensPairAsync(ApplicationUserEntity user, List<string> roles, int ttlMinutes)
+    public async Task<ApplicationExecuteLogicResult<AuthTokensPair>> GenerateAuthTokensPairAsync(ApplicationUserEntity user, List<ApplicationUserRole> roles, int ttlMinutes)
     {
         _logger.LogInformation("Генерация пары токенов авторизации для пользователя {login}", user.UserName);
         
@@ -126,7 +126,7 @@ public class HandmadeTokenService : ITokenService
         };
 
         foreach (var role in roles)
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SigningKey))
         {
@@ -172,7 +172,7 @@ public class HandmadeTokenService : ITokenService
         });
     }
 
-    public async Task<ApplicationExecuteLogicResult<AuthTokensPair>> RegenerateAuthTokensPairAsync(string refreshToken, ApplicationUserEntity user, List<string> roles, int ttlMinutes)
+    public async Task<ApplicationExecuteLogicResult<AuthTokensPair>> RegenerateAuthTokensPairAsync(string refreshToken, ApplicationUserEntity user, List<ApplicationUserRole> roles, int ttlMinutes)
     {
         _logger.LogInformation("Перегенерация пары токенов авторизации для пользователя {id}", user.Id);
         

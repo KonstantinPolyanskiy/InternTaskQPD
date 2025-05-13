@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Private.Services.CarServices;
 using Private.Services.EmailSenderServices;
+using Private.Services.ManagerServices;
 using Private.Services.PhotoServices;
 using Private.Services.RoleServices;
 using Private.Services.TokenServices;
 using Private.Services.UserServices;
 using Private.ServicesInterfaces;
 using Public.UseCase.UseCases.AdminUseCases;
-using Public.UseCase.UseCases.CarUseCases;
 using Public.UseCase.UseCases.ConsumerUseCases;
+using Public.UseCase.UseCases.ManagerUseCases;
 using Public.UseCase.UseCases.UserUseCases;
 
 namespace Public.UseCase.Extensions;
@@ -22,6 +23,7 @@ public static class UseCasesServiceCollectionExtension
 
         services.AddScoped<ICarService, CarService>();
         services.AddScoped<IPhotoService, PhotoService>();
+        services.AddScoped<IEmployerService, EmployerService>();
         
         services.AddScoped<ITokenService, HandmadeTokenService>();
 
@@ -29,7 +31,7 @@ public static class UseCasesServiceCollectionExtension
 
         services.AddScoped<UserUseCase>();
         services.AddScoped<AdminUseCases>();
-        services.AddScoped<CarUseCase>();
+        services.AddScoped<EmployerUseCases>();
         services.AddScoped<ConsumerUseCases>();
         
         return services;
