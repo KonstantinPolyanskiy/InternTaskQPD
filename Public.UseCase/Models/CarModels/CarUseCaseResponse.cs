@@ -17,7 +17,7 @@ public record CarUseCaseResponse
     public CarConditionTypes? CarCondition { get; init; }
     public PrioritySaleTypes? PrioritySale { get; init; }
     
-    public required EmployerUseCaseResponse Employer { get; init; }
+    public required EmployerUseCaseResponse Employer { get; set; }
     
     public PhotoUseCaseResponse? Photo { get; set; }
 }

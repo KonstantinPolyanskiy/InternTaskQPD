@@ -31,6 +31,8 @@ public record DtoForSaveCar
     
     public string? CurrentOwner { get; init; }
     public int? Mileage { get; init; }
+    
+    public DtoForSavePhoto? Photo { get; set; }
 }
 
 /// <summary> DTO для поиска машин по параметрам и с фильтрами </summary>

@@ -12,7 +12,7 @@ public class BlackListAccessTokenRepository(AppDbContext db, ILogger<BlackListAc
 {
     private const string EntityName = "AccessTokenInBlackList";
     
-    public async Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> SaveAccessTokenInBlackListAsync(BlackListTokenAccessEntity entity)
+    public async Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> SaveTokenInBlackListAsync(BlackListTokenAccessEntity entity)
     {
         try
         {
@@ -28,7 +28,7 @@ public class BlackListAccessTokenRepository(AppDbContext db, ILogger<BlackListAc
         }
     }
 
-    public async Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> GetAccessTokenByJtiAsync(string jti)
+    public async Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> TokenByJtiAsync(string jti)
     {
         try
         {

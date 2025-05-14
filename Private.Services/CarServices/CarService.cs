@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Private.Services.ErrorHelpers;
 using Private.Services.Repositories;
@@ -11,39 +10,26 @@ using Public.Models.BusinessModels.StorageModels;
 using Public.Models.BusinessModels.UserModels;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.CarDtoModels;
+using Public.Models.DtoModels.PhotoDtoModels;
+using Public.Models.Extensions;
 
 namespace Private.Services.CarServices;
 
-public class CarService : ICarService
+public class CarService(ICarRepository carRepository, IPhotoRepository photoRepository,
+    IPhotoMetadataRepository photoMetadataRepository, IEmployerService employerService, ILogger<CarService> logger) : ICarService
 {
-    private readonly ILogger<CarService> _logger;
-    
-    private readonly ICarRepository _carRepository;
-
     private const string CarObjectName = "Car";
+    private const string PhotoObjectName = "Photo";
+    private const string PhotoMetadataObjectName = "Photo Metadata";
 
-    // ReSharper disable once ConvertToPrimaryConstructor
-    public CarService(ILogger<CarService> logger, ICarRepository carRepository)
-    {
-        _logger = logger;
-        
-        _carRepository = carRepository;
-    }
-    
-    /// <summary>
-    /// Создает и сохраняет машину без фото 
-    /// </summary>
-    /// <param name="carDto">Данные для создания машины</param>
-    /// <returns><see cref="DomainCar"/> с Id <see cref="DomainEmployer"/> и без <see cref="DomainPhoto"/></returns>
     public async Task<ApplicationExecuteLogicResult<DomainCar>> CreateCarAsync(DtoForSaveCar carDto)
     {
-        _logger.LogInformation("Попытка создать машину в системе");
-        _logger.LogDebug("Данные для создания - {data}", carDto);
+        logger.LogInformation("Попытка создать машину в системе");
         
         var condition = CalculateCarCondition(carDto.CurrentOwner, carDto.Mileage);
         var priority = CalculatePrioritySale(condition);
         
-        var carResult = await _carRepository.SaveCarAsync(new CarEntity
+        var carResult = await carRepository.SaveCarAsync(new CarEntity
         {
             Brand = carDto.Brand,
             Color = carDto.Color,
@@ -55,105 +41,181 @@ public class CarService : ICarService
             ResponsiveManagerId = carDto.ResponsiveManager,
         });
         if (carResult.IsSuccess is not true)
-        {
-            if (carResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarEntity, DomainCar>(CarErrors.CarNotSaved, carResult);
-        }
-        var car = carResult.Value!;
+            return ErrorHelper.WrapAllDbErrors<CarEntity, DomainCar>(CarErrors.CarNotSaved, carResult, string.Join(" ", CarObjectName));
+        var carEntity = carResult.Value!;
         
-        _logger.LogInformation("Машина с id {id} успешно сохранена", carResult.Value!.Id);
+        logger.LogInformation("Машина с id {id} успешно сохранена", carEntity.Id);
         
-        return ApplicationExecuteLogicResult<DomainCar>
-            .Success(new DomainCar
-            {
-                Id = car.Id,
-                Brand = car.Brand,
-                Color = car.Color,
-                Price = car.Price,
-                CurrentOwner = car.CurrentOwner,
-                Mileage = car.Mileage,
-                CarCondition = car.CarCondition,
-                PrioritySale = car.PrioritySale,
-                Manager = new DomainEmployer {Id = car.ResponsiveManagerId},
-            });
-    }
-    
-    /// <summary>
-    /// Устанавливает машине метаданные фотографии
-    /// </summary>
-    /// <param name="car">Машина которой устанавливается фото</param>
-    /// <param name="photo">Фото которое необходимо установить</param>
-    /// <returns><see cref="DomainCar"/> с заполненным <see cref="DomainPhoto"/> </returns>
-    public async Task<ApplicationExecuteLogicResult<DomainCar>> SetPhotoToCarAsync(DomainCar car, DomainPhoto photo)
-    {
-        _logger.LogInformation("Попытка установить машине фотографию");
-        
-        var oldCarResult = await _carRepository.GetCarByIdAsync(car.Id);
-        if (oldCarResult.IsSuccess is not true)
-        {
-            if (oldCarResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, oldCarResult);
-            if (oldCarResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, CarObjectName, car.Id.ToString(), oldCarResult);
-        }
-        var oldCar = oldCarResult.Value!;
-        
-        oldCar.PhotoMetadataId = photo.Id;
+        var warns = new List<ApplicationError>();
 
-        var updatedCarResult = await _carRepository.RewriteCarAsync(oldCar);
-        if (oldCarResult.IsSuccess is not true)
+        if (carDto.Photo is not null)
         {
-            if (oldCarResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, oldCarResult);
-            if (oldCarResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, CarObjectName, car.Id.ToString(), oldCarResult);
+            var savedPhotoResult = await SetCarPhoto(carDto.Photo);
+            if (savedPhotoResult.IsSuccess is false)
+                warns.Add(new ApplicationError(
+                    CarErrors.CarAddedWithoutPhoto, "Не удалось сохранить фото",
+                    $"Для машины {carEntity.Id} не получилось сохранить фото",
+                    ErrorSeverity.NotImportant));
         }
-        var updatedCar = updatedCarResult.Value!;
-        
-        _logger.LogInformation("Машине {carId} установлено фото с метаданными {metadataId} и данными {dataId}", updatedCar.Id, photo.Id, photo.PhotoDataId);
-        
-        return ApplicationExecuteLogicResult<DomainCar>
-            .Success(new DomainCar
-            {
-                Id = updatedCar.Id,
-                Brand = updatedCar.Brand,
-                Color = updatedCar.Color,
-                Price = updatedCar.Price,
-                CurrentOwner = updatedCar.CurrentOwner,
-                Mileage = updatedCar.Mileage,
-                CarCondition = updatedCar.CarCondition,
-                PrioritySale = updatedCar.PrioritySale,
-                Manager = new DomainEmployer {Id = updatedCar.ResponsiveManagerId},
-                Photo = new DomainPhoto
-                {
-                    Id = photo.Id,
-                    CarId = updatedCar.Id,
-                    Extension = photo.Extension,
-                    PhotoDataId = photo.PhotoDataId,
-                    PhotoData = photo.PhotoData
-                }
-            });
-    }
     
-    /// <summary>
-    /// Обновляет стандартные данные машины
-    /// </summary>
-    /// <param name="carDto"> Данные для обновления </param>
-    /// <returns><see cref="DomainCar"/> c Id (если есть, иначе - warn) <see cref="DomainPhoto"/> и Id <see cref="DomainEmployer"/></returns>
+        var car = new DomainCar
+        {
+            Id = carEntity.Id,
+            Brand = carEntity.Brand,
+            Color = carEntity.Color,
+            Price = carEntity.Price,
+            CurrentOwner = carEntity.CurrentOwner,
+            Mileage = carEntity.Mileage,
+            CarCondition = carEntity.CarCondition,
+            PrioritySale = carEntity.PrioritySale,
+            Manager = new DomainEmployer
+            {
+                Id = carDto.ResponsiveManager,
+            },
+        };
+                
+        var managerResult = await employerService.ManagerByUserIdAsync(carDto.ResponsiveManager);
+        if (managerResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                    UserErrors.UserNotFound, "Менеджер машины не найден",
+                    $"Не получилось найти менеджера машины {car.Id}",
+                    ErrorSeverity.NotImportant));
+        var manager = managerResult.Value!;
+        
+        car.Manager = manager;
+        
+        if (carEntity.PhotoMetadataId is null)
+            warns.Add(new ApplicationError(
+                CarErrors.CarNotFoundPhoto, "Фото машины не найдено",
+                $"У машины {car.Id} не установлено фото",
+                ErrorSeverity.NotImportant));
+        
+        var photoResult = await CarPhotoById((int)carEntity.PhotoMetadataId!);
+        if (photoResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                CarErrors.CarNotFoundPhoto, "Фото машины не найдено",
+                $"У машины {car.Id} не получилось найти фото",
+                ErrorSeverity.NotImportant));
+        var photo = photoResult.Value!;
+        
+        car.Photo = photo;
+
+        return ApplicationExecuteLogicResult<DomainCar>.Success(car).WithWarnings(warns);
+    }
+    public async Task<ApplicationExecuteLogicResult<DomainCar>> SetCarPhoto(DtoForSavePhoto photoDto)
+    {
+        logger.LogInformation("Попытка установить фото машине {carId}", photoDto.CarId);
+
+        var imageResult = await photoRepository.SavePhotoAsync(new PhotoEntity { PhotoBytes = photoDto.PhotoData });
+        if (imageResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<PhotoEntity, DomainCar>(PhotoImageErrors.ImageNotSaved, imageResult, PhotoObjectName);
+        var photoEntity = imageResult.Value!;
+        
+        var metadataResult = await photoMetadataRepository.SavePhotoMetadataAsync(new PhotoMetadataEntity
+        {
+            PhotoDataId = photoEntity.Id,
+            StorageType = photoDto.PriorityStorageType,
+            Extension = photoDto.Extension,
+            CarId = photoDto.CarId,
+        });
+        if (metadataResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<PhotoMetadataEntity, DomainCar>(PhotoMetadataErrors.MetadataNotSaved, metadataResult, PhotoMetadataObjectName);
+        var metadataEntity = metadataResult.Value!;
+        
+        var carResult = await CarById(metadataEntity.CarId);
+        if (carResult.IsSuccess is false)
+            return ApplicationExecuteLogicResult<DomainCar>.Failure().Merge(carResult);
+        var car = carResult.Value!;
+
+        car.Photo = new DomainPhoto
+        {
+            Id = metadataEntity.Id,
+            CarId = car.Id,
+            Extension = metadataEntity.Extension,
+            PhotoDataId = photoEntity.Id,
+            PhotoData = photoEntity.PhotoBytes
+        };
+        
+        return ApplicationExecuteLogicResult<DomainCar>.Success(car);
+    }
+    public async Task<ApplicationExecuteLogicResult<DomainCar>> CarById(int id)
+    {
+        logger.LogInformation("Получение машины {carId}", id);
+        
+        var carResult = await carRepository.GetCarByIdAsync(id);
+        if (carResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<CarEntity, DomainCar>(CarErrors.CarNotFound, carResult, string.Join(" ", CarObjectName, id.ToString()));
+        var carEntity = carResult.Value!;
+
+        var managerResult = await employerService.ManagerByUserIdAsync(carEntity.ResponsiveManagerId);
+        if (managerResult.IsSuccess is false)
+            return ApplicationExecuteLogicResult<DomainCar>.Failure().Merge(managerResult);
+        var manager = managerResult.Value!;
+
+        var car = new DomainCar
+        {
+            Id = carEntity.Id,
+            Brand = carEntity.Brand,
+            Color = carEntity.Color,
+            Price = carEntity.Price,
+            CurrentOwner = carEntity.CurrentOwner,
+            Mileage = carEntity.Mileage,
+            CarCondition = carEntity.CarCondition,
+            PrioritySale = carEntity.PrioritySale,
+            Manager = manager,
+        };
+        
+        if (carEntity.PhotoMetadataId is null)
+            return ApplicationExecuteLogicResult<DomainCar>.Success(car);
+
+
+        var photoResult = await CarPhotoById((int)carEntity.PhotoMetadataId);
+        if (photoResult.IsSuccess is false)
+            return ApplicationExecuteLogicResult<DomainCar>.Success(car).WithWarning(new ApplicationError(
+                CarErrors.CarNotFoundPhoto, "Нет фото", "У запрашиваемой машины отсутствует фото",
+                ErrorSeverity.NotImportant));
+        var photo = photoResult.Value!;
+
+        car.Photo = photo;
+        
+        return ApplicationExecuteLogicResult<DomainCar>.Success(car);
+    }
+    public async Task<ApplicationExecuteLogicResult<DomainCarsPage>> CarsByParams(DtoForSearchCars searchDto)
+    {
+        logger.LogInformation("Попытка найти машины по параметрам {@data}", searchDto);
+        
+        var entityCarsResult = await carRepository.GetCarsByQueryAsync(searchDto);
+        if (entityCarsResult.IsSuccess is false)
+                return ErrorHelper.WrapAllDbErrors<CarsEntityPage, DomainCarsPage>(CarErrors.CarNotFound, entityCarsResult, string.Join(" ", CarObjectName+"s", searchDto.ToString()));
+        var entityCars = entityCarsResult.Value!;
+        
+        var warns = new List<ApplicationError>();
+        var cars = new List<DomainCar>();
+
+        foreach (var entity in entityCars.Cars)
+        {
+            var carResult = await CarById(entity.Id);
+            warns.AddRange(carResult.GetWarnings);
+            
+            cars.Add(carResult.Value!);
+        }
+
+        return ApplicationExecuteLogicResult<DomainCarsPage>.Success(new DomainCarsPage
+        {
+            DomainCars = cars,
+            TotalCount = entityCars.TotalCount,
+            PageNumber = entityCars.PageNumber,
+            PageSize = entityCars.PageSize,
+        }).WithWarnings(warns);
+    }
     public async Task<ApplicationExecuteLogicResult<DomainCar>> UpdateCarAsync(DtoForUpdateCar carDto)
     {
-        _logger.LogInformation("Попытка обновить данные машины");
-        _logger.LogDebug("Данные для обновления - {data}", carDto);
+        logger.LogInformation("Попытка обновить данные машины {carId}", carDto.CarId);
         
         // Получаем старую машину
-        var oldCarResult = await _carRepository.GetCarByIdAsync(carDto.CarId);
-        if (oldCarResult.IsSuccess is not true)
-        {
-            if (oldCarResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, oldCarResult);
-            if (oldCarResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, CarObjectName, carDto.CarId.ToString(), oldCarResult);
-        }
+        var oldCarResult = await carRepository.GetCarByIdAsync(carDto.CarId);
+        if (oldCarResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<CarEntity, DomainCar>(CarErrors.CarNotUpdated, oldCarResult, string.Join(" ", CarObjectName, carDto.CarId.ToString()));
         var oldCar = oldCarResult.Value!;
         
         // Переназначаем стандартные поля
@@ -164,18 +226,31 @@ public class CarService : ICarService
         if (carDto.NewManager is not null)
             oldCar.ResponsiveManagerId = (Guid)carDto.NewManager;
         
-        var updatedCarResult = await _carRepository.RewriteCarAsync(oldCar);
+        var updatedCarResult = await carRepository.RewriteCarAsync(oldCar);
         if (updatedCarResult.IsSuccess is not true)
-        {
-            if (updatedCarResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, updatedCarResult);
-            if (updatedCarResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<CarEntity, DomainCar>(CarErrors.CarNotUpdated, CarObjectName, carDto.CarId.ToString(), oldCarResult);
-        }
+            return ErrorHelper.WrapAllDbErrors<CarEntity, DomainCar>(CarErrors.CarNotUpdated, updatedCarResult, string.Join(" ", CarObjectName, carDto.CarId.ToString()));
         var updatedCar = oldCarResult.Value!;
         
-        return ApplicationExecuteLogicResult<DomainCar>
-            .Success(new DomainCar
+        var warns = new List<ApplicationError>();
+        
+        var managerResult = await employerService.ManagerByUserIdAsync(updatedCar.ResponsiveManagerId);
+        if (managerResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                UserErrors.UserNotFound, "Менеджер машины не найден",
+                $"Не получилось найти менеджера машины {updatedCar.Id}",
+                ErrorSeverity.NotImportant));
+        var manager = managerResult.Value!;
+        
+        var photoResult = await CarPhotoById((int)updatedCar.PhotoMetadataId!);
+        if (photoResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                CarErrors.CarNotFoundPhoto, "Фото машины не найдено",
+                $"У машины {updatedCar.Id} не получилось найти фото",
+                ErrorSeverity.NotImportant));
+        var photo = photoResult.Value!;
+        
+        
+        return ApplicationExecuteLogicResult<DomainCar>.Success(new DomainCar
             {
                 Id = updatedCar.Id,
                 Brand = updatedCar.Brand,
@@ -185,129 +260,61 @@ public class CarService : ICarService
                 Mileage = updatedCar.Mileage,
                 CarCondition = updatedCar.CarCondition,
                 PrioritySale = updatedCar.PrioritySale,
-                Manager = new DomainEmployer {Id = updatedCar.ResponsiveManagerId},
-                Photo = updatedCar.PhotoMetadataId is not null ? new DomainPhoto
-                {
-                    Id = (int)updatedCar.PhotoMetadataId,
-                    CarId = updatedCar.Id,
-                } : null,
-            });
+                Manager = manager,
+                Photo = photo,
+            }).WithWarnings(warns);
     }
-    
-    /// <summary>
-    /// Возвращает машину
-    /// </summary>
-    /// <param name="id">Id машины</param>
-    /// <returns><see cref="DomainCar"/> c Id (если есть, иначе - warn) <see cref="DomainPhoto"/> и Id <see cref="DomainEmployer"/></returns>
-    public async Task<ApplicationExecuteLogicResult<DomainCar>> GetCarByIdAsync(int id)
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteCarById(int id)
     {
-        _logger.LogInformation("Попытка найти машину с id {id}", id);
+        logger.LogInformation("Удаление машины {carId}", id);
         
-        var carResult = await _carRepository.GetCarByIdAsync(id);
-        if (carResult.IsSuccess is not true)
-        {
-            if (carResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarEntity, DomainCar>(CarErrors.CarNotFound, carResult);
-            if (carResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<CarEntity, DomainCar>(CarErrors.CarNotFound, CarObjectName, id.ToString(), carResult);
-        }
-        var car = carResult.Value!;
-        
-        _logger.LogInformation("Машина с id {id} найдена", id);
-        _logger.LogDebug("Данные найденной машины {@data}", car);
-
-        var domainCar = new DomainCar
-        {
-            Id = car.Id,
-            Brand = car.Brand,
-            Color = car.Color,
-            Price = car.Price,
-            CurrentOwner = car.CurrentOwner,
-            Mileage = car.Mileage,
-            CarCondition = car.CarCondition,
-            PrioritySale = car.PrioritySale,
-            Manager = new DomainEmployer { Id = car.ResponsiveManagerId },
-        };
-
-        if (car.PhotoMetadataId is null)
-        {
-            return ApplicationExecuteLogicResult<DomainCar>.
-                Success(domainCar)
-                .WithWarning(new ApplicationError(
-                    CarErrors.CarNotFoundPhoto, "Фото не найдено", 
-                    $"У запрошенной машины отсутствует фото", ErrorSeverity.NotImportant));
-        }
-
-        domainCar.Photo = new DomainPhoto { Id = (int)car.PhotoMetadataId, CarId = car.Id };
-        
-        return ApplicationExecuteLogicResult<DomainCar>.Success(domainCar);
-    }
-    
-    /// <summary>
-    /// Hard удаление машины по id
-    /// </summary>
-    /// <param name="id">Id машины</param>
-    /// <returns>Результат (с возможными ошибками) </returns>
-    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteCarByIdAsync(int id)
-    {
-        _logger.LogInformation("Удаление машины {id}", id);
-        
-        var deleteResult = await _carRepository.DeleteCarAsync(id);
-        if (deleteResult.IsSuccess is not true)
-        {
-            if (deleteResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<Unit, Unit>(CarErrors.CarNotDeleted, deleteResult);
-            if (deleteResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<Unit, Unit>(CarErrors.CarNotFound, CarObjectName, id.ToString(), deleteResult);
-        }
+        var deleteResult = await carRepository.DeleteCarAsync(id);
+        if (deleteResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<Unit, Unit>(CarErrors.CarNotDeleted, deleteResult, string.Join(" ", CarObjectName, id.ToString()));
         
         return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
-    
-    /// <summary>
-    /// Возвращает машины по параметрам
-    /// </summary>
-    /// <param name="data">Параметры запроса и фильтры </param>
-    /// <returns><see cref="DomainCar"/> c Id (если есть, иначе - warn) <see cref="DomainPhoto"/> и Id <see cref="DomainEmployer"/></returns>
-    public async Task<ApplicationExecuteLogicResult<DomainCarsPage>> GetCarsAsync(DtoForSearchCars data)
+    public async Task<ApplicationExecuteLogicResult<DomainPhoto>> CarPhotoById(int metadataId)
     {
-        _logger.LogInformation("Попытка найти машины по параметрам");
-        _logger.LogDebug("Параметры - {@params}", data);
-
-        var entityCarsResult = await _carRepository.GetCarsByQueryAsync(data);
-        if (entityCarsResult.IsSuccess is not true)
-        {
-            if (entityCarsResult.ContainsError(DatabaseErrors.DatabaseException))
-                return ErrorHelper.WrapDbExceptionError<CarsEntityPage, DomainCarsPage>(CarErrors.CarNotFound, entityCarsResult);
-            if (entityCarsResult.ContainsError(DatabaseErrors.NotFound))
-                return ErrorHelper.WrapNotFoundError<CarsEntityPage, DomainCarsPage>(CarErrors.CarNotFound, CarObjectName, "Query Search", entityCarsResult);
-        }
-        var entityCars = entityCarsResult.Value!;
+        logger.LogInformation("Получение фото по метаданным {metadataId}", metadataId);
         
-        var domainCars = entityCars.Cars.Select(c => new DomainCar
-        {
-            Id = c.Id,
-            Brand = c.Brand,
-            Color = c.Color,
-            Price = c.Price,
-            CurrentOwner = c.CurrentOwner,
-            Mileage = c.Mileage,
-            CarCondition = c.CarCondition,
-            PrioritySale = c.PrioritySale,
-            Manager = new DomainEmployer { Id = c.ResponsiveManagerId },
-            Photo = c.PhotoMetadataId is not null ? new DomainPhoto { Id = (int)c.PhotoMetadataId, CarId = c.Id} : null,
-        }).ToList();
-        
-        _logger.LogInformation("Успешный поиск по параметрам, всего - {count}", entityCarsResult.Value!.Cars.Count);
-        _logger.LogInformation("Результат domain cars - {@result}", domainCars);
+        var metadataResult = await photoMetadataRepository.GetPhotoMetadataByIdAsync(metadataId);
+        if (metadataResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<PhotoMetadataEntity, DomainPhoto>(PhotoMetadataErrors.MetadataNotFound, metadataResult, string.Join(" ", PhotoMetadataObjectName, metadataId.ToString()));
+        var metadata = metadataResult.Value!;
 
-        return ApplicationExecuteLogicResult<DomainCarsPage>.Success(new DomainCarsPage
+        var photoResult = await photoRepository.GetPhotoByIdAsync((Guid)metadata.PhotoDataId!);
+        if (photoResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<PhotoEntity, DomainPhoto>(PhotoImageErrors.ImageNotFound, photoResult, string.Join(" ", PhotoObjectName, metadata.PhotoDataId.ToString()));
+        var data = photoResult.Value!;
+
+        return ApplicationExecuteLogicResult<DomainPhoto>.Success(new DomainPhoto
         {
-            DomainCars = domainCars,
-            TotalCount = entityCarsResult.Value!.TotalCount,
-            PageNumber = entityCarsResult.Value!.PageNumber,
-            PageSize = entityCarsResult.Value!.PageSize,
+            Id = metadata.Id,
+            CarId = metadata.CarId,
+            Extension = metadata.Extension,
+            PhotoDataId = data.Id,
+            PhotoData = data.PhotoBytes
         });
+    }
+    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteCarPhoto(int carId)
+    {
+        logger.LogInformation("Удаление фото у машины {carId}", carId);
+        
+        //TODO: удаление фото по настоящему
+        
+        var carResult = await carRepository.GetCarByIdAsync(carId);
+        if (carResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<CarEntity, Unit>(CarErrors.CarNotFound, carResult, string.Join(" ", CarObjectName, carId.ToString()));
+        var car = carResult.Value!;
+        
+        car.PhotoMetadata = null;
+        
+        var updatingResult = await carRepository.RewriteCarAsync(car);
+        if (updatingResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<CarEntity, Unit>(CarErrors.CarNotUpdated, carResult, string.Join(" ", CarObjectName, carId.ToString()));
+
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
 
     #region Вспомогательные методы

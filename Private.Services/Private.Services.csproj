@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Private.ServicesInterfaces\Private.ServicesInterfaces.csproj" />
       <ProjectReference Include="..\Private.StorageModels\Private.StorageModels.csproj" />
+      <ProjectReference Include="..\Settings.Common\Settings.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

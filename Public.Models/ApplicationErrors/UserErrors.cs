@@ -7,7 +7,7 @@ public enum UserErrors
     EmailIsBusy,
     FailSaveUser,
     FailDeleteUser,
-    PasswordIsNotValid,
+    InvalidLoginOrPassword,
     UserNotFound,
     NotFoundAnyRoleForUser,
     ForbiddenRole

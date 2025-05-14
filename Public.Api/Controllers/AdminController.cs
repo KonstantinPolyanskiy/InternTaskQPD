@@ -34,9 +34,9 @@ public class AdminController(AdminUseCases adminUseCases, ILogger<AdminControlle
     }
 
     [HttpDelete("user/{id}")]
-    public async Task<IActionResult> DeleteUser([FromRoute] string id)
+    public async Task<IActionResult> BlockUser([FromRoute] string id)
     {
-        var deletedResult = await adminUseCases.DeleteUserByIdAsync(Guid.Parse(id));
+        var deletedResult = await adminUseCases.BlockUserById(Guid.Parse(id));
         
         return this.ToApiResult(deletedResult);
     }

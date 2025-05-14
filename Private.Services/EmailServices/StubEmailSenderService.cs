@@ -2,7 +2,7 @@
 using Private.ServicesInterfaces;
 using Public.Models.CommonModels;
 
-namespace Private.Services.EmailSenderServices;
+namespace Private.Services.EmailServices;
 
 public class StubEmailSenderService(ILogger<StubEmailSenderService> _logger) : IMailSenderService
 {

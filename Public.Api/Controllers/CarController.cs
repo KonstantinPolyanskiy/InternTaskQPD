@@ -12,23 +12,22 @@ namespace Public.Api.Controllers;
 
 [ApiController]
 [Route("api/car")]
-public class CarController(EmployerUseCases employerUseCases, ConsumerUseCases consumerUseCases, ILogger<CarController> logger) : ControllerBase
+public class CarController(CarEmployerUseCase carEmployerUseCase, ConsumerUseCases consumerUseCases, ILogger<CarController> logger) : ControllerBase
 {
     [HttpPost]
     [Authorize(Roles = nameof(ApplicationUserRole.Admin) + "," + nameof(ApplicationUserRole.Manager))]
-    public async Task<IActionResult> PostCar([FromForm] AddCarRequest req)
+    public async Task<IActionResult> AddCar([FromForm] AddCarRequest req)
     {
         logger.LogInformation("Запрос на внесение новой машины");
         logger.LogDebug("Данные запроса - {@data}", req);
         
-        var data = new DtoForAddCar()
+        var data = new DtoForAddCar
         {
             Brand = req.Brand,
             Color = req.Color,
             Price = req.Price,
             CurrentOwner = req.CurrentOwner,
             Mileage = req.Mileage,
-            EmployerClaims = User
         };
 
         if (req.Photo is not null)
@@ -45,7 +44,7 @@ public class CarController(EmployerUseCases employerUseCases, ConsumerUseCases c
             };
         }
 
-        var addedCar = await employerUseCases.AddNewCar(data);
+        var addedCar = await carEmployerUseCase.NewCar(data, User);
         
         return this.ToApiResult(addedCar);
     }
@@ -56,7 +55,7 @@ public class CarController(EmployerUseCases employerUseCases, ConsumerUseCases c
     {
         logger.LogInformation("Запрос на удаление машины {id}", id);
         
-        var deleted = await employerUseCases.DeleteCarByCarId(id, User);
+        var deleted = await carEmployerUseCase.DeleteCar(id, User);
         
         return this.ToApiResult(deleted);
     }
@@ -78,7 +77,7 @@ public class CarController(EmployerUseCases employerUseCases, ConsumerUseCases c
             NewManager = Guid.Parse(req.NewManager!),
         };
         
-        var car = await employerUseCases.UpdateCarById(dto, User);
+        var car = await carEmployerUseCase.UpdateCar(dto, User);
         
         return this.ToApiResult(car);
     }
@@ -95,13 +94,13 @@ public class CarController(EmployerUseCases employerUseCases, ConsumerUseCases c
                                    || User.IsInRole(nameof(ApplicationUserRole.Manager)));
         
         var car = isManagerOrAdmin ? 
-            await employerUseCases.GetCarById(id, User) : 
+            await carEmployerUseCase.CarById(id, User) : 
             await consumerUseCases.GetCarById(id);
         
         return this.ToApiResult(car);
     }
 
-    [HttpGet("params")]
+    [HttpGet("cars")]
     [AllowAnonymous]
     public async Task<IActionResult> GetCars([FromQuery] CarQueryRequest req)
     {
@@ -125,7 +124,7 @@ public class CarController(EmployerUseCases employerUseCases, ConsumerUseCases c
                                    || User.IsInRole(nameof(ApplicationUserRole.Manager)));
 
         var cars = isManagerOrAdmin ? 
-            await employerUseCases.GetCarsByParams(data, User) : 
+            await carEmployerUseCase.CarByParams(data, User) : 
             await consumerUseCases.GetCarsByParams(data);
         
         return this.ToApiResult(cars);

@@ -15,6 +15,7 @@ public enum EmailTokenErrors
 public enum RefreshTokenErrors
 {
     TokenNotFound,
+    TokenNotFoundOrBlocked,
     TokenNotCreated,
     TokenExpired,
     TokenNotDeleted
@@ -23,7 +24,10 @@ public enum RefreshTokenErrors
 /// <summary> Ошибки, связанные с токенами access </summary>
 public enum AccessTokenErrors
 {
-    TokenNotBanned,
+    TokensNotRevokedBecauseUserIsNull,
+    TokensNotRevokedBecauseUnknownError,
+    TokenNotRevokedBecauseJtiIsNull,
+    TokenNotRevokedUnknownError,
     TokenNotFound,
     BanExpired,
     UnknownError

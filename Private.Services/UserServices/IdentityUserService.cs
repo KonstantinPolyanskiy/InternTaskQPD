@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +7,6 @@ using Private.StorageModels;
 using Public.Models.ApplicationErrors;
 using Public.Models.CommonModels;
 using Public.Models.DtoModels.UserDtoModels;
-using Public.Models.Extensions;
 
 namespace Private.Services.UserServices;
 
@@ -73,7 +71,7 @@ public class IdentityUserService : IUserService
         return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
     }
 
-    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UserByLoginOrIdAsync(string userIdentifier)
+    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> ByLoginOrIdAsync(string userIdentifier)
     {
         _logger.LogInformation("Попытка найти пользователя по id/login {@id}", userIdentifier);
 
@@ -96,20 +94,18 @@ public class IdentityUserService : IUserService
         return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user!);
     }
 
-    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteUserByLoginOrIdAsync(string userIdentifier)
+    public async Task<ApplicationExecuteLogicResult<Unit>> BlockUser(ApplicationUserEntity user)
     {
-        var userResult = await UserByLoginOrIdAsync(userIdentifier);
-        if (userResult.IsSuccess is not true || userResult.Value is null)
-            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(userResult);
-        var user = userResult.Value;
+        await _userManager.SetLockoutEnabledAsync(user, true);
+        await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(1));
         
-        var deleted = await _userManager.DeleteAsync(user);
-        if (deleted.Succeeded is not true)
-        {
-            _logger.LogError("Ошибка при удалении пользователя - {@err}", deleted.Errors);
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(UserErrors.FailDeleteUser, "Пользователь не удален", 
-                "При удалении пользователя возникла неизвестная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
-        }
+        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
+    }
+
+    public async Task<ApplicationExecuteLogicResult<Unit>> UnblockUser(ApplicationUserEntity user)
+    {
+        await _userManager.ResetAccessFailedCountAsync(user);
+        await _userManager.SetLockoutEndDateAsync(user, null);
         
         return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
@@ -121,66 +117,10 @@ public class IdentityUserService : IUserService
         return ApplicationExecuteLogicResult<List<ApplicationUserEntity>>.Success(users);
     }
 
-    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> SaveUserAsync(ApplicationUserEntity user)
+    public async Task<ApplicationExecuteLogicResult<ApplicationUserEntity>> UpdateAsync(ApplicationUserEntity user)
     {
         await _userManager.UpdateAsync(user);
         
         return ApplicationExecuteLogicResult<ApplicationUserEntity>.Success(user);
-    }
-
-    public async Task<ApplicationExecuteLogicResult<bool>> CheckPasswordForUserAsync(ApplicationUserEntity user, string password)
-    {
-        _logger.LogInformation("Проверка пароля пользователя {login}", user.UserName);
-
-        var isValid = await _userManager.CheckPasswordAsync(user, password);
-        if (isValid is not true)
-        {
-            _logger.LogWarning("Пароль {password} для пользователя {login} не подходит", password, user.UserName);
-            return ApplicationExecuteLogicResult<bool>.Failure(new ApplicationError(
-                UserErrors.PasswordIsNotValid, "Пароль неверен",
-                $"Переданный пароль не подходит для указанного пользователя", ErrorSeverity.Critical, HttpStatusCode.Forbidden));
-        }
-        
-        _logger.LogInformation("Проверка пользователя {login} успешна", user.UserName);
-        return ApplicationExecuteLogicResult<bool>.Success(true);
-    }
-
-    public async Task<ApplicationExecuteLogicResult<Unit>> SetEmailAddressAsConfirmedAsync(ApplicationUserEntity user)
-    {
-        _logger.LogInformation("Смена состояния почты пользователя с id {@id} на подтвержденную", user.Id);
-        
-        user.EmailConfirmed = true;
-        
-        var updated= await _userManager.UpdateAsync(user);
-        if (updated.Succeeded is not true)
-        {
-            _logger.LogError("Не получилось обновить пользователя в хранилище, ошибки - {@errors}", updated.Errors);
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(
-                UserErrors.FailSaveUser, "Пользователь не обновлен", 
-                "В процессе обновления пользователя возникла неизвестная ошибка", ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
-        }
-        
-        _logger.LogInformation("Почта пользователя с id {@id} теперь подтвержденная", user.Id);
-        
-        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
-    }
-
-    public async Task<ApplicationExecuteLogicResult<Unit>> UpdateUserSecurityStampAsync(ApplicationUserEntity user)
-    {
-        _logger.LogInformation("Обновление метки безопасности пользователя с id {@id} на новую", user.Id);
-        
-        var updated= await _userManager.UpdateSecurityStampAsync(user);
-        if (updated.Succeeded is not true)
-        {
-            _logger.LogError("Не получилось обновить метку безопасности пользователя, ошибки - {@errors}", updated.Errors);
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(
-                UserErrors.FailSaveUser, "Метка безопасности не обновлена", 
-                "В процессе обновления метки безопасности пользователя возникла неизвестная ошибка, access токены не инвалидированы", 
-                ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
-        }
-        
-        _logger.LogInformation("Метки безопасности пользователя с id {@id} теперь новые", user.Id);
-        
-        return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
     }
 }

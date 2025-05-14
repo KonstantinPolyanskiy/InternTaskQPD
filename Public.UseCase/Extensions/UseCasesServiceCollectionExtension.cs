@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Private.Services.CarServices;
-using Private.Services.EmailSenderServices;
+using Private.Services.EmailServices;
 using Private.Services.ManagerServices;
 using Private.Services.PhotoServices;
 using Private.Services.RoleServices;

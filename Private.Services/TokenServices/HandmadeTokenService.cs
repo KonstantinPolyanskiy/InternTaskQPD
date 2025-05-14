@@ -256,7 +256,7 @@ public class HandmadeTokenService : ITokenService
             ExpiresAtUtc = expiration,
         };
         
-        var banned = await _blackListAccessTokenRepository.SaveAccessTokenInBlackListAsync(entity);
+        var banned = await _blackListAccessTokenRepository.SaveTokenInBlackListAsync(entity);
         if (banned.IsSuccess is not true)
         {
             if (banned.ContainsError(DatabaseErrors.DatabaseException))
@@ -275,7 +275,7 @@ public class HandmadeTokenService : ITokenService
     {
         _logger.LogInformation("Попытка проверить access токен в черном список по jti {jti}", jti);
 
-        var entity = await _blackListAccessTokenRepository.GetAccessTokenByJtiAsync(jti);
+        var entity = await _blackListAccessTokenRepository.TokenByJtiAsync(jti);
         if (entity.IsSuccess is not true)
         {
             if (entity.ContainsError(DatabaseErrors.DatabaseException))

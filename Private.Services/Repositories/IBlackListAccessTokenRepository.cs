@@ -5,6 +5,6 @@ namespace Private.Services.Repositories;
 
 public interface IBlackListAccessTokenRepository
 {
-    public Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> SaveAccessTokenInBlackListAsync(BlackListTokenAccessEntity entity);
-    public Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> GetAccessTokenByJtiAsync(string jti);
+    public Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> SaveTokenInBlackListAsync(BlackListTokenAccessEntity entity);
+    public Task<ApplicationExecuteLogicResult<BlackListTokenAccessEntity>> TokenByJtiAsync(string jti);
 }

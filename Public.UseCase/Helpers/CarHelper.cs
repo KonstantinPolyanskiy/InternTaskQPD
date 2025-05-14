@@ -9,10 +9,7 @@ namespace Public.UseCase.Helpers;
 
 internal static class CarHelper
 {
-    internal static CarUseCaseResponse BuildFullResponse(
-        DomainCar car,
-        DomainEmployer manager,
-        DomainPhoto? photo)
+    internal static CarUseCaseResponse BuildFullResponse(DomainCar car)
     {
         var resp = new CarUseCaseResponse
         {
@@ -24,41 +21,37 @@ internal static class CarHelper
             Mileage = car.Mileage,
             CarCondition = car.CarCondition,
             PrioritySale = car.PrioritySale,
-            Employer = new EmployerUseCaseResponse
-            {
-                Id = manager.Id,
-                FirstName = manager.FirstName,
-                LastName = manager.LastName,
-                Email = manager.Email,
-                Login = manager.Login,
-            },
+            Employer = new EmployerUseCaseResponse()
         };
 
-        if (photo != null)
+        if (car.Manager is not null)
+        {
+            resp.Employer = new EmployerUseCaseResponse
+            {
+                Id = car.Manager.Id,
+                FirstName = car.Manager.FirstName,
+                LastName = car.Manager.LastName,
+                Email = car.Manager.Email,
+                Login = car.Manager.Login,
+            };
+        }
+
+        if (car.Photo is not null)
+        {
             resp.Photo = new PhotoUseCaseResponse
             {
-                MetadataId = photo.Id,
-                Extension = photo.Extension,
-                PhotoDataId = photo.PhotoDataId,
-                PhotoBytes = photo.PhotoData
+                MetadataId = car.Photo.Id,
+                Extension = car.Photo.Extension,
+                PhotoDataId = car.Photo.PhotoDataId,
+                PhotoBytes = car.Photo.PhotoData
             };
+        }
         
         return resp;
     }
 
-    internal static CarUseCaseResponse BuildRestrictedResponse(
-        DomainCar car,
-        DomainEmployer manager,
-        DomainPhoto? photo)
+    internal static CarUseCaseResponse BuildRestrictedResponse(DomainCar car)
     {
-        // Менеджер - только имя и email
-        var limitedManager = new EmployerUseCaseResponse
-        {
-            FirstName = manager.FirstName,
-            LastName  = manager.LastName,
-            Email     = manager.Email,
-        };
-
         var resp = new CarUseCaseResponse
         {
             Id = car.Id,
@@ -69,18 +62,30 @@ internal static class CarHelper
             Mileage = car.Mileage,
             CarCondition = car.CarCondition,
             PrioritySale = null, // не заполняем
-            Employer = limitedManager,
+            Employer = new EmployerUseCaseResponse()
         };
-        
-        if (photo != null)
+
+        if (car.Manager is not null)
+        {
+            resp.Employer = new EmployerUseCaseResponse
+            {
+                FirstName = car.Manager.FirstName,
+                LastName = car.Manager.LastName,
+                Email = car.Manager.Email,
+            };
+        }
+
+        if (car.Photo is not null)
+        {
             resp.Photo = new PhotoUseCaseResponse
             {
-                MetadataId = photo.Id,
-                Extension = photo.Extension,
-                PhotoDataId = photo.PhotoDataId,
-                PhotoBytes = photo.PhotoData
+                MetadataId = car.Photo.Id,
+                Extension = car.Photo.Extension,
+                PhotoDataId = car.Photo.PhotoDataId,
+                PhotoBytes = car.Photo.PhotoData
             };
-        
+        }
+            
         return resp;
     }
 }

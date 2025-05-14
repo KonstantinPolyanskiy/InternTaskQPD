@@ -28,7 +28,7 @@ public class EmployerService : IEmployerService
     {
         _logger.LogInformation("Попытка найти менеджера UserId - {@UserId}", userId);
         
-        var userResult = await _userService.UserByLoginOrIdAsync(userId.ToString());
+        var userResult = await _userService.ByLoginOrIdAsync(userId.ToString());
         if (userResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<DomainEmployer>.Failure(new ApplicationError(
                 UserErrors.UserNotFound, "Менеджер не найден",
