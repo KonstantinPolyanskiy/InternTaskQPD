@@ -16,6 +16,7 @@
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
       <PackageReference Include="Minio" Version="6.0.4" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+      <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.1" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
     </ItemGroup>

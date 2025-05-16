@@ -62,7 +62,8 @@ public class CarEmployerUseCase(ICarService carService, IUserService userService
         if (carDto.Photo is null)
         {
             // TODO: пока фиксированно, но идейно тут должен быть ответственный сотрудник или сам менеджер
-            var sendResult = await mailSender.SendNoPhotoNotifyEmailAsync("admin@mail.ru", car.Manager!.Login, car.Id);
+            var sendResult = await mailSender.SendAsync("admin@mail.ru", $"")
+            var sendResult1 = await mailSender.SendNoPhotoNotifyEmailAsync("admin@mail.ru", car.Manager!.Login, car.Id);
             if (sendResult.IsSuccess is false)
                 return ApplicationExecuteLogicResult<CarUseCaseResponse>.Success(resp)
                 .WithWarning(new ApplicationError(EmailSendingErrors.EmailNotSend, "Письмо не отправлено",

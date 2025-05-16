@@ -55,10 +55,11 @@ public class ConsumerUseCases(IEmailConfirmationService emailConfirmationService
         
         var url = new Uri($"/confirm-email?uid={ Uri.EscapeDataString(user.Id) }&code={ Uri.EscapeDataString(token) }", UriKind.Relative);
 
-        var confirmEmail = await mailSenderService.SendConfirmationEmailAsync(user.Email!, url.ToString());
-        if (confirmEmail.IsSuccess is not true)
-            return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(confirmEmail);
-        warnings.AddRange(confirmEmail.GetWarnings);
+        var sendEmailResult = await mailSenderService.SendAsync(user.Email!, $"Подтеверждение почты CarService",
+            $"Перейдите по {url} для подтверждения почты");
+        if (sendEmailResult.IsSuccess is not true)
+            return ApplicationExecuteLogicResult<UserRegistrationResponse>.Failure().Merge(sendEmailResult);
+        warnings.AddRange(sendEmailResult.GetWarnings);
         
         logger.LogInformation("Успешная регистрация пользователя с логином {login}", user.UserName);
 
