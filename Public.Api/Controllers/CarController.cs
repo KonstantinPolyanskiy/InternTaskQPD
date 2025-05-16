@@ -32,7 +32,7 @@ public class CarController(CarEmployerUseCase carEmployerUseCase, ConsumerUseCas
 
         if (req.Photo is not null)
         {
-            var extension = Path.GetExtension(req.Photo.FileName).ToLowerInvariant();
+            var extension = Path.GetExtension(req.Photo.FileName).ToLowerInvariant().TrimStart('.');
 
             await using var ms = new MemoryStream();
             await req.Photo.CopyToAsync(ms);

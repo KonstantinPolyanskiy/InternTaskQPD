@@ -52,7 +52,7 @@ public class IdentityAuthTokenService(ILogger<IdentityAuthTokenService> logger, 
 
         var jwt = new JwtSecurityToken(
             issuer: opts.Value.Issuer,
-            audience: opts.Value.Issuer,
+            audience: opts.Value.Audience,
             claims: claims,
             notBefore: now,
             expires: now.AddMinutes(opts.Value.AccessTokenLifetimeMinutes),

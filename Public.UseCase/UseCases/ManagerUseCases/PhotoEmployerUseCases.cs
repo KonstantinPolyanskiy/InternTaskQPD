@@ -44,7 +44,7 @@ public class PhotoEmployerUseCases(ICarService carService, IUserService userServ
         var setPhotoResult = await carService.SetCarPhoto(new DtoForSavePhoto
         {
             Extension = Enum.Parse<ImageFileExtensions>(photoDto.RawExtension),
-            PriorityStorageType = StorageTypes.Database,
+            PriorityStorageType = StorageTypes.Minio,
             PhotoData = photoDto.Data,
             CarId = car.Id,
         });

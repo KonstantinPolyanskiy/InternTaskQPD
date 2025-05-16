@@ -263,6 +263,12 @@ public class CarEmployerUseCase(ICarService carService, IUserService userService
             Price = dto.Price,
             CurrentOwner = dto.CurrentOwner,
             Mileage = dto.Mileage,
+            Photo = dto.Photo is not null ? new DtoForSavePhoto
+            {
+                Extension = Enum.Parse<ImageFileExtensions>(dto.Photo!.RawExtension, ignoreCase: true),
+                PriorityStorageType = StorageTypes.Minio,
+                PhotoData = dto.Photo!.Data,
+            } : null
         });
         if (carResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<DomainCar>.Failure().Merge(carResult);

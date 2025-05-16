@@ -46,18 +46,6 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
         
         logger.LogInformation("Машина с id {id} успешно сохранена", carEntity.Id);
         
-        var warns = new List<ApplicationError>();
-
-        if (carDto.Photo is not null)
-        {
-            var savedPhotoResult = await SetCarPhoto(carDto.Photo);
-            if (savedPhotoResult.IsSuccess is false)
-                warns.Add(new ApplicationError(
-                    CarErrors.CarAddedWithoutPhoto, "Не удалось сохранить фото",
-                    $"Для машины {carEntity.Id} не получилось сохранить фото",
-                    ErrorSeverity.NotImportant));
-        }
-    
         var car = new DomainCar
         {
             Id = carEntity.Id,
@@ -73,6 +61,21 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
                 Id = carDto.ResponsiveManager,
             },
         };
+        
+        var warns = new List<ApplicationError>();
+
+        if (carDto.Photo is not null)
+        {
+            carDto.Photo.CarId = carEntity.Id;
+            var savedPhotoResult = await SetCarPhoto(carDto.Photo);
+            if (savedPhotoResult.IsSuccess is false)
+                warns.Add(new ApplicationError(
+                    CarErrors.CarAddedWithoutPhoto, "Не удалось сохранить фото",
+                    $"Для машины {carEntity.Id} не получилось сохранить фото",
+                    ErrorSeverity.NotImportant));
+            
+            car = savedPhotoResult.Value!;
+        }
                 
         var managerResult = await employerService.ManagerByUserIdAsync(carDto.ResponsiveManager);
         if (managerResult.IsSuccess is false)
@@ -84,21 +87,11 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
         
         car.Manager = manager;
         
-        if (carEntity.PhotoMetadataId is null)
+        if (car.Photo is null)
             warns.Add(new ApplicationError(
                 CarErrors.CarNotFoundPhoto, "Фото машины не найдено",
                 $"У машины {car.Id} не установлено фото",
                 ErrorSeverity.NotImportant));
-        
-        var photoResult = await CarPhotoById((int)carEntity.PhotoMetadataId!);
-        if (photoResult.IsSuccess is false)
-            warns.Add(new ApplicationError(
-                CarErrors.CarNotFoundPhoto, "Фото машины не найдено",
-                $"У машины {car.Id} не получилось найти фото",
-                ErrorSeverity.NotImportant));
-        var photo = photoResult.Value!;
-        
-        car.Photo = photo;
 
         return ApplicationExecuteLogicResult<DomainCar>.Success(car).WithWarnings(warns);
     }
@@ -106,7 +99,7 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
     {
         logger.LogInformation("Попытка установить фото машине {carId}", photoDto.CarId);
 
-        var imageResult = await photoRepository.SavePhotoAsync(new PhotoEntity { PhotoBytes = photoDto.PhotoData });
+        var imageResult = await photoRepository.SavePhotoAsync(new PhotoEntity { PhotoBytes = photoDto.PhotoData }, StorageTypes.Minio, photoDto.Extension);
         if (imageResult.IsSuccess is false)
             return ErrorHelper.WrapAllDbErrors<PhotoEntity, DomainCar>(PhotoImageErrors.ImageNotSaved, imageResult, PhotoObjectName);
         var photoEntity = imageResult.Value!;
@@ -122,19 +115,23 @@ public class CarService(ICarRepository carRepository, IPhotoRepository photoRepo
             return ErrorHelper.WrapAllDbErrors<PhotoMetadataEntity, DomainCar>(PhotoMetadataErrors.MetadataNotSaved, metadataResult, PhotoMetadataObjectName);
         var metadataEntity = metadataResult.Value!;
         
-        var carResult = await CarById(metadataEntity.CarId);
+        var carResult = await carRepository.GetCarByIdAsync(metadataEntity.CarId);
         if (carResult.IsSuccess is false)
             return ApplicationExecuteLogicResult<DomainCar>.Failure().Merge(carResult);
-        var car = carResult.Value!;
+        var withoutCarEntity = carResult.Value!;
+        
+        withoutCarEntity.PhotoMetadataId = metadataEntity.Id;
 
-        car.Photo = new DomainPhoto
-        {
-            Id = metadataEntity.Id,
-            CarId = car.Id,
-            Extension = metadataEntity.Extension,
-            PhotoDataId = photoEntity.Id,
-            PhotoData = photoEntity.PhotoBytes
-        };
+        var updateCarResult = await carRepository.RewriteCarAsync(withoutCarEntity);
+        if (updateCarResult.IsSuccess is false)
+            return ErrorHelper.WrapAllDbErrors<CarEntity, DomainCar>(CarErrors.CarNotUpdated, updateCarResult, string.Join(" ", CarObjectName, withoutCarEntity.Id.ToString()));
+        var withPhotoCarEntity = updateCarResult.Value!;
+
+        var updatedCarResult = await CarById(withoutCarEntity.Id);
+        if (updatedCarResult.IsSuccess is false)
+            return ApplicationExecuteLogicResult<DomainCar>.Failure().Merge(updatedCarResult);
+        var car = updatedCarResult.Value!;
+        
         
         return ApplicationExecuteLogicResult<DomainCar>.Success(car);
     }

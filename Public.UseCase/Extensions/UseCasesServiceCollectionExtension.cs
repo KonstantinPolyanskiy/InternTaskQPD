@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Private.Services.AuthServices;
 using Private.Services.CarServices;
 using Private.Services.EmailServices;
 using Private.Services.ManagerServices;
@@ -16,6 +17,8 @@ public static class UseCasesServiceCollectionExtension
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
+        services.AddScoped<IAuthTokenService, IdentityAuthTokenService>();
+        services.AddScoped<IAuthService, IdentityAuthService>();
         services.AddScoped<IRoleService, IdentityRoleService>();
         services.AddScoped<IUserService, IdentityUserService>();
 
@@ -23,10 +26,12 @@ public static class UseCasesServiceCollectionExtension
         services.AddScoped<IEmployerService, EmployerService>();
         
         services.AddScoped<IMailSenderService, StubEmailSenderService>();
+        services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 
         services.AddScoped<UserUseCase>();
         services.AddScoped<AdminUseCases>();
         services.AddScoped<CarEmployerUseCase>();
+        services.AddScoped<PhotoEmployerUseCases>();
         services.AddScoped<ConsumerUseCases>();
         
         return services;

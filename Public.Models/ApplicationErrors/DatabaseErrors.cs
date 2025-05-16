@@ -5,5 +5,6 @@ public enum DatabaseErrors
 {
     DatabaseException,
     NotFound,
+    NotDeleted,
 }
 

@@ -15,4 +15,8 @@ internal static class ErrorHelper
     internal static ApplicationError PrepareStorageException(string entityName) 
         => new ApplicationError(DatabaseErrors.DatabaseException, $"Возникло исключение", $"При работе с {entityName} возникло исключение",
             ErrorSeverity.Critical, HttpStatusCode.InternalServerError);
+    
+    internal static ApplicationError PrepareNotDeletedError(string entityName)
+        => new ApplicationError(DatabaseErrors.NotDeleted, $"{entityName} не удален", $"Объект {entityName} не удален",
+            ErrorSeverity.Critical, HttpStatusCode.InternalServerError); 
 }

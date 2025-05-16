@@ -12,8 +12,9 @@ namespace Public.Api.Controllers;
 public class PhotoController(PhotoEmployerUseCases photoEmployerUse, ILogger<PhotoController> logger) : ControllerBase
 {
     [HttpPost("{carId:int}")]
+    [Consumes("multipart/form-data")]
     [Authorize(Roles = nameof(ApplicationUserRole.Manager))]
-    public async Task<IActionResult> AddPhotoCar([FromRoute] int carId, [FromForm] IFormFile photoFile)
+    public async Task<IActionResult> AddPhotoCar([FromRoute] int carId, IFormFile photoFile)
     {
         logger.LogInformation("Запрос на установку фото машине {carId}", carId);
         
