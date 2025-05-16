@@ -10,7 +10,7 @@ using Public.Models.Extensions;
 
 namespace Private.Services.EmailServices;
 
-public class EmailConfirmationService(IUserService userService, UserManager<ApplicationUserEntity> userManager) : IEmailConfirmationService
+public class EmailConfirmationService(UserManager<ApplicationUserEntity> userManager) : IEmailConfirmationService
 {
     public async Task<ApplicationExecuteLogicResult<string>> CreateConfirmationTokenAsync(ApplicationUserEntity user)
     {

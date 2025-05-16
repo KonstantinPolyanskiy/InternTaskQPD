@@ -36,12 +36,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRol
                 .HasComment("FK на таблицу пользователей")
                 .IsRequired();
 
-            e.Property(x => x.RefreshTokenBody)
+            e.Property(x => x.RefreshBody)
                 .HasColumnName("refresh_token_body")
                 .HasComment("Тело refresh токена, передаваемое в запросах")
                 .IsRequired();
             
-            e.Property(x => x.Jti)
+            e.Property(x => x.AccessJti)
                 .HasColumnName("jti")
                 .HasComment("Jti связанного с этим refresh токеном access токена")
                 .IsRequired();
@@ -51,8 +51,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRol
                 .HasComment("Через сколько секунд истекает срок валидности refresh токена")
                 .IsRequired();
             
-            e.HasIndex(x => x.RefreshTokenBody).IsUnique();
-            e.HasIndex(x => x.Jti).IsUnique();
+            e.HasIndex(x => x.RefreshBody).IsUnique();
+            e.HasIndex(x => x.AccessJti).IsUnique();
             
             e.HasOne(rt => rt.ApplicationUser)
                 .WithMany(u => u.RefreshTokens)

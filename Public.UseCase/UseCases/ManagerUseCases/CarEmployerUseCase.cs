@@ -18,37 +18,9 @@ using Public.UseCase.Models.UserModels;
 
 namespace Public.UseCase.UseCases.ManagerUseCases;
 
-public class CarEmployerUseCase
+public class CarEmployerUseCase(ICarService carService, IUserService userService, IMailSenderService mailSender,
+    IRoleService roleService, ILogger<CarEmployerUseCase> logger)
 {
-    #region Fields
-    
-    private readonly ICarService _carService;
-    private readonly IUserService _userService;
-    private readonly IMailSenderService _mailService;
-    private readonly IRoleService _roleService;
-    
-    private readonly ILogger<EmployerUseCases> _logger;
-    
-    #endregion
-    
-    #region Ctor
-    
-    // ReSharper disable once ConvertToPrimaryConstructor
-    public CarEmployerUseCase(ICarService carService, IPhotoService photoService, IEmployerService employerService, 
-        ILogger<EmployerUseCases> logger, IMailSenderService mailService, IUserService userService, IRoleService roleService)
-    {
-        _carService = carService;
-        _mailService = mailService;
-        _userService = userService;
-        _roleService = roleService;
-        
-        _logger = logger;
-    }
-    
-    #endregion
-
-    #region Публичные методы
-
      /// <summary> Кейс добавления сотрудником (менеджером) новой машины в систему </summary>
      public async Task<ApplicationExecuteLogicResult<CarUseCaseResponse>> NewCar(DtoForAddCar carDto, ClaimsPrincipal employerClaims)
     {
@@ -61,7 +33,7 @@ public class CarEmployerUseCase
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(saveCarResult);
 
         // Получаем снова с менеджером
-        var carResult = await _carService.CarById(saveCarResult.Value!.Id);
+        var carResult = await carService.CarById(saveCarResult.Value!.Id);
         if (carResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(carResult);
         var car = carResult.Value!;                           
@@ -90,7 +62,7 @@ public class CarEmployerUseCase
         if (carDto.Photo is null)
         {
             // TODO: пока фиксированно, но идейно тут должен быть ответственный сотрудник или сам менеджер
-            var sendResult = await _mailService.SendNoPhotoNotifyEmailAsync("admin@mail.ru", car.Manager!.Login, car.Id);
+            var sendResult = await mailSender.SendNoPhotoNotifyEmailAsync("admin@mail.ru", car.Manager!.Login, car.Id);
             if (sendResult.IsSuccess is false)
                 return ApplicationExecuteLogicResult<CarUseCaseResponse>.Success(resp)
                 .WithWarning(new ApplicationError(EmailSendingErrors.EmailNotSend, "Письмо не отправлено",
@@ -124,12 +96,12 @@ public class CarEmployerUseCase
         // Получаем пользователя
         var requestedEmployerId = Guid.Parse(employerClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         
-        var userResult = await _userService.ByLoginOrIdAsync(requestedEmployerId.ToString());
+        var userResult = await userService.ByLoginOrIdAsync(requestedEmployerId.ToString());
         if (userResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarsUseCaseResponse>.Failure().Merge(userResult);
         var requestedEmployer = userResult.Value!;
         
-        var rolesResult = await _roleService.GetRolesByUser(requestedEmployer);
+        var rolesResult = await roleService.GetRolesByUser(requestedEmployer);
         if (rolesResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarsUseCaseResponse>.Failure().Merge(rolesResult);
         var roles = rolesResult.Value!;
@@ -138,7 +110,7 @@ public class CarEmployerUseCase
         var isManager = roles.Contains(ApplicationUserRole.Manager);
         
         // Получаем машины
-        var carsPageResult = await _carService.CarsByParams(searchParams);
+        var carsPageResult = await carService.CarsByParams(searchParams);
         if (carsPageResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarsUseCaseResponse>.Failure().Merge(carsPageResult);
         var carsPage = carsPageResult.Value!;
@@ -176,23 +148,23 @@ public class CarEmployerUseCase
     /// <summary> Кейс получения сотрудником машины по ее Id </summary>
     public async Task<ApplicationExecuteLogicResult<CarUseCaseResponse>> CarById(int carId, ClaimsPrincipal employerClaims)
     {
-        _logger.LogInformation("Попытка получить данные о машине {id} сотрудником ", carId);
+        logger.LogInformation("Попытка получить данные о машине {id} сотрудником ", carId);
 
         // Получаем пользователя
         var requestedEmployerId = Guid.Parse(employerClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         
-        var userResult = await _userService.ByLoginOrIdAsync(requestedEmployerId.ToString());
+        var userResult = await userService.ByLoginOrIdAsync(requestedEmployerId.ToString());
         if (userResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(userResult);
         var requestedEmployer = userResult.Value!;
         
-        var rolesResult = await _roleService.GetRolesByUser(requestedEmployer);
+        var rolesResult = await roleService.GetRolesByUser(requestedEmployer);
         if (rolesResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(rolesResult);
         var roles = rolesResult.Value!;
         
         // Получаем машину
-        var carResult = await _carService.CarById(carId);
+        var carResult = await carService.CarById(carId);
         if (carResult.IsSuccess is false)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(carResult);
         var car = carResult.Value!;
@@ -203,17 +175,17 @@ public class CarEmployerUseCase
     /// <summary> Кейс обновления сотрудником машины по ее Id </summary>
     public async Task<ApplicationExecuteLogicResult<CarUseCaseResponse>> UpdateCar(DtoForUpdateCar carDto, ClaimsPrincipal employerClaims)
     {
-        _logger.LogInformation("Попытка удалить данные о машине {id} сотрудником ", carDto.CarId);
+        logger.LogInformation("Попытка удалить данные о машине {id} сотрудником ", carDto.CarId);
         
         // Получаем сотрудника
         var requestedEmployerId = Guid.Parse(employerClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         
-        var userResult = await _userService.ByLoginOrIdAsync(requestedEmployerId.ToString());
+        var userResult = await userService.ByLoginOrIdAsync(requestedEmployerId.ToString());
         if (userResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(userResult);
         var requestedEmployer = userResult.Value!;
         
-        var rolesResult = await _roleService.GetRolesByUser(requestedEmployer);
+        var rolesResult = await roleService.GetRolesByUser(requestedEmployer);
         if (rolesResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(rolesResult);
         var roles = rolesResult.Value!;
@@ -222,7 +194,7 @@ public class CarEmployerUseCase
         var isManager = roles.Contains(ApplicationUserRole.Manager);
         
         // Получаем машину
-        var carResult = await _carService.CarById(carDto.CarId);
+        var carResult = await carService.CarById(carDto.CarId);
         if (carResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(carResult);
         var car = carResult.Value!;
@@ -240,93 +212,29 @@ public class CarEmployerUseCase
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure(new ApplicationError(RoleErrors.DontHaveEnoughPermissions, "Машина не обновлена",
                 "Недостаточно прав для обновления машины", ErrorSeverity.Critical, HttpStatusCode.Forbidden));
         
-        var updatedCarResult = await _carService.UpdateCarAsync(carDto);
+        var updatedCarResult = await carService.UpdateCarAsync(carDto);
         if (updatedCarResult.IsSuccess is not true)
             return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(updatedCarResult);
         var updatedCar = updatedCarResult.Value!;
         
         return ApplicationExecuteLogicResult<CarUseCaseResponse>.Success(CarHelper.BuildFullResponse(updatedCar)).WithWarnings(updatedCarResult.GetWarnings);
     }
-
-    /// <summary> Кейс установка сотрудником фото машины </summary>
-    public async Task<ApplicationExecuteLogicResult<CarUseCaseResponse>> SetCarPhoto(int carId, DtoForAddPhoto photoDto, ClaimsPrincipal employerClaims)
-    {
-        var userId = Guid.Parse(employerClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var userResult = await _userService.ByLoginOrIdAsync(userId.ToString());
-        if (userResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(userResult);
-        var user = userResult.Value!;
-
-        var rolesResult = await _roleService.GetRolesByUser(user);
-        if (rolesResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(rolesResult);
-        var roles = rolesResult.Value!;
-        
-        var carResult = await _carService.CarById(carId);
-        if (carResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(carResult);
-        var car = carResult.Value!;
-            
-        // Добавить машину может только админ (для любой), или менеджер за нее отвественный
-        if (car.Manager!.Id.ToString() != user.Id || !roles.Contains(ApplicationUserRole.Admin))
-            return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure(new ApplicationError(
-                RoleErrors.DontHaveEnoughPermissions, "Не достаточно прав",
-                "Добавить машине фото может только мендежер за нее отвественный или администратор",
-                ErrorSeverity.Critical, HttpStatusCode.Forbidden));
-
-        var setPhotoResult = await _carService.SetCarPhoto(new DtoForSavePhoto
-        {
-            Extension = Enum.Parse<ImageFileExtensions>(photoDto.RawExtension),
-            PriorityStorageType = StorageTypes.Database,
-            PhotoData = photoDto.Data,
-            CarId = car.Id,
-        });
-        if (setPhotoResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<CarUseCaseResponse>.Failure().Merge(setPhotoResult);
-
-        return ApplicationExecuteLogicResult<CarUseCaseResponse>.Success(new CarUseCaseResponse
-        {
-            Id = car.Id,
-            Brand = car.Brand!,
-            Color = car.Color!,
-            Price = (decimal)car.Price!,
-            CurrentOwner = car.CurrentOwner,
-            Mileage = car.Mileage,
-            CarCondition = car.CarCondition,
-            PrioritySale = car.PrioritySale,
-            Employer = new EmployerUseCaseResponse
-            {
-                Id = car.Manager.Id,
-                FirstName = car.Manager.FirstName,
-                LastName = car.Manager.LastName,
-                Email = car.Manager.Email,
-                Login = car.Manager.Login,
-            },
-            Photo = new PhotoUseCaseResponse
-            {
-                MetadataId = car.Photo!.Id,
-                Extension = car.Photo.Extension,
-                PhotoDataId = car.Photo.PhotoDataId,
-                PhotoBytes = car.Photo.PhotoData
-            }
-        });
-    }
     
     /// <summary> Кейс удаления сотрудником машины </summary>
     public async Task<ApplicationExecuteLogicResult<Unit>> DeleteCar(int carId, ClaimsPrincipal employerClaims)
     {
         var userId = Guid.Parse(employerClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var userResult = await _userService.ByLoginOrIdAsync(userId.ToString());
+        var userResult = await userService.ByLoginOrIdAsync(userId.ToString());
         if (userResult.IsSuccess is false)
             return ApplicationExecuteLogicResult<Unit>.Failure().Merge(userResult);
         var user = userResult.Value!;
 
-        var rolesResult = await _roleService.GetRolesByUser(user);
+        var rolesResult = await roleService.GetRolesByUser(user);
         if (rolesResult.IsSuccess is false)
             return ApplicationExecuteLogicResult<Unit>.Failure().Merge(rolesResult);
         var roles = rolesResult.Value!;
         
-        var carResult = await _carService.CarById(carId);
+        var carResult = await carService.CarById(carId);
         if (carResult.IsSuccess is false)
             return ApplicationExecuteLogicResult<Unit>.Failure().Merge(carResult);
         var car = carResult.Value!;
@@ -337,52 +245,17 @@ public class CarEmployerUseCase
                 "Удалить машину может только мендежер за нее отвественный или администратор",
                 ErrorSeverity.Critical, HttpStatusCode.Forbidden));
         
-        var deletedResult = await _carService.DeleteCarById(carId);
+        var deletedResult = await carService.DeleteCarById(carId);
         if (deletedResult.IsSuccess is false)
             return ApplicationExecuteLogicResult<Unit>.Failure().Merge(deletedResult);
         
         return ApplicationExecuteLogicResult<Unit>.Success(new Unit());
     }
     
-    /// <summary> Кейс удаления сотрудником фото машины </summary>
-    public async Task<ApplicationExecuteLogicResult<Unit>> DeleteCarPhoto(int carId, ClaimsPrincipal employerClaims)
-    {
-        var userId = Guid.Parse(employerClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var userResult = await _userService.ByLoginOrIdAsync(userId.ToString());
-        if (userResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(userResult);
-        var user = userResult.Value!;
-
-        var rolesResult = await _roleService.GetRolesByUser(user);
-        if (rolesResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(rolesResult);
-        var roles = rolesResult.Value!;
-        
-        var carResult = await _carService.CarById(carId);
-        if (carResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(carResult);
-        var car = carResult.Value!;
-        
-        if (car.Manager!.Id.ToString() != user.Id || !roles.Contains(ApplicationUserRole.Admin))
-            return ApplicationExecuteLogicResult<Unit>.Failure(new ApplicationError(
-                RoleErrors.DontHaveEnoughPermissions, "Не достаточно прав",
-                "Удалить фото машины может только мендежер за нее отвественный или администратор",
-                ErrorSeverity.Critical, HttpStatusCode.Forbidden));
-        
-        var deletedResult = await _carService.DeleteCarPhoto(carId);
-        if (deletedResult.IsSuccess is false)
-            return ApplicationExecuteLogicResult<Unit>.Failure().Merge(deletedResult);
-        
-        return ApplicationExecuteLogicResult<Unit>.Success(new Unit());
-    }
-
-    #endregion
-
-    #region Служебные методы
-
+    
     private async Task<ApplicationExecuteLogicResult<DomainCar>> PrepareAndSaveCar(Guid managerId, DtoForAddCar dto)
     {
-        var carResult = await _carService.CreateCarAsync(new DtoForSaveCar
+        var carResult = await carService.CreateCarAsync(new DtoForSaveCar
         {
             ResponsiveManager = managerId,
             Brand = dto.Brand,
@@ -413,6 +286,4 @@ public class CarEmployerUseCase
                     "Частичный ответ: пользователь не является администратором или ответственным менеджером машины",
                     ErrorSeverity.NotImportant));
     }
-
-    #endregion
 }

@@ -4,6 +4,6 @@ namespace Private.Services.Models;
 
 public class PhotoServiceModel
 {
-    public PhotoMetadataEntity Metadata { get; set; }
-    public PhotoEntity Image { get; set; }
+    public PhotoMetadataEntity? Metadata { get; set; }
+    public PhotoEntity? Image { get; set; }
 }

@@ -2,9 +2,7 @@
 using Private.Services.CarServices;
 using Private.Services.EmailServices;
 using Private.Services.ManagerServices;
-using Private.Services.PhotoServices;
 using Private.Services.RoleServices;
-using Private.Services.TokenServices;
 using Private.Services.UserServices;
 using Private.ServicesInterfaces;
 using Public.UseCase.UseCases.AdminUseCases;
@@ -22,16 +20,13 @@ public static class UseCasesServiceCollectionExtension
         services.AddScoped<IUserService, IdentityUserService>();
 
         services.AddScoped<ICarService, CarService>();
-        services.AddScoped<IPhotoService, PhotoService>();
         services.AddScoped<IEmployerService, EmployerService>();
         
-        services.AddScoped<ITokenService, HandmadeTokenService>();
-
         services.AddScoped<IMailSenderService, StubEmailSenderService>();
 
         services.AddScoped<UserUseCase>();
         services.AddScoped<AdminUseCases>();
-        services.AddScoped<EmployerUseCases>();
+        services.AddScoped<CarEmployerUseCase>();
         services.AddScoped<ConsumerUseCases>();
         
         return services;

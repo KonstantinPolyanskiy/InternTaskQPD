@@ -15,7 +15,7 @@ namespace Public.Api.Controllers;
 public class CarController(CarEmployerUseCase carEmployerUseCase, ConsumerUseCases consumerUseCases, ILogger<CarController> logger) : ControllerBase
 {
     [HttpPost]
-    [Authorize(Roles = nameof(ApplicationUserRole.Admin) + "," + nameof(ApplicationUserRole.Manager))]
+    [Authorize(Roles = nameof(ApplicationUserRole.Manager))]
     public async Task<IActionResult> AddCar([FromForm] AddCarRequest req)
     {
         logger.LogInformation("Запрос на внесение новой машины");
@@ -50,7 +50,7 @@ public class CarController(CarEmployerUseCase carEmployerUseCase, ConsumerUseCas
     }
     
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = nameof(ApplicationUserRole.Admin) + "," + nameof(ApplicationUserRole.Manager))]
+    [Authorize(Roles = nameof(ApplicationUserRole.Manager))]
     public async Task<IActionResult> DeleteCar([FromQuery] int id)
     {
         logger.LogInformation("Запрос на удаление машины {id}", id);
@@ -61,7 +61,7 @@ public class CarController(CarEmployerUseCase carEmployerUseCase, ConsumerUseCas
     }
 
     [HttpPatch("{id:int}")]
-    [Authorize(Roles = nameof(ApplicationUserRole.Admin) + "," + nameof(ApplicationUserRole.Manager))]
+    [Authorize(Roles = nameof(ApplicationUserRole.Manager))]
     public async Task<IActionResult> PatchCar([FromBody] PatchCarRequest req, [FromQuery] int id)
     {
         logger.LogInformation("Запрос на обновление машины {id}", id);

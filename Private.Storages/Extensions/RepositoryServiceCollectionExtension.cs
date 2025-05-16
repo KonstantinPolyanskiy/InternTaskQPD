@@ -4,7 +4,7 @@ using Private.Storages.Repositories.BlackListAccessTokenRepository;
 using Private.Storages.Repositories.CarRepository;
 using Private.Storages.Repositories.EmailConfirmationTokenRepository;
 using Private.Storages.Repositories.PhotoMetadataRepository;
-using Private.Storages.Repositories.PhotoRepositories.PostgresPhotoRepository;
+using Private.Storages.Repositories.PhotoRepositories;
 using Private.Storages.Repositories.RefreshTokenRepository;
 
 namespace Private.Storages.Extensions;

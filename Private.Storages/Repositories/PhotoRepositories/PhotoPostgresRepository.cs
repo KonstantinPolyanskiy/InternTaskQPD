@@ -6,7 +6,7 @@ using Private.Storages.DbContexts;
 using Private.Storages.ErrorHelpers;
 using Public.Models.CommonModels;
 
-namespace Private.Storages.Repositories.PhotoRepositories.PostgresPhotoRepository;
+namespace Private.Storages.Repositories.PhotoRepositories;
 
 public class PhotoPostgresRepository(AppDbContext db, ILogger<PhotoPostgresRepository> logger) : IPhotoRepository
 {

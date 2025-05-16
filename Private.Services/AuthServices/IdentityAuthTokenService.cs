@@ -160,7 +160,7 @@ public class IdentityAuthTokenService(ILogger<IdentityAuthTokenService> logger, 
         {
             var deletedAllResult = await refreshRepository.DeleteAllUsersTokens(command.User.Id);
             if (deletedAllResult.IsSuccess is false)
-                return ErrorHelper.WrapAllDbErrors<RefreshTokenEntity, Unit>(RefreshTokenErrors.TokenNotDeleted, deletedAllResult, string.Join(" ", RefreshObjectName, "по user id", command.User));
+                return ErrorHelper.WrapAllDbErrors<Unit, Unit>(RefreshTokenErrors.TokenNotDeleted, deletedAllResult, string.Join(" ", RefreshObjectName, "по user id", command.User));
             
             return ApplicationExecuteLogicResult<Unit>.Success(Unit.Value);
         }

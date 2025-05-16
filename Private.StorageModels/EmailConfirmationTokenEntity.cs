@@ -4,7 +4,7 @@ public class EmailConfirmationTokenEntity
 {
     public int Id { get; set; }
     
-    public string TokenBody { get; set; } = null!;
+    public required string TokenBody { get; set; }
     
     public DateTime ExpiresAt { get; set; }
     
@@ -12,7 +12,7 @@ public class EmailConfirmationTokenEntity
     
     public DateTime? ConfirmedAt { get; set; }
     
-    public string UserId { get; set; }
+    public required string UserId { get; set; }
     
     public ApplicationUserEntity User { get; set; } = null!;
 }
