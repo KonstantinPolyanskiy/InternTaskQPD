@@ -1,0 +1,117 @@
+﻿using System.Net;
+using System.Security.Claims;
+using Microsoft.Extensions.Logging;
+using QPDCar.Models.ApplicationModels;
+using QPDCar.Models.ApplicationModels.ApplicationResult;
+using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
+using QPDCar.Models.ApplicationModels.AuthModels;
+using QPDCar.Models.ApplicationModels.ErrorTypes;
+using QPDCar.ServiceInterfaces.MailServices;
+using QPDCar.ServiceInterfaces.UserServices;
+
+namespace QPDCar.UseCases.UseCases.UserUseCases;
+
+/// <summary> Кейсы для пользователей в целом </summary>
+public class UserUseCases(IAuthService authService, IUserService userService, IMailSender mailSender, 
+    IMailConfirmationService mailConfirmation, ILogger<UserUseCases> logger)  
+{
+    /// <summary> Вход пользователя </summary>
+    public async Task<ApplicationExecuteResult<AuthTokensPair>> Login(string login, string password)
+    {
+        logger.LogInformation("Вход в аккаунт {login}", login);
+
+        var warns = new List<ApplicationError>();
+        
+        // Авторизируем пользователя
+        var authResult = await authService.SignInAndGetAuthTokensAsync(login, password);
+        if (authResult.IsSuccess is false)
+            return ApplicationExecuteResult<AuthTokensPair>.Failure().Merge(authResult);
+        var pair = authResult.Value!;
+        
+        var now = DateTime.UtcNow;
+        
+        // Получаем пользователя для отправки email
+        var userResult = await userService.ByLoginOrIdAsync(login);
+        if (userResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                UserErrors.UserNotFound, "Пользователь не найден",
+                "Пользователь успешно авторизован, но не найден",
+                ErrorSeverity.NotImportant));
+        var user = userResult.Value!;
+        
+        // Отправляем email о входе
+        var body = $"Уважаемый {user.LastName} + {user.FirstName}, в ваш аккаунт {user.UserName} совершен вход {now.ToShortDateString() + now.ToShortTimeString()}";
+        var sendResult = await mailSender.SendAsync(user.Email!, "В аккаунт совершен вход", body);
+        if (sendResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                EmailErrors.MailNotSend, "Почта не отправлена",
+                $"На почту {user.Email!} не удалось отправить email о входе в аккаунт",
+                ErrorSeverity.NotImportant));
+        
+        return ApplicationExecuteResult<AuthTokensPair>.Success(pair)
+            .WithWarnings(warns);
+    }
+
+    /// <summary> Выход пользователя </summary>
+    public async Task<ApplicationExecuteResult<Unit>> Logout(ClaimsPrincipal claims, bool globally = false)
+    {
+        var loginClaim = claims.FindFirst(ClaimTypes.Name);
+        if (loginClaim is null)
+            return ApplicationExecuteResult<Unit>.Failure(new ApplicationError(
+                UserErrors.LoginClaimNotFound, "JwtToken не содержит Name", 
+                "Из claims не удалось получить Login", ErrorSeverity.Critical, HttpStatusCode.Forbidden));
+        var login = loginClaim.ToString();
+        
+        var userResult = await userService.ByLoginOrIdAsync(login);
+        if (userResult.IsSuccess is false)
+            return ApplicationExecuteResult<Unit>.Failure().Merge(userResult);
+        var user = userResult.Value!;
+        
+        var logoutResult = await authService.LogoutUserAsync(user, globally);
+        if (logoutResult.IsSuccess is false)
+            return ApplicationExecuteResult<Unit>.Failure().Merge(logoutResult);
+        
+        return ApplicationExecuteResult<Unit>.Success(Unit.Value);
+    }
+
+    /// <summary> Обновление сессии пользователя </summary>
+    public async Task<ApplicationExecuteResult<AuthTokensPair>> Refresh(string refreshToken) 
+    {
+        var newPairResult = await authService.GetFreshTokensAsync(refreshToken);
+        if (newPairResult.IsSuccess is false)
+            return ApplicationExecuteResult<AuthTokensPair>.Failure().Merge(newPairResult);
+        var pair = newPairResult.Value!;
+
+        return ApplicationExecuteResult<AuthTokensPair>.Success(pair);
+    }
+
+    /// <summary> Подтверждение почты </summary>
+    public async Task<ApplicationExecuteResult<Unit>> EmailConfirm(Guid userId, string confirmToken)
+    {
+        logger.LogInformation("Попытка подтверждения почты аккаунта с Id {id}", userId);
+        
+        var warns = new List<ApplicationError>();
+        
+        // Находим пользователя подтверждающего почту
+        var userResult = await userService.ByLoginOrIdAsync(userId.ToString());
+        if (userResult.IsSuccess is false)
+            return ApplicationExecuteResult<Unit>.Failure().Merge(userResult);
+        var user = userResult.Value!;
+        
+        // Подтверждаем почту
+        var confirmResult = await mailConfirmation.ConfirmEmailAsync(user, confirmToken);
+        if (confirmResult.IsSuccess is false)
+            return ApplicationExecuteResult<Unit>.Failure().Merge(confirmResult);
+        
+        // Отправляем email об успешном подтверждении
+        var body = $"Уважаемый {user.LastName} + {user.FirstName} благодарим за подтверждение почты";
+        var thanksResult = await mailSender.SendAsync(user.Email!, "Почта подтверждена", body);
+        if (thanksResult.IsSuccess is false)
+            warns.Add(new ApplicationError(
+                EmailErrors.MailNotSend, "Email не отправлен",
+                $"Email о подтверждении почты {user.Email} не отправлено",
+                ErrorSeverity.NotImportant)); 
+        
+        return ApplicationExecuteResult<Unit>.Success(Unit.Value).WithWarnings(warns);
+    }
+}
