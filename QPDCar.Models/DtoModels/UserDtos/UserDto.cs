@@ -16,6 +16,16 @@ public record DtoForCreateUser
     public IReadOnlyCollection<ApplicationRoles> InitialRoles { get; set; } = [];
 }
 
+public record DtoForUpdateUser
+{
+    public required Guid UserId { get; init; }
+    
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+
+    public IReadOnlyCollection<ApplicationRoles> NewRoles { get; init; } = [];
+}
+
 public record DtoForCreateConsumer
 {
     public required string FirstName { get; init; }
