@@ -4,3 +4,8 @@ public enum EmailErrors
 {
     MailNotSend, 
 }
+
+public enum EmailTokenErrors
+{
+    IncorrectUserOrExpired
+}

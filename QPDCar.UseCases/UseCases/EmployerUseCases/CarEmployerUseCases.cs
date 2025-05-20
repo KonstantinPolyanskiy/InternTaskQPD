@@ -4,11 +4,13 @@ using QPDCar.Models.ApplicationModels;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
 using QPDCar.Models.ApplicationModels.ErrorTypes;
+using QPDCar.Models.ApplicationModels.Events;
 using QPDCar.Models.BusinessModels.CarModels;
 using QPDCar.Models.BusinessModels.EmployerModels;
 using QPDCar.Models.DtoModels.CarDtos;
 using QPDCar.ServiceInterfaces;
 using QPDCar.ServiceInterfaces.MailServices;
+using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.UseCases.Helpers;
 using QPDCar.UseCases.Models.CarModels;
 using QPDCar.UseCases.Models.PhotoModels;
@@ -17,7 +19,7 @@ using QPDCar.UseCases.Models.UserModels;
 namespace QPDCar.UseCases.UseCases.EmployerUseCases;
 
 /// <summary> Действия с машиной для сотрудника </summary>
-public class CarEmployerUseCases(ICarService carService, IMailSender mailSender)
+public class CarEmployerUseCases(ICarService carService, INotificationPublisher publisher)
 {
     /// <summary> Кейс добавления сотрудником  новой машины в систему </summary>
     public async Task<ApplicationExecuteResult<CarUseCaseResponse>> NewCar(DtoForSaveCar carDto)
@@ -38,7 +40,13 @@ public class CarEmployerUseCases(ICarService carService, IMailSender mailSender)
                 ErrorSeverity.NotImportant));
             
             var body = $"Для машины {car.Id} не добавлено фото";
-            var sendResult = await mailSender.SendAsync(car.Manager!.Email, "Машина установлена без фото", body);
+            var sendResult = await publisher.NotifyAsync(new EmailNotificationEvent
+            {
+                MessageId = Guid.NewGuid(),
+                To = car.Manager!.Email!,
+                Subject = "Машина без фото",
+                BodyHtml = body
+            });
             if (sendResult.IsSuccess is false)
                 warns.Add(new ApplicationError(
                     EmailErrors.MailNotSend, "Email не отправлено",

@@ -13,7 +13,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
                        + Path.DirectorySeparatorChar
                        + ".."
                        + Path.DirectorySeparatorChar
-                       + "Public.Api";
+                       + "QPDCar.Api";
         
         var cfg = new ConfigurationBuilder()
             .SetBasePath(basePath)
