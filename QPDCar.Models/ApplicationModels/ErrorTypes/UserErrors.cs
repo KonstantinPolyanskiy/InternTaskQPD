@@ -4,9 +4,12 @@ public enum UserErrors
 {
     LoginBusy,
     EmailBusy,
+
+    InvalidLoginOrPassword,
     
     UserNotSaved,
     UserNotFound,
+    UserNotUpdated,
     
     NotFoundAnyRole,
     UserRolesNotUpdated,

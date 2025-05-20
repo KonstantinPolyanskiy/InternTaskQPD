@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using QPDCar.Models.ApplicationModels;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
@@ -59,21 +60,54 @@ public class UserService(UserManager<ApplicationUserEntity> userManager, ILogger
 
     public async Task<ApplicationExecuteResult<ApplicationUserEntity>> UpdateAsync(ApplicationUserEntity user)
     {
-        throw new NotImplementedException();
+        var result = await userManager.UpdateAsync(user);
+        if (result.Succeeded is false)
+        {
+            logger.LogInformation("При обновлении пользователя {id} возникли ошибки {@data}", user.Id, result.Errors.ToList());
+            return ApplicationExecuteResult<ApplicationUserEntity>.Failure(new ApplicationError(
+                UserErrors.UserNotUpdated, "Пользователь не обновлен",
+                $"Пользователь {user.Id} не обновлен",
+                ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        }
+        
+        return ApplicationExecuteResult<ApplicationUserEntity>.Success(user);
     }
 
     public async Task<ApplicationExecuteResult<ApplicationUserEntity>> ByLoginOrIdAsync(string loginOrId)
     {
-        throw new NotImplementedException();
+        var byLogin = await userManager.FindByNameAsync(loginOrId);
+        if (byLogin != null)
+            return ApplicationExecuteResult<ApplicationUserEntity>.Success(byLogin);
+        
+        var byId = await userManager.FindByIdAsync(loginOrId);
+        if (byId != null)
+            return ApplicationExecuteResult<ApplicationUserEntity>.Success(byId);
+        
+        return ApplicationExecuteResult<ApplicationUserEntity>.Failure(new ApplicationError(
+            UserErrors.UserNotFound, "Пользователь не найден",
+            $"Пользователь с идентификатором {loginOrId} не найден или не существует", ErrorSeverity.Critical, HttpStatusCode.NotFound));
     }
 
     public async Task<ApplicationExecuteResult<List<ApplicationUserEntity>>> AllUsers()
     {
-        throw new NotImplementedException();
+        var users = await userManager.Users.OrderBy(x => x.Id).ToListAsync();
+        
+        return ApplicationExecuteResult<List<ApplicationUserEntity>>.Success(users);
     }
 
     public async Task<ApplicationExecuteResult<Unit>> BlockOrUnblockAsync(ApplicationUserEntity user)
     {
-        throw new NotImplementedException();
+        if (user.LockoutEnabled)
+        {
+            await userManager.ResetAccessFailedCountAsync(user);
+            await userManager.SetLockoutEndDateAsync(user, null);
+        }
+        else
+        {
+            await userManager.SetLockoutEnabledAsync(user, true);
+            await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(1));
+        }
+        
+        return ApplicationExecuteResult<Unit>.Success(Unit.Value);
     }
 }

@@ -1,0 +1,6 @@
+@QPDCar.Api_HostAddress = http://localhost:5116
+
+GET {{QPDCar.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

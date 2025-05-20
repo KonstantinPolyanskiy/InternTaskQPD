@@ -1,0 +1,1287 @@
+2025-05-20 15:09:40.643 +03:00 [ERR] An error occurred using the connection to database 'main_db' on server 'tcp://db:5432'.
+2025-05-20 15:14:29.803 +03:00 [ERR] An error occurred using the connection to database 'main_db' on server 'tcp://db:5432'.
+2025-05-20 15:15:43.575 +03:00 [ERR] An error occurred using the connection to database 'main_db' on server 'tcp://db:5313'.
+2025-05-20 15:16:31.445 +03:00 [ERR] Failed executing DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-05-20 15:16:32.511 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 15:16:32.513 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 15:16:32.513 +03:00 [INF] Hosting environment: Development
+2025-05-20 15:16:32.513 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 15:17:50.829 +03:00 [INF] HTTP GET / responded 404 in 55.7363 ms
+2025-05-20 15:18:02.763 +03:00 [INF] HTTP GET /swagger/index.html responded 200 in 88.3808 ms
+2025-05-20 15:18:02.788 +03:00 [INF] HTTP GET /swagger/index.js responded 200 in 10.8820 ms
+2025-05-20 15:18:02.795 +03:00 [INF] HTTP GET /swagger/index.css responded 200 in 20.4524 ms
+2025-05-20 15:18:02.809 +03:00 [INF] HTTP GET /swagger/swagger-ui.css responded 200 in 34.2073 ms
+2025-05-20 15:18:02.809 +03:00 [INF] HTTP GET /swagger/swagger-ui-standalone-preset.js responded 200 in 32.2788 ms
+2025-05-20 15:18:02.809 +03:00 [INF] HTTP GET /swagger/swagger-ui-bundle.js responded 200 in 33.8451 ms
+2025-05-20 15:18:02.931 +03:00 [INF] HTTP GET /swagger/favicon-32x32.png responded 200 in 0.5921 ms
+2025-05-20 15:18:03.068 +03:00 [INF] HTTP GET /swagger/v1/swagger.json responded 200 in 151.1214 ms
+2025-05-20 15:18:38.153 +03:00 [ERR] HTTP POST /api/consumer/registration responded 500 in 15.9172 ms
+System.InvalidOperationException: Unable to resolve service for type 'QPDCar.UseCases.UseCases.ConsumerUseCases.ConsumerUseCases' while attempting to activate 'QPDCar.Api.Controllers.ConsumerController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method395(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at QPDCar.Api.Middlewares.CorrelationIdMiddleware.Invoke(HttpContext ctx) in E:\projects\QPDCar\QPDCar.Api\Middlewares\CorrelationIdMiddleware.cs:line 17
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-20 15:18:38.162 +03:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'QPDCar.UseCases.UseCases.ConsumerUseCases.ConsumerUseCases' while attempting to activate 'QPDCar.Api.Controllers.ConsumerController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ThrowHelperUnableToResolveService(Type type, Type requiredBy)
+   at lambda_method395(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at QPDCar.Api.Middlewares.CorrelationIdMiddleware.Invoke(HttpContext ctx) in E:\projects\QPDCar\QPDCar.Api\Middlewares\CorrelationIdMiddleware.cs:line 17
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-20 15:18:50.064 +03:00 [INF] Application is shutting down...
+2025-05-20 15:20:35.869 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 15:20:35.874 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 15:20:35.875 +03:00 [INF] Hosting environment: Development
+2025-05-20 15:20:35.875 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 15:20:46.192 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:20:46.198 +03:00 [INF] Попытка регистрации пользователя с логином consumer
+2025-05-20 15:20:46.201 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = asd, LastName = asd, Login = consumer, Email = polyanskiy.main@list.ru, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:20:46.420 +03:00 [INF] Пользователь с логином consumer успешно создан
+2025-05-20 15:20:46.509 +03:00 [ERR] HTTP POST /api/consumer/registration responded 500 in 409.5896 ms
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at QPDCar.Infrastructure.Publishers.RabbitPublisher.NotifyAsync(EmailNotificationEvent evt) in E:\projects\QPDCar\QPDCar.Infrastructure\Publishers\RabbitPublisher.cs:line 16
+   at QPDCar.UseCases.UseCases.ConsumerUseCases.ConsumerUseCases.RegisterUser(DtoForCreateConsumer userData) in E:\projects\QPDCar\QPDCar.UseCases\UseCases\ConsumerUseCases\ConsumerUseCases.cs:line 55
+   at QPDCar.Api.Controllers.ConsumerController.ConsumerRegistration(ClientRegistrationRequest req) in E:\projects\QPDCar\QPDCar.Api\Controllers\ConsumerController.cs:line 28
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at QPDCar.Api.Middlewares.CorrelationIdMiddleware.Invoke(HttpContext ctx) in E:\projects\QPDCar\QPDCar.Api\Middlewares\CorrelationIdMiddleware.cs:line 17
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-20 15:20:46.526 +03:00 [ERR] An unhandled exception has occurred while executing the request.
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at QPDCar.Infrastructure.Publishers.RabbitPublisher.NotifyAsync(EmailNotificationEvent evt) in E:\projects\QPDCar\QPDCar.Infrastructure\Publishers\RabbitPublisher.cs:line 16
+   at QPDCar.UseCases.UseCases.ConsumerUseCases.ConsumerUseCases.RegisterUser(DtoForCreateConsumer userData) in E:\projects\QPDCar\QPDCar.UseCases\UseCases\ConsumerUseCases\ConsumerUseCases.cs:line 55
+   at QPDCar.Api.Controllers.ConsumerController.ConsumerRegistration(ClientRegistrationRequest req) in E:\projects\QPDCar\QPDCar.Api\Controllers\ConsumerController.cs:line 28
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at QPDCar.Api.Middlewares.CorrelationIdMiddleware.Invoke(HttpContext ctx) in E:\projects\QPDCar\QPDCar.Api\Middlewares\CorrelationIdMiddleware.cs:line 17
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-20 15:22:22.371 +03:00 [INF] Application is shutting down...
+2025-05-20 15:24:40.584 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 15:24:40.590 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 15:24:40.590 +03:00 [INF] Hosting environment: Development
+2025-05-20 15:24:40.590 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 15:25:21.290 +03:00 [INF] Application is shutting down...
+2025-05-20 15:27:02.641 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 15:27:02.646 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 15:27:02.647 +03:00 [INF] Hosting environment: Development
+2025-05-20 15:27:02.647 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 15:27:16.546 +03:00 [ERR] HTTP POST /api/consumer/registration responded 500 in 2367.1132 ms
+System.AggregateException: One or more errors occurred. (None of the specified endpoints were reachable)
+ ---> RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Этот хост неизвестен.)
+ ---> System.Net.Sockets.SocketException (11001): Этот хост неизвестен.
+   at System.Net.NameResolutionPal.ProcessResult(SocketError errorCode, GetAddrInfoExContext* context)
+   at System.Net.NameResolutionPal.GetAddressInfoExCallback(Int32 error, Int32 bytes, NativeOverlapped* overlapped)
+--- End of stack trace from previous location ---
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at Program.<>c.<<Main>$>b__0_1(IServiceProvider sp) in E:\projects\QPDCar\QPDCar.Api\Program.cs:line 78
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at lambda_method245(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at QPDCar.Api.Middlewares.CorrelationIdMiddleware.Invoke(HttpContext ctx) in E:\projects\QPDCar\QPDCar.Api\Middlewares\CorrelationIdMiddleware.cs:line 17
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-20 15:27:16.564 +03:00 [ERR] An unhandled exception has occurred while executing the request.
+System.AggregateException: One or more errors occurred. (None of the specified endpoints were reachable)
+ ---> RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Этот хост неизвестен.)
+ ---> System.Net.Sockets.SocketException (11001): Этот хост неизвестен.
+   at System.Net.NameResolutionPal.ProcessResult(SocketError errorCode, GetAddrInfoExContext* context)
+   at System.Net.NameResolutionPal.GetAddressInfoExCallback(Int32 error, Int32 bytes, NativeOverlapped* overlapped)
+--- End of stack trace from previous location ---
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at Program.<>c.<<Main>$>b__0_1(IServiceProvider sp) in E:\projects\QPDCar\QPDCar.Api\Program.cs:line 78
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at lambda_method245(Closure, IServiceProvider, Object[])
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass6_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at QPDCar.Api.Middlewares.CorrelationIdMiddleware.Invoke(HttpContext ctx) in E:\projects\QPDCar\QPDCar.Api\Middlewares\CorrelationIdMiddleware.cs:line 17
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-05-20 15:28:35.309 +03:00 [INF] Application is shutting down...
+2025-05-20 15:28:40.298 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 15:28:40.304 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 15:28:40.304 +03:00 [INF] Hosting environment: Development
+2025-05-20 15:28:40.304 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 15:28:41.442 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:28:41.448 +03:00 [INF] Попытка регистрации пользователя с логином consumer12
+2025-05-20 15:28:41.451 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer12, Email = k.polyanskiy@qpdev.ru2, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:28:41.690 +03:00 [INF] Пользователь с логином consumer12 успешно создан
+2025-05-20 15:28:41.846 +03:00 [INF] Сообщение 720c92e4-000b-425d-ba45-fdb10d0518aa отправлено в rabbit
+2025-05-20 15:28:41.963 +03:00 [INF] HTTP POST /api/consumer/registration responded 200 in 665.0783 ms
+2025-05-20 15:30:06.614 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:30:06.614 +03:00 [INF] Попытка регистрации пользователя с логином consumer123
+2025-05-20 15:30:06.614 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer123, Email = lie9682@credit-loans.xyz, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:30:06.674 +03:00 [INF] Пользователь с логином consumer123 успешно создан
+2025-05-20 15:30:06.684 +03:00 [INF] Сообщение 2e166643-5fc2-419a-a477-ff630cf80717 отправлено в rabbit
+2025-05-20 15:30:06.735 +03:00 [INF] HTTP POST /api/consumer/registration responded 200 in 126.5501 ms
+2025-05-20 15:31:12.841 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:31:12.841 +03:00 [INF] Попытка регистрации пользователя с логином consumer123
+2025-05-20 15:31:12.842 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer123, Email = lie9682@credit-loans.xyz, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:31:12.854 +03:00 [INF] HTTP POST /api/consumer/registration responded 400 in 23.2307 ms
+2025-05-20 15:31:28.208 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:31:28.208 +03:00 [INF] Попытка регистрации пользователя с логином consumer1233
+2025-05-20 15:31:28.208 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer1233, Email = chain34@business-degree.live, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:31:28.287 +03:00 [INF] Пользователь с логином consumer1233 успешно создан
+2025-05-20 15:31:28.296 +03:00 [INF] Сообщение 2b2f1c80-600e-4a89-92e4-bc0f891f0da8 отправлено в rabbit
+2025-05-20 15:31:28.338 +03:00 [INF] HTTP POST /api/consumer/registration responded 200 in 130.5253 ms
+2025-05-20 15:33:41.638 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:33:41.638 +03:00 [INF] Попытка регистрации пользователя с логином consumer1234
+2025-05-20 15:33:41.638 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer1234, Email = mail44@cancer-treatment.xyz, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:33:41.721 +03:00 [INF] Пользователь с логином consumer1234 успешно создан
+2025-05-20 15:33:41.730 +03:00 [INF] Сообщение bd23311a-a397-4f8d-af00-1186c633f4f7 отправлено в rabbit
+2025-05-20 15:33:41.779 +03:00 [INF] HTTP POST /api/consumer/registration responded 200 in 141.5580 ms
+2025-05-20 15:34:30.336 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:34:30.336 +03:00 [INF] Попытка регистрации пользователя с логином consumer1234
+2025-05-20 15:34:30.336 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer1234, Email = k.polyanskiy@qpdev.ru, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:34:30.393 +03:00 [INF] Пользователь с логином consumer1234 успешно создан
+2025-05-20 15:34:30.401 +03:00 [INF] Сообщение 64b3a580-c0e5-4807-8aea-76614b7d77c0 отправлено в rabbit
+2025-05-20 15:34:30.446 +03:00 [INF] HTTP POST /api/consumer/registration responded 200 in 109.8950 ms
+2025-05-20 15:41:08.674 +03:00 [INF] Запрос на регистрацию клиента
+2025-05-20 15:41:08.674 +03:00 [INF] Попытка регистрации пользователя с логином consumer12345
+2025-05-20 15:41:08.674 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = konstantin, LastName = polyanskiy, Login = consumer12345, Email = k.polyanskiy@qpdev.ru1, Password = Smart24$, InitialRoles = <>z__ReadOnlySingleElementList`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 15:41:08.735 +03:00 [INF] Пользователь с логином consumer12345 успешно создан
+2025-05-20 15:41:08.744 +03:00 [INF] Сообщение 7518a38a-141b-4b69-a855-b729a0223c61 отправлено в rabbit
+2025-05-20 15:41:08.789 +03:00 [INF] HTTP POST /api/consumer/registration responded 200 in 116.4631 ms
+2025-05-20 15:45:43.747 +03:00 [INF] Application is shutting down...
+2025-05-20 16:03:31.846 +03:00 [INF] Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+2025-05-20 16:03:31.852 +03:00 [INF] Quartz Scheduler created
+2025-05-20 16:03:31.853 +03:00 [INF] JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+2025-05-20 16:03:31.853 +03:00 [INF] RAMJobStore initialized.
+2025-05-20 16:03:31.854 +03:00 [INF] Quartz Scheduler 3.14.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+2025-05-20 16:03:31.854 +03:00 [INF] Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+2025-05-20 16:03:31.855 +03:00 [INF] Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+2025-05-20 16:03:31.862 +03:00 [INF] Adding 1 jobs, 1 triggers.
+2025-05-20 16:03:31.865 +03:00 [INF] Adding job: DEFAULT.car-no-photo
+2025-05-20 16:03:31.933 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 16:03:31.934 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 16:03:31.934 +03:00 [INF] Hosting environment: Development
+2025-05-20 16:03:31.934 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 16:03:31.937 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+2025-05-20 16:04:18.087 +03:00 [INF] Запрос на авторизацию пользователя с логином admin
+2025-05-20 16:04:18.092 +03:00 [INF] Вход в аккаунт admin
+2025-05-20 16:04:18.213 +03:00 [INF] Попытка получить роли пользователя с id b3931ef7-d5b4-498e-a6b3-7d97675c8027
+2025-05-20 16:04:18.214 +03:00 [INF] Для пользователя с id b3931ef7-d5b4-498e-a6b3-7d97675c8027 найдено 3 ролей
+2025-05-20 16:04:18.219 +03:00 [INF] Создание токенов авторизации для admin
+2025-05-20 16:04:18.419 +03:00 [INF] Токены авторизации для admin успешно созданы
+2025-05-20 16:04:18.492 +03:00 [INF] Сообщение 58d6dba8-204f-4491-bca8-557147490c35 отправлено в rabbit
+2025-05-20 16:04:18.597 +03:00 [INF] HTTP POST /api/auth/login responded 200 in 589.3516 ms
+2025-05-20 16:04:18.787 +03:00 [INF] Запрос на создание пользователя
+2025-05-20 16:04:18.791 +03:00 [INF] Создание пользователя администратором, данные - {"FirstName":"Lada First","LastName":"Lada Last","Login":"LadaManager","Email":"ladamanager@example.com","Password":"Manager1!","InitialRoles":["Manager"],"$type":"DtoForCreateUser"}
+2025-05-20 16:04:18.792 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = Lada First, LastName = Lada Last, Login = LadaManager, Email = ladamanager@example.com, Password = Manager1!, InitialRoles = System.Collections.Generic.List`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 16:04:18.900 +03:00 [INF] Пользователь с логином LadaManager успешно создан
+2025-05-20 16:04:18.972 +03:00 [INF] HTTP POST /api/admin/user responded 200 in 324.0300 ms
+2025-05-20 16:04:18.987 +03:00 [INF] Запрос на создание пользователя
+2025-05-20 16:04:18.987 +03:00 [INF] Создание пользователя администратором, данные - {"FirstName":"Bmw First","LastName":"Bmw Last","Login":"BmwManager","Email":"bmwmanager@example.com","Password":"Manager1!","InitialRoles":["Manager"],"$type":"DtoForCreateUser"}
+2025-05-20 16:04:18.987 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = Bmw First, LastName = Bmw Last, Login = BmwManager, Email = bmwmanager@example.com, Password = Manager1!, InitialRoles = System.Collections.Generic.List`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 16:04:19.043 +03:00 [INF] Пользователь с логином BmwManager успешно создан
+2025-05-20 16:04:19.051 +03:00 [INF] HTTP POST /api/admin/user responded 200 in 77.6605 ms
+2025-05-20 16:04:19.061 +03:00 [INF] Запрос на создание пользователя
+2025-05-20 16:04:19.062 +03:00 [INF] Создание пользователя администратором, данные - {"FirstName":"Skoda First","LastName":"Skoda Last","Login":"SkodaManager","Email":"skodamanager@example.com","Password":"Manager1!","InitialRoles":["Manager"],"$type":"DtoForCreateUser"}
+2025-05-20 16:04:19.062 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = Skoda First, LastName = Skoda Last, Login = SkodaManager, Email = skodamanager@example.com, Password = Manager1!, InitialRoles = System.Collections.Generic.List`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 16:04:19.125 +03:00 [INF] Пользователь с логином SkodaManager успешно создан
+2025-05-20 16:04:19.132 +03:00 [INF] HTTP POST /api/admin/user responded 200 in 80.1181 ms
+2025-05-20 16:04:19.135 +03:00 [INF] Запрос на авторизацию пользователя с логином LadaManager
+2025-05-20 16:04:19.135 +03:00 [INF] Вход в аккаунт LadaManager
+2025-05-20 16:04:19.194 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.195 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.195 +03:00 [INF] Создание токенов авторизации для LadaManager
+2025-05-20 16:04:19.199 +03:00 [INF] Токены авторизации для LadaManager успешно созданы
+2025-05-20 16:04:19.203 +03:00 [INF] Сообщение fc0d46cc-dbd3-4859-8abe-0e65b8dacf85 отправлено в rabbit
+2025-05-20 16:04:19.246 +03:00 [INF] HTTP POST /api/auth/login responded 200 in 113.1670 ms
+2025-05-20 16:04:19.280 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Red","Price":15536,"CurrentOwner":"Ivan","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.344 +03:00 [INF] Машина с id 1 успешно сохранена
+2025-05-20 16:04:19.345 +03:00 [INF] Получение менеджера машины 1
+2025-05-20 16:04:19.363 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.365 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.369 +03:00 [INF] Сообщение cc505db3-c3f1-491a-8bc2-58618e8fb903 отправлено в rabbit
+2025-05-20 16:04:19.466 +03:00 [INF] HTTP POST /api/car responded 200 in 215.0827 ms
+2025-05-20 16:04:19.473 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Black","Price":16171,"CurrentOwner":"Maria","Mileage":20211,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.478 +03:00 [INF] Машина с id 2 успешно сохранена
+2025-05-20 16:04:19.478 +03:00 [INF] Получение менеджера машины 2
+2025-05-20 16:04:19.481 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.482 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.484 +03:00 [INF] Сообщение 699f1d2e-09e5-45f3-8fac-2b9f84e81d3d отправлено в rabbit
+2025-05-20 16:04:19.526 +03:00 [INF] HTTP POST /api/car responded 200 in 59.8039 ms
+2025-05-20 16:04:19.535 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Black","Price":47996,"CurrentOwner":null,"Mileage":15825,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.538 +03:00 [INF] Машина с id 3 успешно сохранена
+2025-05-20 16:04:19.538 +03:00 [INF] Получение менеджера машины 3
+2025-05-20 16:04:19.540 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.541 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.543 +03:00 [INF] Сообщение c9186a6e-7518-49bd-8fbc-5a2f4f6b164b отправлено в rabbit
+2025-05-20 16:04:19.586 +03:00 [INF] HTTP POST /api/car responded 200 in 58.9646 ms
+2025-05-20 16:04:19.591 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Silver","Price":29444,"CurrentOwner":"Maria","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.593 +03:00 [INF] Машина с id 4 успешно сохранена
+2025-05-20 16:04:19.593 +03:00 [INF] Получение менеджера машины 4
+2025-05-20 16:04:19.595 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.597 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.599 +03:00 [INF] Сообщение 718af23a-5f13-4e71-b16a-f739f799b384 отправлено в rabbit
+2025-05-20 16:04:19.646 +03:00 [INF] HTTP POST /api/car responded 200 in 59.3836 ms
+2025-05-20 16:04:19.651 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"White","Price":46038,"CurrentOwner":null,"Mileage":22495,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.653 +03:00 [INF] Машина с id 5 успешно сохранена
+2025-05-20 16:04:19.653 +03:00 [INF] Получение менеджера машины 5
+2025-05-20 16:04:19.656 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.657 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.658 +03:00 [INF] Сообщение 524ec5d4-5ef2-4aa5-83a2-48b462986b8f отправлено в rabbit
+2025-05-20 16:04:19.706 +03:00 [INF] HTTP POST /api/car responded 200 in 59.3971 ms
+2025-05-20 16:04:19.711 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Blue","Price":40529,"CurrentOwner":"Ivan","Mileage":20107,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.713 +03:00 [INF] Машина с id 6 успешно сохранена
+2025-05-20 16:04:19.713 +03:00 [INF] Получение менеджера машины 6
+2025-05-20 16:04:19.716 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.717 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.718 +03:00 [INF] Сообщение 27a7d294-d525-4e77-813d-27780d0dafa2 отправлено в rabbit
+2025-05-20 16:04:19.776 +03:00 [INF] HTTP POST /api/car responded 200 in 69.5161 ms
+2025-05-20 16:04:19.782 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Green","Price":36078,"CurrentOwner":"Peter","Mileage":18796,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.784 +03:00 [INF] Машина с id 7 успешно сохранена
+2025-05-20 16:04:19.784 +03:00 [INF] Получение менеджера машины 7
+2025-05-20 16:04:19.786 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.787 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.789 +03:00 [INF] Сообщение f00c7707-77a2-42a2-ace1-97d42bc47e02 отправлено в rabbit
+2025-05-20 16:04:19.836 +03:00 [INF] HTTP POST /api/car responded 200 in 59.2302 ms
+2025-05-20 16:04:19.840 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Orange","Price":22055,"CurrentOwner":"Peter","Mileage":5216,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.842 +03:00 [INF] Машина с id 8 успешно сохранена
+2025-05-20 16:04:19.842 +03:00 [INF] Получение менеджера машины 8
+2025-05-20 16:04:19.845 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.846 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.848 +03:00 [INF] Сообщение b9fa5802-fc79-4352-8572-b36277d4d876 отправлено в rabbit
+2025-05-20 16:04:19.896 +03:00 [INF] HTTP POST /api/car responded 200 in 59.3955 ms
+2025-05-20 16:04:19.901 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Orange","Price":45985,"CurrentOwner":"Alice","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.903 +03:00 [INF] Машина с id 9 успешно сохранена
+2025-05-20 16:04:19.903 +03:00 [INF] Получение менеджера машины 9
+2025-05-20 16:04:19.905 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.906 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.907 +03:00 [INF] Сообщение 0081c5e2-29f2-41c7-9a77-421f64308d7e отправлено в rabbit
+2025-05-20 16:04:19.956 +03:00 [INF] HTTP POST /api/car responded 200 in 59.3490 ms
+2025-05-20 16:04:19.960 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"White","Price":23473,"CurrentOwner":null,"Mileage":11078,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:19.962 +03:00 [INF] Машина с id 10 успешно сохранена
+2025-05-20 16:04:19.962 +03:00 [INF] Получение менеджера машины 10
+2025-05-20 16:04:19.964 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:19.965 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:19.967 +03:00 [INF] Сообщение 6585957d-0533-493e-b036-f823626d2fc3 отправлено в rabbit
+2025-05-20 16:04:20.016 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5286 ms
+2025-05-20 16:04:20.020 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Silver","Price":42131,"CurrentOwner":"Peter","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.023 +03:00 [INF] Машина с id 11 успешно сохранена
+2025-05-20 16:04:20.023 +03:00 [INF] Получение менеджера машины 11
+2025-05-20 16:04:20.025 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.026 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.027 +03:00 [INF] Сообщение d867f5ff-d28d-4909-8e88-6f6ff6b55aaf отправлено в rabbit
+2025-05-20 16:04:20.086 +03:00 [INF] HTTP POST /api/car responded 200 in 69.3510 ms
+2025-05-20 16:04:20.090 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"White","Price":8791,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.092 +03:00 [INF] Машина с id 12 успешно сохранена
+2025-05-20 16:04:20.092 +03:00 [INF] Получение менеджера машины 12
+2025-05-20 16:04:20.094 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.095 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.097 +03:00 [INF] Сообщение e14d5218-0daa-4f61-9dad-4d4bab0131f8 отправлено в rabbit
+2025-05-20 16:04:20.146 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4660 ms
+2025-05-20 16:04:20.150 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Yellow","Price":46722,"CurrentOwner":"Maria","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.152 +03:00 [INF] Машина с id 13 успешно сохранена
+2025-05-20 16:04:20.152 +03:00 [INF] Получение менеджера машины 13
+2025-05-20 16:04:20.155 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.156 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.158 +03:00 [INF] Сообщение 38208a08-eb90-4dfe-ad78-091eec6cf900 отправлено в rabbit
+2025-05-20 16:04:20.206 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5917 ms
+2025-05-20 16:04:20.211 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"White","Price":29402,"CurrentOwner":"Peter","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.213 +03:00 [INF] Машина с id 14 успешно сохранена
+2025-05-20 16:04:20.213 +03:00 [INF] Получение менеджера машины 14
+2025-05-20 16:04:20.215 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.216 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.218 +03:00 [INF] Сообщение 77cdb2ab-7876-4a6b-a767-e1188f78679f отправлено в rabbit
+2025-05-20 16:04:20.266 +03:00 [INF] HTTP POST /api/car responded 200 in 58.9951 ms
+2025-05-20 16:04:20.270 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Silver","Price":43209,"CurrentOwner":"John","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.272 +03:00 [INF] Машина с id 15 успешно сохранена
+2025-05-20 16:04:20.272 +03:00 [INF] Получение менеджера машины 15
+2025-05-20 16:04:20.274 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.275 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.276 +03:00 [INF] Сообщение 879114a9-06bc-4e1e-a0ee-66f212fbf508 отправлено в rabbit
+2025-05-20 16:04:20.336 +03:00 [INF] HTTP POST /api/car responded 200 in 69.4542 ms
+2025-05-20 16:04:20.340 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Black","Price":41604,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.342 +03:00 [INF] Машина с id 16 успешно сохранена
+2025-05-20 16:04:20.342 +03:00 [INF] Получение менеджера машины 16
+2025-05-20 16:04:20.344 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.346 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.347 +03:00 [INF] Сообщение ac8dbb76-cdf2-49dd-ad93-50febca43eb5 отправлено в rabbit
+2025-05-20 16:04:20.396 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4820 ms
+2025-05-20 16:04:20.400 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Red","Price":42610,"CurrentOwner":"Maria","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.402 +03:00 [INF] Машина с id 17 успешно сохранена
+2025-05-20 16:04:20.402 +03:00 [INF] Получение менеджера машины 17
+2025-05-20 16:04:20.404 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.406 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.407 +03:00 [INF] Сообщение dbca0df8-d618-47a2-a813-0bb2fc146b61 отправлено в rabbit
+2025-05-20 16:04:20.466 +03:00 [INF] HTTP POST /api/car responded 200 in 69.4691 ms
+2025-05-20 16:04:20.470 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Silver","Price":46246,"CurrentOwner":"Peter","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.472 +03:00 [INF] Машина с id 18 успешно сохранена
+2025-05-20 16:04:20.472 +03:00 [INF] Получение менеджера машины 18
+2025-05-20 16:04:20.474 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.475 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.477 +03:00 [INF] Сообщение cd613273-2fc8-4c68-8a86-d64a47264650 отправлено в rabbit
+2025-05-20 16:04:20.526 +03:00 [INF] HTTP POST /api/car responded 200 in 59.3960 ms
+2025-05-20 16:04:20.530 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Red","Price":31796,"CurrentOwner":"John","Mileage":19139,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.532 +03:00 [INF] Машина с id 19 успешно сохранена
+2025-05-20 16:04:20.532 +03:00 [INF] Получение менеджера машины 19
+2025-05-20 16:04:20.534 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.535 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.537 +03:00 [INF] Сообщение 425c4f46-2527-4ce6-84a2-09ecf20107fe отправлено в rabbit
+2025-05-20 16:04:20.586 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5260 ms
+2025-05-20 16:04:20.590 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Yellow","Price":25099,"CurrentOwner":"Alice","Mileage":16529,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.592 +03:00 [INF] Машина с id 20 успешно сохранена
+2025-05-20 16:04:20.592 +03:00 [INF] Получение менеджера машины 20
+2025-05-20 16:04:20.594 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.595 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.597 +03:00 [INF] Сообщение 7c8694fe-312d-4e78-84f2-ec6c83b61992 отправлено в rabbit
+2025-05-20 16:04:20.646 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5260 ms
+2025-05-20 16:04:20.650 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Green","Price":12670,"CurrentOwner":null,"Mileage":4188,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.652 +03:00 [INF] Машина с id 21 успешно сохранена
+2025-05-20 16:04:20.652 +03:00 [INF] Получение менеджера машины 21
+2025-05-20 16:04:20.654 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.655 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.657 +03:00 [INF] Сообщение 4dc5b926-b2f5-442e-b0c2-bf1bf61866c5 отправлено в rabbit
+2025-05-20 16:04:20.706 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4492 ms
+2025-05-20 16:04:20.710 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Red","Price":13242,"CurrentOwner":"John","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.712 +03:00 [INF] Машина с id 22 успешно сохранена
+2025-05-20 16:04:20.712 +03:00 [INF] Получение менеджера машины 22
+2025-05-20 16:04:20.714 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.715 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.717 +03:00 [INF] Сообщение b9cc1f57-1cac-4bf7-a681-a69943d58381 отправлено в rabbit
+2025-05-20 16:04:20.766 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4814 ms
+2025-05-20 16:04:20.770 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Red","Price":26561,"CurrentOwner":null,"Mileage":1780,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.772 +03:00 [INF] Машина с id 23 успешно сохранена
+2025-05-20 16:04:20.772 +03:00 [INF] Получение менеджера машины 23
+2025-05-20 16:04:20.774 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.776 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.777 +03:00 [INF] Сообщение db641814-cf76-4d82-a10b-94686d09419c отправлено в rabbit
+2025-05-20 16:04:20.826 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4742 ms
+2025-05-20 16:04:20.830 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Yellow","Price":11384,"CurrentOwner":"John","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.833 +03:00 [INF] Машина с id 24 успешно сохранена
+2025-05-20 16:04:20.833 +03:00 [INF] Получение менеджера машины 24
+2025-05-20 16:04:20.835 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.836 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.838 +03:00 [INF] Сообщение 20243da5-8c6f-4266-bb6e-dd2cf734d5db отправлено в rabbit
+2025-05-20 16:04:20.886 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6062 ms
+2025-05-20 16:04:20.890 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Black","Price":22730,"CurrentOwner":null,"Mileage":8680,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.892 +03:00 [INF] Машина с id 25 успешно сохранена
+2025-05-20 16:04:20.892 +03:00 [INF] Получение менеджера машины 25
+2025-05-20 16:04:20.894 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.896 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.897 +03:00 [INF] Сообщение 698de1fc-4c75-4ac9-83a8-5f63a0addc7a отправлено в rabbit
+2025-05-20 16:04:20.946 +03:00 [INF] HTTP POST /api/car responded 200 in 59.2442 ms
+2025-05-20 16:04:20.950 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"White","Price":12801,"CurrentOwner":"Maria","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:20.952 +03:00 [INF] Машина с id 26 успешно сохранена
+2025-05-20 16:04:20.952 +03:00 [INF] Получение менеджера машины 26
+2025-05-20 16:04:20.954 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:20.955 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:20.957 +03:00 [INF] Сообщение b88a1b48-883e-44f7-9993-a757d4f77b4b отправлено в rabbit
+2025-05-20 16:04:21.006 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4874 ms
+2025-05-20 16:04:21.010 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Black","Price":6063,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.012 +03:00 [INF] Машина с id 27 успешно сохранена
+2025-05-20 16:04:21.012 +03:00 [INF] Получение менеджера машины 27
+2025-05-20 16:04:21.014 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.016 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.017 +03:00 [INF] Сообщение fb0867cf-5bca-476f-8d0b-f32461c2ef11 отправлено в rabbit
+2025-05-20 16:04:21.066 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5100 ms
+2025-05-20 16:04:21.070 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Yellow","Price":46385,"CurrentOwner":"Olga","Mileage":9884,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.072 +03:00 [INF] Машина с id 28 успешно сохранена
+2025-05-20 16:04:21.072 +03:00 [INF] Получение менеджера машины 28
+2025-05-20 16:04:21.074 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.075 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.077 +03:00 [INF] Сообщение e48e5973-9b3a-4781-ab82-7cff56499771 отправлено в rabbit
+2025-05-20 16:04:21.126 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4628 ms
+2025-05-20 16:04:21.130 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Blue","Price":38162,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.132 +03:00 [INF] Машина с id 29 успешно сохранена
+2025-05-20 16:04:21.132 +03:00 [INF] Получение менеджера машины 29
+2025-05-20 16:04:21.134 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.135 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.137 +03:00 [INF] Сообщение 3bfcd62e-035a-4890-b9b1-3e0f92ba7ef2 отправлено в rabbit
+2025-05-20 16:04:21.186 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5564 ms
+2025-05-20 16:04:21.190 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Green","Price":44778,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.192 +03:00 [INF] Машина с id 30 успешно сохранена
+2025-05-20 16:04:21.192 +03:00 [INF] Получение менеджера машины 30
+2025-05-20 16:04:21.194 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.195 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.196 +03:00 [INF] Сообщение a33389fa-b2c1-4877-9b39-6ea6ab104d17 отправлено в rabbit
+2025-05-20 16:04:21.246 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5284 ms
+2025-05-20 16:04:21.250 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Silver","Price":43726,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.252 +03:00 [INF] Машина с id 31 успешно сохранена
+2025-05-20 16:04:21.252 +03:00 [INF] Получение менеджера машины 31
+2025-05-20 16:04:21.254 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.255 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.257 +03:00 [INF] Сообщение cb61450a-bb78-4679-b7ff-3d2f1316730b отправлено в rabbit
+2025-05-20 16:04:21.306 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5588 ms
+2025-05-20 16:04:21.310 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"Orange","Price":19213,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.312 +03:00 [INF] Машина с id 32 успешно сохранена
+2025-05-20 16:04:21.312 +03:00 [INF] Получение менеджера машины 32
+2025-05-20 16:04:21.314 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.315 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.317 +03:00 [INF] Сообщение 911c1900-b8e1-48a1-b4c5-4ee3b8d27e69 отправлено в rabbit
+2025-05-20 16:04:21.376 +03:00 [INF] HTTP POST /api/car responded 200 in 69.3927 ms
+2025-05-20 16:04:21.380 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"9a248119-84af-47b4-9133-8d64b21160e5","Brand":"Lada","Color":"White","Price":21353,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.382 +03:00 [INF] Машина с id 33 успешно сохранена
+2025-05-20 16:04:21.382 +03:00 [INF] Получение менеджера машины 33
+2025-05-20 16:04:21.384 +03:00 [INF] Попытка получить роли пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5
+2025-05-20 16:04:21.385 +03:00 [INF] Для пользователя с id 9a248119-84af-47b4-9133-8d64b21160e5 найдено 1 ролей
+2025-05-20 16:04:21.386 +03:00 [INF] Сообщение 634cc0a7-3fab-4c79-8bfa-eda47b9ff6fd отправлено в rabbit
+2025-05-20 16:04:21.436 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6939 ms
+2025-05-20 16:04:21.438 +03:00 [INF] Запрос на авторизацию пользователя с логином BmwManager
+2025-05-20 16:04:21.438 +03:00 [INF] Вход в аккаунт BmwManager
+2025-05-20 16:04:21.502 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.503 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.503 +03:00 [INF] Создание токенов авторизации для BmwManager
+2025-05-20 16:04:21.505 +03:00 [INF] Токены авторизации для BmwManager успешно созданы
+2025-05-20 16:04:21.508 +03:00 [INF] Сообщение 516a9321-d082-4025-b02d-90ba251ef36c отправлено в rabbit
+2025-05-20 16:04:21.556 +03:00 [INF] HTTP POST /api/auth/login responded 200 in 119.4079 ms
+2025-05-20 16:04:21.560 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":40152,"CurrentOwner":null,"Mileage":2344,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.562 +03:00 [INF] Машина с id 34 успешно сохранена
+2025-05-20 16:04:21.562 +03:00 [INF] Получение менеджера машины 34
+2025-05-20 16:04:21.564 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.565 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.567 +03:00 [INF] Сообщение d4a8ae92-fac9-4906-825a-eeb14e83d361 отправлено в rabbit
+2025-05-20 16:04:21.616 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6163 ms
+2025-05-20 16:04:21.620 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":21843,"CurrentOwner":"John","Mileage":21070,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.622 +03:00 [INF] Машина с id 35 успешно сохранена
+2025-05-20 16:04:21.622 +03:00 [INF] Получение менеджера машины 35
+2025-05-20 16:04:21.624 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.625 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.627 +03:00 [INF] Сообщение e865a2cf-203a-4d7f-94b8-0cec44b930c9 отправлено в rabbit
+2025-05-20 16:04:21.676 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4730 ms
+2025-05-20 16:04:21.680 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Red","Price":37835,"CurrentOwner":"Ivan","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.682 +03:00 [INF] Машина с id 36 успешно сохранена
+2025-05-20 16:04:21.682 +03:00 [INF] Получение менеджера машины 36
+2025-05-20 16:04:21.684 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.685 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.687 +03:00 [INF] Сообщение 2259c5be-030c-41b3-9ca0-97fe4d587d19 отправлено в rabbit
+2025-05-20 16:04:21.736 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5066 ms
+2025-05-20 16:04:21.739 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Blue","Price":39758,"CurrentOwner":null,"Mileage":6928,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.742 +03:00 [INF] Машина с id 37 успешно сохранена
+2025-05-20 16:04:21.742 +03:00 [INF] Получение менеджера машины 37
+2025-05-20 16:04:21.744 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.745 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.746 +03:00 [INF] Сообщение 8bd5f53c-151b-4d6b-929c-9071c72affcd отправлено в rabbit
+2025-05-20 16:04:21.796 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6086 ms
+2025-05-20 16:04:21.800 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Black","Price":10718,"CurrentOwner":null,"Mileage":26827,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.802 +03:00 [INF] Машина с id 38 успешно сохранена
+2025-05-20 16:04:21.802 +03:00 [INF] Получение менеджера машины 38
+2025-05-20 16:04:21.804 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.805 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.807 +03:00 [INF] Сообщение 6684cb7d-f70a-4378-bbb2-31ba1f879ff8 отправлено в rabbit
+2025-05-20 16:04:21.856 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6082 ms
+2025-05-20 16:04:21.860 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":14033,"CurrentOwner":"Ivan","Mileage":28348,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.862 +03:00 [INF] Машина с id 39 успешно сохранена
+2025-05-20 16:04:21.862 +03:00 [INF] Получение менеджера машины 39
+2025-05-20 16:04:21.864 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.865 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.866 +03:00 [INF] Сообщение e69d1da1-192c-443c-94ff-4a0461b12e57 отправлено в rabbit
+2025-05-20 16:04:21.916 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6656 ms
+2025-05-20 16:04:21.919 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Black","Price":36482,"CurrentOwner":null,"Mileage":9420,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.921 +03:00 [INF] Машина с id 40 успешно сохранена
+2025-05-20 16:04:21.921 +03:00 [INF] Получение менеджера машины 40
+2025-05-20 16:04:21.923 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.924 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.926 +03:00 [INF] Сообщение 711ff7d4-7b85-426b-b4c8-2d0eb3d81d5f отправлено в rabbit
+2025-05-20 16:04:21.976 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5914 ms
+2025-05-20 16:04:21.980 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"White","Price":33537,"CurrentOwner":null,"Mileage":1941,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:21.982 +03:00 [INF] Машина с id 41 успешно сохранена
+2025-05-20 16:04:21.982 +03:00 [INF] Получение менеджера машины 41
+2025-05-20 16:04:21.984 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:21.985 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:21.986 +03:00 [INF] Сообщение 42b57dee-1935-4028-8fdd-0cdff77aa65c отправлено в rabbit
+2025-05-20 16:04:22.036 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5809 ms
+2025-05-20 16:04:22.039 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Red","Price":48662,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.042 +03:00 [INF] Машина с id 42 успешно сохранена
+2025-05-20 16:04:22.042 +03:00 [INF] Получение менеджера машины 42
+2025-05-20 16:04:22.043 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.044 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.046 +03:00 [INF] Сообщение bc43d296-45bb-4762-a8f2-676abdc0233a отправлено в rabbit
+2025-05-20 16:04:22.106 +03:00 [INF] HTTP POST /api/car responded 200 in 69.5909 ms
+2025-05-20 16:04:22.109 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":8288,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.112 +03:00 [INF] Машина с id 43 успешно сохранена
+2025-05-20 16:04:22.112 +03:00 [INF] Получение менеджера машины 43
+2025-05-20 16:04:22.113 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.114 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.116 +03:00 [INF] Сообщение 9b7c3b0d-0165-4083-ba58-72fa7e188fb6 отправлено в rabbit
+2025-05-20 16:04:22.166 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6620 ms
+2025-05-20 16:04:22.169 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":20339,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.172 +03:00 [INF] Машина с id 44 успешно сохранена
+2025-05-20 16:04:22.172 +03:00 [INF] Получение менеджера машины 44
+2025-05-20 16:04:22.174 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.175 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.176 +03:00 [INF] Сообщение d2d1251a-e260-45f2-874f-2ab4de18fdf5 отправлено в rabbit
+2025-05-20 16:04:22.236 +03:00 [INF] HTTP POST /api/car responded 200 in 69.6236 ms
+2025-05-20 16:04:22.239 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"White","Price":42086,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.242 +03:00 [INF] Машина с id 45 успешно сохранена
+2025-05-20 16:04:22.242 +03:00 [INF] Получение менеджера машины 45
+2025-05-20 16:04:22.243 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.244 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.246 +03:00 [INF] Сообщение 641fe7ad-7229-4e9d-9c65-2760c676e1d3 отправлено в rabbit
+2025-05-20 16:04:22.296 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6186 ms
+2025-05-20 16:04:22.299 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Silver","Price":13835,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.302 +03:00 [INF] Машина с id 46 успешно сохранена
+2025-05-20 16:04:22.302 +03:00 [INF] Получение менеджера машины 46
+2025-05-20 16:04:22.304 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.305 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.307 +03:00 [INF] Сообщение 5813f15b-43d6-4188-bfde-64d812add2e2 отправлено в rabbit
+2025-05-20 16:04:22.356 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5705 ms
+2025-05-20 16:04:22.359 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Yellow","Price":11714,"CurrentOwner":"John","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.362 +03:00 [INF] Машина с id 47 успешно сохранена
+2025-05-20 16:04:22.362 +03:00 [INF] Получение менеджера машины 47
+2025-05-20 16:04:22.365 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.367 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.369 +03:00 [INF] Сообщение 255f065b-d45c-4844-8c7c-e420adb35fd7 отправлено в rabbit
+2025-05-20 16:04:22.416 +03:00 [INF] HTTP POST /api/car responded 200 in 59.8137 ms
+2025-05-20 16:04:22.421 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Silver","Price":5811,"CurrentOwner":"Ivan","Mileage":5261,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.423 +03:00 [INF] Машина с id 48 успешно сохранена
+2025-05-20 16:04:22.423 +03:00 [INF] Получение менеджера машины 48
+2025-05-20 16:04:22.426 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.428 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.429 +03:00 [INF] Сообщение 43e218a5-a6ed-48c3-8785-1560876820a0 отправлено в rabbit
+2025-05-20 16:04:22.486 +03:00 [INF] HTTP POST /api/car responded 200 in 69.3001 ms
+2025-05-20 16:04:22.489 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Yellow","Price":46281,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.491 +03:00 [INF] Машина с id 49 успешно сохранена
+2025-05-20 16:04:22.491 +03:00 [INF] Получение менеджера машины 49
+2025-05-20 16:04:22.493 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.494 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.495 +03:00 [INF] Сообщение b64f72e7-3937-4703-b04f-3117d2c3b89a отправлено в rabbit
+2025-05-20 16:04:22.546 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6896 ms
+2025-05-20 16:04:22.550 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Silver","Price":36650,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.552 +03:00 [INF] Машина с id 50 успешно сохранена
+2025-05-20 16:04:22.552 +03:00 [INF] Получение менеджера машины 50
+2025-05-20 16:04:22.554 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.555 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.556 +03:00 [INF] Сообщение 31a8f42c-c2c8-4254-92a6-934b4253a24e отправлено в rabbit
+2025-05-20 16:04:22.616 +03:00 [INF] HTTP POST /api/car responded 200 in 69.6225 ms
+2025-05-20 16:04:22.620 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Red","Price":6324,"CurrentOwner":"Maria","Mileage":28898,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.622 +03:00 [INF] Машина с id 51 успешно сохранена
+2025-05-20 16:04:22.622 +03:00 [INF] Получение менеджера машины 51
+2025-05-20 16:04:22.624 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.625 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.626 +03:00 [INF] Сообщение 78f03557-b106-441e-a520-a523f316c638 отправлено в rabbit
+2025-05-20 16:04:22.686 +03:00 [INF] HTTP POST /api/car responded 200 in 69.4668 ms
+2025-05-20 16:04:22.690 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Yellow","Price":22185,"CurrentOwner":null,"Mileage":25326,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.692 +03:00 [INF] Машина с id 52 успешно сохранена
+2025-05-20 16:04:22.692 +03:00 [INF] Получение менеджера машины 52
+2025-05-20 16:04:22.694 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.695 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.696 +03:00 [INF] Сообщение c002d3c0-2440-4216-bd82-c879aa0b625a отправлено в rabbit
+2025-05-20 16:04:22.746 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6455 ms
+2025-05-20 16:04:22.750 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Black","Price":23465,"CurrentOwner":null,"Mileage":9363,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.752 +03:00 [INF] Машина с id 53 успешно сохранена
+2025-05-20 16:04:22.752 +03:00 [INF] Получение менеджера машины 53
+2025-05-20 16:04:22.754 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.756 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.757 +03:00 [INF] Сообщение 28fe3930-1e01-4368-9a43-517b44c4a3fe отправлено в rabbit
+2025-05-20 16:04:22.806 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4865 ms
+2025-05-20 16:04:22.809 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Black","Price":39988,"CurrentOwner":null,"Mileage":22522,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.811 +03:00 [INF] Машина с id 54 успешно сохранена
+2025-05-20 16:04:22.812 +03:00 [INF] Получение менеджера машины 54
+2025-05-20 16:04:22.813 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.814 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.816 +03:00 [INF] Сообщение 509de9e6-fb72-4e35-b30d-6ae26b656138 отправлено в rabbit
+2025-05-20 16:04:22.866 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6838 ms
+2025-05-20 16:04:22.870 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Black","Price":48758,"CurrentOwner":null,"Mileage":18074,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.872 +03:00 [INF] Машина с id 55 успешно сохранена
+2025-05-20 16:04:22.872 +03:00 [INF] Получение менеджера машины 55
+2025-05-20 16:04:22.874 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.875 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.877 +03:00 [INF] Сообщение 32320255-7688-44cb-9bd6-d9f085fe9f56 отправлено в rabbit
+2025-05-20 16:04:22.926 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4552 ms
+2025-05-20 16:04:22.929 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Silver","Price":23262,"CurrentOwner":"Alice","Mileage":1806,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.931 +03:00 [INF] Машина с id 56 успешно сохранена
+2025-05-20 16:04:22.932 +03:00 [INF] Получение менеджера машины 56
+2025-05-20 16:04:22.934 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.935 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.936 +03:00 [INF] Сообщение d8a23dba-5cfd-4d9e-b065-742c162cbdd1 отправлено в rabbit
+2025-05-20 16:04:22.986 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6737 ms
+2025-05-20 16:04:22.989 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":35119,"CurrentOwner":"Olga","Mileage":21633,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:22.992 +03:00 [INF] Машина с id 57 успешно сохранена
+2025-05-20 16:04:22.992 +03:00 [INF] Получение менеджера машины 57
+2025-05-20 16:04:22.994 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:22.995 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:22.997 +03:00 [INF] Сообщение b4e0a69d-6861-4ece-9a02-5088641f0323 отправлено в rabbit
+2025-05-20 16:04:23.046 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6478 ms
+2025-05-20 16:04:23.049 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Red","Price":43082,"CurrentOwner":"Peter","Mileage":9132,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.052 +03:00 [INF] Машина с id 58 успешно сохранена
+2025-05-20 16:04:23.052 +03:00 [INF] Получение менеджера машины 58
+2025-05-20 16:04:23.054 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.055 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.057 +03:00 [INF] Сообщение bed7f2d1-6963-40bd-848e-59d95cb7a22b отправлено в rabbit
+2025-05-20 16:04:23.106 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5614 ms
+2025-05-20 16:04:23.110 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Black","Price":12358,"CurrentOwner":"Maria","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.112 +03:00 [INF] Машина с id 59 успешно сохранена
+2025-05-20 16:04:23.112 +03:00 [INF] Получение менеджера машины 59
+2025-05-20 16:04:23.115 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.116 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.118 +03:00 [INF] Сообщение 501ea1d8-a0ae-4d39-ab4b-f3f3d8069ec6 отправлено в rabbit
+2025-05-20 16:04:23.166 +03:00 [INF] HTTP POST /api/car responded 200 in 60.0618 ms
+2025-05-20 16:04:23.188 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"White","Price":27080,"CurrentOwner":"Maria","Mileage":16154,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.192 +03:00 [INF] Машина с id 60 успешно сохранена
+2025-05-20 16:04:23.192 +03:00 [INF] Получение менеджера машины 60
+2025-05-20 16:04:23.196 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.197 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.199 +03:00 [INF] Сообщение fa6e00ea-745d-44fc-a4fe-80353612a624 отправлено в rabbit
+2025-05-20 16:04:23.256 +03:00 [INF] HTTP POST /api/car responded 200 in 89.2530 ms
+2025-05-20 16:04:23.261 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Yellow","Price":30541,"CurrentOwner":null,"Mileage":23959,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.263 +03:00 [INF] Машина с id 61 успешно сохранена
+2025-05-20 16:04:23.263 +03:00 [INF] Получение менеджера машины 61
+2025-05-20 16:04:23.266 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.268 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.270 +03:00 [INF] Сообщение 833140ec-8095-4ba2-b141-eb2ec02651ab отправлено в rabbit
+2025-05-20 16:04:23.316 +03:00 [INF] HTTP POST /api/car responded 200 in 59.0587 ms
+2025-05-20 16:04:23.320 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Yellow","Price":37631,"CurrentOwner":null,"Mileage":15858,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.323 +03:00 [INF] Машина с id 62 успешно сохранена
+2025-05-20 16:04:23.323 +03:00 [INF] Получение менеджера машины 62
+2025-05-20 16:04:23.327 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.329 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.331 +03:00 [INF] Сообщение 67260397-f421-4e83-bc44-3faf0741c739 отправлено в rabbit
+2025-05-20 16:04:23.376 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5640 ms
+2025-05-20 16:04:23.381 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Orange","Price":44540,"CurrentOwner":null,"Mileage":12073,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.384 +03:00 [INF] Машина с id 63 успешно сохранена
+2025-05-20 16:04:23.385 +03:00 [INF] Получение менеджера машины 63
+2025-05-20 16:04:23.389 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.391 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.393 +03:00 [INF] Сообщение 7cdd4a54-e612-4688-ac51-784b5ac4b066 отправлено в rabbit
+2025-05-20 16:04:23.436 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6149 ms
+2025-05-20 16:04:23.440 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Yellow","Price":44078,"CurrentOwner":"John","Mileage":19348,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.444 +03:00 [INF] Машина с id 64 успешно сохранена
+2025-05-20 16:04:23.444 +03:00 [INF] Получение менеджера машины 64
+2025-05-20 16:04:23.448 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.449 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.452 +03:00 [INF] Сообщение dde07360-b7a7-4051-a77a-54beb8128f45 отправлено в rabbit
+2025-05-20 16:04:23.506 +03:00 [INF] HTTP POST /api/car responded 200 in 69.3080 ms
+2025-05-20 16:04:23.512 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Blue","Price":9460,"CurrentOwner":null,"Mileage":26264,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.517 +03:00 [INF] Машина с id 65 успешно сохранена
+2025-05-20 16:04:23.517 +03:00 [INF] Получение менеджера машины 65
+2025-05-20 16:04:23.521 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.523 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.525 +03:00 [INF] Сообщение 37a30921-1c5f-4c69-a172-f210acb855fa отправлено в rabbit
+2025-05-20 16:04:23.566 +03:00 [INF] HTTP POST /api/car responded 200 in 59.9473 ms
+2025-05-20 16:04:23.606 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8a1173bb-d89a-412b-95a9-6b4e02d33611","Brand":"Bmw","Color":"Red","Price":36824,"CurrentOwner":"Alice","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.610 +03:00 [INF] Машина с id 66 успешно сохранена
+2025-05-20 16:04:23.610 +03:00 [INF] Получение менеджера машины 66
+2025-05-20 16:04:23.612 +03:00 [INF] Попытка получить роли пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611
+2025-05-20 16:04:23.614 +03:00 [INF] Для пользователя с id 8a1173bb-d89a-412b-95a9-6b4e02d33611 найдено 1 ролей
+2025-05-20 16:04:23.616 +03:00 [INF] Сообщение dd27cc4c-53e9-4632-8454-25f013f84fbb отправлено в rabbit
+2025-05-20 16:04:23.676 +03:00 [INF] HTTP POST /api/car responded 200 in 108.2886 ms
+2025-05-20 16:04:23.676 +03:00 [INF] Запрос на авторизацию пользователя с логином SkodaManager
+2025-05-20 16:04:23.677 +03:00 [INF] Вход в аккаунт SkodaManager
+2025-05-20 16:04:23.737 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:23.738 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:23.738 +03:00 [INF] Создание токенов авторизации для SkodaManager
+2025-05-20 16:04:23.740 +03:00 [INF] Токены авторизации для SkodaManager успешно созданы
+2025-05-20 16:04:23.742 +03:00 [INF] Сообщение 61760ddd-a842-49c8-9ced-4b2d41e2bbf9 отправлено в rabbit
+2025-05-20 16:04:23.786 +03:00 [INF] HTTP POST /api/auth/login responded 200 in 109.5276 ms
+2025-05-20 16:04:23.789 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"White","Price":37854,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.791 +03:00 [INF] Машина с id 67 успешно сохранена
+2025-05-20 16:04:23.791 +03:00 [INF] Получение менеджера машины 67
+2025-05-20 16:04:23.793 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:23.794 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:23.796 +03:00 [INF] Сообщение 04a86bde-ef56-4dfa-b947-2e2ba873ef31 отправлено в rabbit
+2025-05-20 16:04:23.846 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5294 ms
+2025-05-20 16:04:23.849 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":8645,"CurrentOwner":"Alice","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.851 +03:00 [INF] Машина с id 68 успешно сохранена
+2025-05-20 16:04:23.851 +03:00 [INF] Получение менеджера машины 68
+2025-05-20 16:04:23.854 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:23.855 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:23.857 +03:00 [INF] Сообщение e69cf142-cf0f-4c59-b53a-6a46840163dd отправлено в rabbit
+2025-05-20 16:04:23.906 +03:00 [INF] HTTP POST /api/car responded 200 in 59.8918 ms
+2025-05-20 16:04:23.910 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":25733,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.912 +03:00 [INF] Машина с id 69 успешно сохранена
+2025-05-20 16:04:23.912 +03:00 [INF] Получение менеджера машины 69
+2025-05-20 16:04:23.914 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:23.915 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:23.917 +03:00 [INF] Сообщение e7dec40a-fa7b-4d39-a339-8cfc98c4bd80 отправлено в rabbit
+2025-05-20 16:04:23.966 +03:00 [INF] HTTP POST /api/car responded 200 in 59.3095 ms
+2025-05-20 16:04:23.970 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Silver","Price":48783,"CurrentOwner":null,"Mileage":23931,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:23.973 +03:00 [INF] Машина с id 70 успешно сохранена
+2025-05-20 16:04:23.973 +03:00 [INF] Получение менеджера машины 70
+2025-05-20 16:04:23.976 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:23.977 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:23.979 +03:00 [INF] Сообщение e93fddc4-b808-4e2d-8136-a7da394eb326 отправлено в rabbit
+2025-05-20 16:04:24.026 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6998 ms
+2025-05-20 16:04:24.030 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Green","Price":38214,"CurrentOwner":"John","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.033 +03:00 [INF] Машина с id 71 успешно сохранена
+2025-05-20 16:04:24.033 +03:00 [INF] Получение менеджера машины 71
+2025-05-20 16:04:24.036 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.038 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.040 +03:00 [INF] Сообщение d74a59ed-1859-45cf-b71e-9e75a607d979 отправлено в rabbit
+2025-05-20 16:04:24.086 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6182 ms
+2025-05-20 16:04:24.090 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Red","Price":40899,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.096 +03:00 [INF] Машина с id 72 успешно сохранена
+2025-05-20 16:04:24.096 +03:00 [INF] Получение менеджера машины 72
+2025-05-20 16:04:24.099 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.101 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.103 +03:00 [INF] Сообщение feda6578-67f1-4482-9466-b4b74f30fab1 отправлено в rabbit
+2025-05-20 16:04:24.146 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4462 ms
+2025-05-20 16:04:24.150 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Blue","Price":13156,"CurrentOwner":"Ivan","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.152 +03:00 [INF] Машина с id 73 успешно сохранена
+2025-05-20 16:04:24.152 +03:00 [INF] Получение менеджера машины 73
+2025-05-20 16:04:24.154 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.156 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.157 +03:00 [INF] Сообщение 7ab37213-ee3c-4e82-948b-30a39ba181de отправлено в rabbit
+2025-05-20 16:04:24.206 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5818 ms
+2025-05-20 16:04:24.210 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":10465,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.214 +03:00 [INF] Машина с id 74 успешно сохранена
+2025-05-20 16:04:24.214 +03:00 [INF] Получение менеджера машины 74
+2025-05-20 16:04:24.216 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.218 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.220 +03:00 [INF] Сообщение 692b56cd-089c-4ab8-afac-8b7f08645705 отправлено в rabbit
+2025-05-20 16:04:24.266 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5801 ms
+2025-05-20 16:04:24.270 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":48399,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.272 +03:00 [INF] Машина с id 75 успешно сохранена
+2025-05-20 16:04:24.272 +03:00 [INF] Получение менеджера машины 75
+2025-05-20 16:04:24.274 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.276 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.277 +03:00 [INF] Сообщение e49639cf-6d02-463c-9702-91dd001cedf5 отправлено в rabbit
+2025-05-20 16:04:24.326 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6542 ms
+2025-05-20 16:04:24.330 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":13241,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.332 +03:00 [INF] Машина с id 76 успешно сохранена
+2025-05-20 16:04:24.332 +03:00 [INF] Получение менеджера машины 76
+2025-05-20 16:04:24.334 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.335 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.337 +03:00 [INF] Сообщение d0709d83-6a05-40f8-80f4-237c6961e0f5 отправлено в rabbit
+2025-05-20 16:04:24.386 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5854 ms
+2025-05-20 16:04:24.389 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Silver","Price":29967,"CurrentOwner":null,"Mileage":2249,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.391 +03:00 [INF] Машина с id 77 успешно сохранена
+2025-05-20 16:04:24.391 +03:00 [INF] Получение менеджера машины 77
+2025-05-20 16:04:24.394 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.395 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.396 +03:00 [INF] Сообщение 2ad9b784-4a59-490a-8e0b-f8f06d5a0083 отправлено в rabbit
+2025-05-20 16:04:24.446 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5603 ms
+2025-05-20 16:04:24.449 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":22135,"CurrentOwner":"John","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.451 +03:00 [INF] Машина с id 78 успешно сохранена
+2025-05-20 16:04:24.451 +03:00 [INF] Получение менеджера машины 78
+2025-05-20 16:04:24.453 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.454 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.455 +03:00 [INF] Сообщение fd6813aa-8e57-4057-b0ff-689a23e9190a отправлено в rabbit
+2025-05-20 16:04:24.506 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6088 ms
+2025-05-20 16:04:24.509 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Green","Price":33367,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.511 +03:00 [INF] Машина с id 79 успешно сохранена
+2025-05-20 16:04:24.511 +03:00 [INF] Получение менеджера машины 79
+2025-05-20 16:04:24.513 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.514 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.515 +03:00 [INF] Сообщение 55dfe2b8-f31a-4d6f-bdbd-9b7d57fa5fb6 отправлено в rabbit
+2025-05-20 16:04:24.566 +03:00 [INF] HTTP POST /api/car responded 200 in 59.7385 ms
+2025-05-20 16:04:24.569 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Red","Price":6426,"CurrentOwner":null,"Mileage":21102,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.571 +03:00 [INF] Машина с id 80 успешно сохранена
+2025-05-20 16:04:24.571 +03:00 [INF] Получение менеджера машины 80
+2025-05-20 16:04:24.573 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.574 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.575 +03:00 [INF] Сообщение b267f529-0d61-4d34-86b0-fba4554c1133 отправлено в rabbit
+2025-05-20 16:04:24.626 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6171 ms
+2025-05-20 16:04:24.629 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Blue","Price":23103,"CurrentOwner":"Olga","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.631 +03:00 [INF] Машина с id 81 успешно сохранена
+2025-05-20 16:04:24.631 +03:00 [INF] Получение менеджера машины 81
+2025-05-20 16:04:24.632 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.633 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.635 +03:00 [INF] Сообщение 265d0810-62f3-4d85-8250-a5f0a19d1303 отправлено в rabbit
+2025-05-20 16:04:24.686 +03:00 [INF] HTTP POST /api/car responded 200 in 59.7342 ms
+2025-05-20 16:04:24.689 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Blue","Price":9752,"CurrentOwner":null,"Mileage":8024,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.691 +03:00 [INF] Машина с id 82 успешно сохранена
+2025-05-20 16:04:24.691 +03:00 [INF] Получение менеджера машины 82
+2025-05-20 16:04:24.693 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.694 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.695 +03:00 [INF] Сообщение 2f486197-20ae-441e-b0aa-a347375a1858 отправлено в rabbit
+2025-05-20 16:04:24.746 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5456 ms
+2025-05-20 16:04:24.750 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":48254,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.752 +03:00 [INF] Машина с id 83 успешно сохранена
+2025-05-20 16:04:24.752 +03:00 [INF] Получение менеджера машины 83
+2025-05-20 16:04:24.755 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.756 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.757 +03:00 [INF] Сообщение 87ac7af7-42c7-48dd-b645-73d2c78fc915 отправлено в rabbit
+2025-05-20 16:04:24.806 +03:00 [INF] HTTP POST /api/car responded 200 in 59.7585 ms
+2025-05-20 16:04:24.810 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"White","Price":43908,"CurrentOwner":null,"Mileage":29401,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.812 +03:00 [INF] Машина с id 84 успешно сохранена
+2025-05-20 16:04:24.812 +03:00 [INF] Получение менеджера машины 84
+2025-05-20 16:04:24.814 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.816 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.817 +03:00 [INF] Сообщение 72aa898e-c0f3-4a79-8f48-4683927316b5 отправлено в rabbit
+2025-05-20 16:04:24.866 +03:00 [INF] HTTP POST /api/car responded 200 in 59.4820 ms
+2025-05-20 16:04:24.870 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Blue","Price":48677,"CurrentOwner":null,"Mileage":29781,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.872 +03:00 [INF] Машина с id 85 успешно сохранена
+2025-05-20 16:04:24.872 +03:00 [INF] Получение менеджера машины 85
+2025-05-20 16:04:24.874 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.875 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.877 +03:00 [INF] Сообщение 45229f00-a056-4af6-acb0-8040ffa3edf2 отправлено в rabbit
+2025-05-20 16:04:24.926 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6163 ms
+2025-05-20 16:04:24.930 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"White","Price":5470,"CurrentOwner":"Ivan","Mileage":5943,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.933 +03:00 [INF] Машина с id 86 успешно сохранена
+2025-05-20 16:04:24.933 +03:00 [INF] Получение менеджера машины 86
+2025-05-20 16:04:24.935 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.937 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.939 +03:00 [INF] Сообщение 1c337f82-db84-4782-b7b1-7e659f412dba отправлено в rabbit
+2025-05-20 16:04:24.986 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6120 ms
+2025-05-20 16:04:24.989 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Red","Price":35662,"CurrentOwner":null,"Mileage":19186,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:24.992 +03:00 [INF] Машина с id 87 успешно сохранена
+2025-05-20 16:04:24.992 +03:00 [INF] Получение менеджера машины 87
+2025-05-20 16:04:24.994 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:24.995 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:24.997 +03:00 [INF] Сообщение 4392bcba-a71c-4514-b33c-8ca128d24128 отправлено в rabbit
+2025-05-20 16:04:25.056 +03:00 [INF] HTTP POST /api/car responded 200 in 69.7297 ms
+2025-05-20 16:04:25.060 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Green","Price":8804,"CurrentOwner":"Olga","Mileage":9142,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.062 +03:00 [INF] Машина с id 88 успешно сохранена
+2025-05-20 16:04:25.062 +03:00 [INF] Получение менеджера машины 88
+2025-05-20 16:04:25.064 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.065 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.067 +03:00 [INF] Сообщение ba48dc27-2e7d-4ccf-bca4-8fece96d341a отправлено в rabbit
+2025-05-20 16:04:25.119 +03:00 [INF] HTTP POST /api/car responded 200 in 62.6005 ms
+2025-05-20 16:04:25.122 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Silver","Price":27926,"CurrentOwner":"John","Mileage":1638,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.125 +03:00 [INF] Машина с id 89 успешно сохранена
+2025-05-20 16:04:25.125 +03:00 [INF] Получение менеджера машины 89
+2025-05-20 16:04:25.127 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.129 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.130 +03:00 [INF] Сообщение 13f8fa4b-ebd2-4bf9-8b8d-5117a6d9baa5 отправлено в rabbit
+2025-05-20 16:04:25.176 +03:00 [INF] HTTP POST /api/car responded 200 in 56.4163 ms
+2025-05-20 16:04:25.179 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Silver","Price":22010,"CurrentOwner":null,"Mileage":22955,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.182 +03:00 [INF] Машина с id 90 успешно сохранена
+2025-05-20 16:04:25.182 +03:00 [INF] Получение менеджера машины 90
+2025-05-20 16:04:25.184 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.185 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.187 +03:00 [INF] Сообщение dcc259c4-0443-418a-b4d8-b5a6d318c3e6 отправлено в rabbit
+2025-05-20 16:04:25.235 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5283 ms
+2025-05-20 16:04:25.239 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Silver","Price":41303,"CurrentOwner":null,"Mileage":16883,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.241 +03:00 [INF] Машина с id 91 успешно сохранена
+2025-05-20 16:04:25.241 +03:00 [INF] Получение менеджера машины 91
+2025-05-20 16:04:25.243 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.244 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.245 +03:00 [INF] Сообщение fb7a565e-a1e2-47df-9be1-932e3f552566 отправлено в rabbit
+2025-05-20 16:04:25.306 +03:00 [INF] HTTP POST /api/car responded 200 in 69.7598 ms
+2025-05-20 16:04:25.309 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Silver","Price":45924,"CurrentOwner":"Olga","Mileage":28321,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.311 +03:00 [INF] Машина с id 92 успешно сохранена
+2025-05-20 16:04:25.311 +03:00 [INF] Получение менеджера машины 92
+2025-05-20 16:04:25.312 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.313 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.315 +03:00 [INF] Сообщение 3f902d75-6833-4f1d-a3e0-df0137924207 отправлено в rabbit
+2025-05-20 16:04:25.365 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5958 ms
+2025-05-20 16:04:25.369 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":19155,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.371 +03:00 [INF] Машина с id 93 успешно сохранена
+2025-05-20 16:04:25.371 +03:00 [INF] Получение менеджера машины 93
+2025-05-20 16:04:25.373 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.374 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.375 +03:00 [INF] Сообщение 512ed7ab-4c08-4eeb-866a-5f379982686a отправлено в rabbit
+2025-05-20 16:04:25.426 +03:00 [INF] HTTP POST /api/car responded 200 in 59.7385 ms
+2025-05-20 16:04:25.429 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Green","Price":45712,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.431 +03:00 [INF] Машина с id 94 успешно сохранена
+2025-05-20 16:04:25.431 +03:00 [INF] Получение менеджера машины 94
+2025-05-20 16:04:25.432 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.433 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.435 +03:00 [INF] Сообщение 7fdb9ae9-9fc3-4ffa-8457-a4a7a8acf1ef отправлено в rabbit
+2025-05-20 16:04:25.486 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6762 ms
+2025-05-20 16:04:25.489 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Orange","Price":36011,"CurrentOwner":"Ivan","Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.491 +03:00 [INF] Машина с id 95 успешно сохранена
+2025-05-20 16:04:25.491 +03:00 [INF] Получение менеджера машины 95
+2025-05-20 16:04:25.493 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.494 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.495 +03:00 [INF] Сообщение 7654b16d-2614-4249-8c13-b14eff941497 отправлено в rabbit
+2025-05-20 16:04:25.545 +03:00 [INF] HTTP POST /api/car responded 200 in 59.5742 ms
+2025-05-20 16:04:25.549 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Orange","Price":9628,"CurrentOwner":null,"Mileage":27521,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.551 +03:00 [INF] Машина с id 96 успешно сохранена
+2025-05-20 16:04:25.551 +03:00 [INF] Получение менеджера машины 96
+2025-05-20 16:04:25.552 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.554 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.556 +03:00 [INF] Сообщение 891de581-517f-4348-80bb-71225be3a2d4 отправлено в rabbit
+2025-05-20 16:04:25.616 +03:00 [INF] HTTP POST /api/car responded 200 in 69.7540 ms
+2025-05-20 16:04:25.619 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Black","Price":13666,"CurrentOwner":"John","Mileage":22965,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.621 +03:00 [INF] Машина с id 97 успешно сохранена
+2025-05-20 16:04:25.621 +03:00 [INF] Получение менеджера машины 97
+2025-05-20 16:04:25.623 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.624 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.625 +03:00 [INF] Сообщение 980cfa7a-89b6-414e-8ffe-6e79b284d1cf отправлено в rabbit
+2025-05-20 16:04:25.676 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6715 ms
+2025-05-20 16:04:25.679 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Black","Price":26208,"CurrentOwner":"Olga","Mileage":1096,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.681 +03:00 [INF] Машина с id 98 успешно сохранена
+2025-05-20 16:04:25.681 +03:00 [INF] Получение менеджера машины 98
+2025-05-20 16:04:25.682 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.683 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.684 +03:00 [INF] Сообщение 887f01c5-fc9f-4c62-a0bf-8ca34867d229 отправлено в rabbit
+2025-05-20 16:04:25.725 +03:00 [INF] HTTP POST /api/car responded 200 in 49.6360 ms
+2025-05-20 16:04:25.729 +03:00 [INF] Создание машины с данными {"ResponsiveManager":"8ec4006a-e26f-4d25-a971-376e10ac05bf","Brand":"Skoda","Color":"Yellow","Price":22702,"CurrentOwner":null,"Mileage":null,"Photo":null,"$type":"DtoForSaveCar"}
+2025-05-20 16:04:25.731 +03:00 [INF] Машина с id 99 успешно сохранена
+2025-05-20 16:04:25.731 +03:00 [INF] Получение менеджера машины 99
+2025-05-20 16:04:25.732 +03:00 [INF] Попытка получить роли пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf
+2025-05-20 16:04:25.733 +03:00 [INF] Для пользователя с id 8ec4006a-e26f-4d25-a971-376e10ac05bf найдено 1 ролей
+2025-05-20 16:04:25.735 +03:00 [INF] Сообщение 5c382f3b-6fec-40d7-91e2-70fbf556e37e отправлено в rabbit
+2025-05-20 16:04:25.785 +03:00 [INF] HTTP POST /api/car responded 200 in 59.6253 ms
+2025-05-20 16:07:51.044 +03:00 [INF] Запрос на авторизацию пользователя с логином admin
+2025-05-20 16:07:51.044 +03:00 [INF] Вход в аккаунт admin
+2025-05-20 16:07:51.108 +03:00 [INF] Попытка получить роли пользователя с id b3931ef7-d5b4-498e-a6b3-7d97675c8027
+2025-05-20 16:07:51.109 +03:00 [INF] Для пользователя с id b3931ef7-d5b4-498e-a6b3-7d97675c8027 найдено 3 ролей
+2025-05-20 16:07:51.109 +03:00 [INF] Создание токенов авторизации для admin
+2025-05-20 16:07:51.112 +03:00 [INF] Токены авторизации для admin успешно созданы
+2025-05-20 16:07:51.115 +03:00 [INF] Сообщение fbd9f16b-c333-4188-bfae-b433c6240e66 отправлено в rabbit
+2025-05-20 16:07:51.165 +03:00 [INF] HTTP POST /api/auth/login responded 200 in 121.4835 ms
+2025-05-20 16:07:51.223 +03:00 [INF] Запрос на создание пользователя
+2025-05-20 16:07:51.223 +03:00 [INF] Создание пользователя администратором, данные - {"FirstName":"Lada First","LastName":"Lada Last","Login":"LadaManager","Email":"ladamanager@example.com","Password":"Manager1!","InitialRoles":["Manager"],"$type":"DtoForCreateUser"}
+2025-05-20 16:07:51.223 +03:00 [INF] Создание пользователя DtoForCreateUser { FirstName = Lada First, LastName = Lada Last, Login = LadaManager, Email = ladamanager@example.com, Password = Manager1!, InitialRoles = System.Collections.Generic.List`1[QPDCar.Models.BusinessModels.EmployerModels.ApplicationRoles] }
+2025-05-20 16:07:51.228 +03:00 [INF] HTTP POST /api/admin/user responded 400 in 8.0985 ms
+2025-05-20 16:08:09.241 +03:00 [INF] Application is shutting down...
+2025-05-20 16:08:09.253 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED shutting down.
+2025-05-20 16:08:09.254 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED paused.
+2025-05-20 16:08:09.259 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED Shutdown complete.
+2025-05-20 16:08:28.136 +03:00 [INF] Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+2025-05-20 16:08:28.141 +03:00 [INF] Quartz Scheduler created
+2025-05-20 16:08:28.144 +03:00 [INF] JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+2025-05-20 16:08:28.145 +03:00 [INF] RAMJobStore initialized.
+2025-05-20 16:08:28.146 +03:00 [INF] Quartz Scheduler 3.14.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+2025-05-20 16:08:28.146 +03:00 [INF] Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+2025-05-20 16:08:28.147 +03:00 [INF] Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+2025-05-20 16:08:28.155 +03:00 [INF] Adding 1 jobs, 1 triggers.
+2025-05-20 16:08:28.158 +03:00 [INF] Adding job: DEFAULT.car-no-photo
+2025-05-20 16:08:28.303 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 16:08:28.304 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 16:08:28.304 +03:00 [INF] Hosting environment: Development
+2025-05-20 16:08:28.304 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 16:08:28.307 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+2025-05-20 16:10:20.182 +03:00 [INF] Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+2025-05-20 16:10:20.189 +03:00 [INF] Quartz Scheduler created
+2025-05-20 16:10:20.189 +03:00 [INF] JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+2025-05-20 16:10:20.190 +03:00 [INF] RAMJobStore initialized.
+2025-05-20 16:10:20.190 +03:00 [INF] Quartz Scheduler 3.14.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+2025-05-20 16:10:20.190 +03:00 [INF] Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+2025-05-20 16:10:20.191 +03:00 [INF] Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+2025-05-20 16:10:20.199 +03:00 [INF] Adding 1 jobs, 1 triggers.
+2025-05-20 16:10:20.202 +03:00 [INF] Adding job: DEFAULT.car-no-photo
+2025-05-20 16:10:20.271 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 16:10:20.271 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 16:10:20.272 +03:00 [INF] Hosting environment: Development
+2025-05-20 16:10:20.272 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 16:10:20.274 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+2025-05-20 16:10:48.834 +03:00 [INF] Application is shutting down...
+2025-05-20 16:10:48.844 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED shutting down.
+2025-05-20 16:10:48.845 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED paused.
+2025-05-20 16:10:48.849 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED Shutdown complete.
+2025-05-20 16:10:55.643 +03:00 [INF] Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+2025-05-20 16:10:55.648 +03:00 [INF] Quartz Scheduler created
+2025-05-20 16:10:55.651 +03:00 [INF] JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+2025-05-20 16:10:55.651 +03:00 [INF] RAMJobStore initialized.
+2025-05-20 16:10:55.652 +03:00 [INF] Quartz Scheduler 3.14.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+2025-05-20 16:10:55.652 +03:00 [INF] Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+2025-05-20 16:10:55.653 +03:00 [INF] Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+2025-05-20 16:10:55.661 +03:00 [INF] Adding 1 jobs, 1 triggers.
+2025-05-20 16:10:55.664 +03:00 [INF] Adding job: DEFAULT.car-no-photo
+2025-05-20 16:10:55.825 +03:00 [INF] Now listening on: http://localhost:5116
+2025-05-20 16:10:55.826 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-05-20 16:10:55.826 +03:00 [INF] Hosting environment: Development
+2025-05-20 16:10:55.826 +03:00 [INF] Content root path: E:\projects\QPDCar\QPDCar.Api
+2025-05-20 16:10:55.829 +03:00 [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+2025-05-20 16:11:11.189 +03:00 [INF] Сообщение efe2ee2a-b45c-4ca0-b1b1-f3eb86d65628 отправлено в rabbit
+2025-05-20 16:11:11.258 +03:00 [INF] Сообщение f79424ad-3d27-449d-bb9e-c3ce097da6d9 отправлено в rabbit
+2025-05-20 16:11:11.317 +03:00 [INF] Сообщение 09d8ec11-0ef5-42aa-9219-d49b03466862 отправлено в rabbit
+2025-05-20 16:11:11.377 +03:00 [INF] Сообщение bfbbb130-9275-4d59-be3e-ae62c25b62f4 отправлено в rabbit
+2025-05-20 16:11:11.427 +03:00 [INF] Сообщение d6a272fb-88fe-41dc-8dbc-9536f03e89d2 отправлено в rabbit
+2025-05-20 16:11:11.477 +03:00 [INF] Сообщение 6bf3109f-d814-4fc0-9acf-f82da166a80f отправлено в rabbit
+2025-05-20 16:11:11.527 +03:00 [INF] Сообщение a0edce9b-07cd-4a0a-8209-1cd9dd5073dc отправлено в rabbit
+2025-05-20 16:11:11.587 +03:00 [INF] Сообщение 4772384e-027a-4aa3-ad88-c13e4104ca45 отправлено в rabbit
+2025-05-20 16:11:11.647 +03:00 [INF] Сообщение 7e51746e-86dc-42d9-ab55-342d1d3cc475 отправлено в rabbit
+2025-05-20 16:11:11.697 +03:00 [INF] Сообщение f4fe2ee3-7444-412c-87d8-f42d876a2201 отправлено в rabbit
+2025-05-20 16:11:11.747 +03:00 [INF] Сообщение d6ed2e24-0103-436d-a926-8cc35ff7e48b отправлено в rabbit
+2025-05-20 16:11:11.797 +03:00 [INF] Сообщение 40b136a8-163d-4354-aa6a-5c29119ae172 отправлено в rabbit
+2025-05-20 16:11:11.857 +03:00 [INF] Сообщение 00046a16-c7ff-49e7-82c1-42559b358810 отправлено в rabbit
+2025-05-20 16:11:11.917 +03:00 [INF] Сообщение b3832f1d-ba4a-4917-9918-c04fe4c41e8a отправлено в rabbit
+2025-05-20 16:11:11.967 +03:00 [INF] Сообщение cb32ea83-2ac4-427a-89c6-a558b6077c4a отправлено в rabbit
+2025-05-20 16:11:12.017 +03:00 [INF] Сообщение 80a3724b-8756-4fa7-8092-d83e59d3ad0d отправлено в rabbit
+2025-05-20 16:11:12.077 +03:00 [INF] Сообщение 4af86071-debe-44f3-b14a-1d5a87874c93 отправлено в rabbit
+2025-05-20 16:11:12.127 +03:00 [INF] Сообщение dbb2d1b3-8208-44d1-aca2-8491c9c0b7fc отправлено в rabbit
+2025-05-20 16:11:12.177 +03:00 [INF] Сообщение 33ead745-134e-4fa5-bc38-30b99e6e741d отправлено в rabbit
+2025-05-20 16:11:12.227 +03:00 [INF] Сообщение 1338b602-3d5a-4d2c-bf8b-9fda90dd7274 отправлено в rabbit
+2025-05-20 16:11:12.277 +03:00 [INF] Сообщение 9406ef8f-a431-4a6a-bea9-2062a207e1d3 отправлено в rabbit
+2025-05-20 16:11:12.327 +03:00 [INF] Сообщение 98a803bf-1dad-48c0-8845-4c1a42c1188f отправлено в rabbit
+2025-05-20 16:11:12.377 +03:00 [INF] Сообщение 29eec61a-6d30-46ea-abc7-85a9d39bcaae отправлено в rabbit
+2025-05-20 16:11:12.427 +03:00 [INF] Сообщение 472a666e-0cbb-4a29-adb6-cbdddbe34e7a отправлено в rabbit
+2025-05-20 16:11:12.477 +03:00 [INF] Сообщение d53d447f-b320-42ee-be2c-e2f7d09d2ba0 отправлено в rabbit
+2025-05-20 16:11:12.537 +03:00 [INF] Сообщение 79ce7d91-8eee-4b9e-832c-08a26ccabd47 отправлено в rabbit
+2025-05-20 16:11:12.587 +03:00 [INF] Сообщение f8594200-f7aa-4a20-aec9-50ec08b5fda7 отправлено в rabbit
+2025-05-20 16:11:12.637 +03:00 [INF] Сообщение 7a22e3a7-ea84-49dc-9070-772f605f961e отправлено в rabbit
+2025-05-20 16:11:12.687 +03:00 [INF] Сообщение e5a4ace4-9466-4031-9109-d42734c7eebd отправлено в rabbit
+2025-05-20 16:11:12.737 +03:00 [INF] Сообщение 30ae4f20-c088-4704-89b8-ed7a207177bf отправлено в rabbit
+2025-05-20 16:11:12.849 +03:00 [INF] Сообщение 55cc804e-4c1c-4bf3-84c1-ac1053c04c99 отправлено в rabbit
+2025-05-20 16:11:12.897 +03:00 [INF] Сообщение 47947e98-fb93-40b2-95c6-f36b9a6af388 отправлено в rabbit
+2025-05-20 16:11:12.947 +03:00 [INF] Сообщение 3c0a6062-d285-4c92-a17b-b0e089784f64 отправлено в rabbit
+2025-05-20 16:11:12.997 +03:00 [INF] Сообщение e4f6ee4e-da9a-4f23-ab5a-25d80dafe491 отправлено в rabbit
+2025-05-20 16:11:13.047 +03:00 [INF] Сообщение 91819950-f249-4793-a27a-4b71ec867c52 отправлено в rabbit
+2025-05-20 16:11:13.097 +03:00 [INF] Сообщение 2a07de73-fbac-4937-bab8-05cb1946ecd0 отправлено в rabbit
+2025-05-20 16:11:13.147 +03:00 [INF] Сообщение 78e31f2e-c69f-4dce-b8d7-b7a1edecbc40 отправлено в rabbit
+2025-05-20 16:11:13.197 +03:00 [INF] Сообщение 1f3ec9ad-873b-4f7a-945b-37fb16156cc6 отправлено в rabbit
+2025-05-20 16:11:13.257 +03:00 [INF] Сообщение 9f58e73b-0f95-4ddc-bf4b-a9b617a6a8a9 отправлено в rabbit
+2025-05-20 16:11:13.307 +03:00 [INF] Сообщение 600151c6-5a99-4ecc-92e6-0e5d4712858f отправлено в rabbit
+2025-05-20 16:11:13.357 +03:00 [INF] Сообщение 7e16a3ff-fd54-40e5-a3fc-fc9a4a8c3818 отправлено в rabbit
+2025-05-20 16:11:13.407 +03:00 [INF] Сообщение 9fbd6cb9-9bc2-47e1-a2c4-a2a1e5f71d5d отправлено в rabbit
+2025-05-20 16:11:13.457 +03:00 [INF] Сообщение 660ac2a3-5632-4272-a9af-83ee17ce4532 отправлено в rabbit
+2025-05-20 16:11:13.517 +03:00 [INF] Сообщение b30f0413-eea9-4c67-8c69-e22e1f588098 отправлено в rabbit
+2025-05-20 16:11:13.567 +03:00 [INF] Сообщение 7dded900-1910-426d-9621-25a63de07424 отправлено в rabbit
+2025-05-20 16:11:13.617 +03:00 [INF] Сообщение f809599e-c467-49cc-ab0b-fcfb158fe41e отправлено в rabbit
+2025-05-20 16:11:13.667 +03:00 [INF] Сообщение f7768646-4c27-4c96-9ef1-c11299d78cc7 отправлено в rabbit
+2025-05-20 16:11:13.727 +03:00 [INF] Сообщение 0fe9584b-68e7-4851-9e6f-4b45f6df2755 отправлено в rabbit
+2025-05-20 16:11:13.777 +03:00 [INF] Сообщение 48759b9a-4284-4513-8cbc-813f5102a14e отправлено в rabbit
+2025-05-20 16:11:13.827 +03:00 [INF] Сообщение 860438ee-eef0-4c10-9229-c98980a1cc59 отправлено в rabbit
+2025-05-20 16:11:13.877 +03:00 [INF] Сообщение 1336636c-556b-4000-bb84-e509d3022c89 отправлено в rabbit
+2025-05-20 16:11:13.927 +03:00 [INF] Сообщение b8cbc094-e671-4734-a756-f06e2c649903 отправлено в rabbit
+2025-05-20 16:11:13.977 +03:00 [INF] Сообщение 27148e07-83ac-4499-92b2-ef49287107a7 отправлено в rabbit
+2025-05-20 16:11:14.027 +03:00 [INF] Сообщение 87362295-393d-460f-ae4f-bc46e7c7cb07 отправлено в rabbit
+2025-05-20 16:11:14.077 +03:00 [INF] Сообщение be494cd4-1623-4f0e-9602-6044ba5f3c16 отправлено в rabbit
+2025-05-20 16:11:14.127 +03:00 [INF] Сообщение 5b2b1bf1-a5ee-4dca-b4bd-d34730fb86a9 отправлено в rabbit
+2025-05-20 16:11:14.177 +03:00 [INF] Сообщение e364c93b-0024-4b6a-899d-f3ff4e8060d0 отправлено в rabbit
+2025-05-20 16:11:14.227 +03:00 [INF] Сообщение 8583d5f9-e72f-4418-95fa-1117b026f3cc отправлено в rabbit
+2025-05-20 16:11:14.277 +03:00 [INF] Сообщение 119a10b6-e158-4d25-be8f-049d8d6ad14a отправлено в rabbit
+2025-05-20 16:11:14.327 +03:00 [INF] Сообщение f7254d44-485b-45e1-90f6-9c049826f385 отправлено в rabbit
+2025-05-20 16:11:14.377 +03:00 [INF] Сообщение 7a51fe9d-1694-4e2c-a9c7-3979b4163a5c отправлено в rabbit
+2025-05-20 16:11:14.427 +03:00 [INF] Сообщение 7c0634de-058e-44d7-b943-dd208a61a205 отправлено в rabbit
+2025-05-20 16:11:14.477 +03:00 [INF] Сообщение 6e7a3e57-7d23-448f-915e-9b17b1290841 отправлено в rabbit
+2025-05-20 16:11:14.527 +03:00 [INF] Сообщение e60c03ab-bef9-4d9b-990b-d4acf8ca0e1f отправлено в rabbit
+2025-05-20 16:11:14.577 +03:00 [INF] Сообщение 1b77b2c0-364a-4735-8219-406b9e22e1d9 отправлено в rabbit
+2025-05-20 16:11:14.627 +03:00 [INF] Сообщение a40fab50-c2af-4625-ac3e-2b7aa93b996a отправлено в rabbit
+2025-05-20 16:11:14.677 +03:00 [INF] Сообщение ea1fb8f7-1103-4e75-84e8-9f4e0d708fe4 отправлено в rabbit
+2025-05-20 16:11:14.727 +03:00 [INF] Сообщение 65ce0eef-317d-49c2-bcd0-7bbfde99e247 отправлено в rabbit
+2025-05-20 16:11:14.777 +03:00 [INF] Сообщение 7908d848-169a-463b-b531-971d01ad8a7b отправлено в rabbit
+2025-05-20 16:11:14.827 +03:00 [INF] Сообщение e69d90d4-e00e-4667-9c0e-778c4c6f85b6 отправлено в rabbit
+2025-05-20 16:11:14.877 +03:00 [INF] Сообщение ca3ef779-664d-4c16-802e-8244c640b316 отправлено в rabbit
+2025-05-20 16:11:14.927 +03:00 [INF] Сообщение 949ed430-0148-433c-9f55-2e32f0c13ae1 отправлено в rabbit
+2025-05-20 16:11:14.977 +03:00 [INF] Сообщение d3f5d5ff-4c5c-474f-9e0a-091c3f769f78 отправлено в rabbit
+2025-05-20 16:11:15.027 +03:00 [INF] Сообщение d834b3ee-8531-4265-83b6-268e46e52469 отправлено в rabbit
+2025-05-20 16:11:15.077 +03:00 [INF] Сообщение 80e6672a-8f4e-40a8-ad85-cf4288fae376 отправлено в rabbit
+2025-05-20 16:11:15.127 +03:00 [INF] Сообщение 0b448901-bb4c-400c-9925-a77fa861fd16 отправлено в rabbit
+2025-05-20 16:11:15.177 +03:00 [INF] Сообщение b6d1ea15-8f08-43a2-8cea-aef5351f6f89 отправлено в rabbit
+2025-05-20 16:11:15.227 +03:00 [INF] Сообщение 7dacd000-eb41-48b9-be35-4c7895914cfb отправлено в rabbit
+2025-05-20 16:11:15.277 +03:00 [INF] Сообщение 35ebdb49-4a93-422a-8aa1-ff464f95799e отправлено в rabbit
+2025-05-20 16:11:15.327 +03:00 [INF] Сообщение eac737d9-8bf0-49c6-ad8a-624d9a71257e отправлено в rabbit
+2025-05-20 16:11:15.377 +03:00 [INF] Сообщение 33cafbcb-a473-4e34-b2c9-771ac654fbc8 отправлено в rabbit
+2025-05-20 16:11:15.427 +03:00 [INF] Сообщение 9ebb13a8-376a-447e-a606-47929a0b3996 отправлено в rabbit
+2025-05-20 16:11:15.477 +03:00 [INF] Сообщение 7a9fb16e-b45c-4b4c-8634-fe67ac7bb547 отправлено в rabbit
+2025-05-20 16:11:15.527 +03:00 [INF] Сообщение 928d60de-4beb-45f3-a977-637722467995 отправлено в rabbit
+2025-05-20 16:11:15.577 +03:00 [INF] Сообщение c26cf543-2293-4ba3-9d09-528a4e316b43 отправлено в rabbit
+2025-05-20 16:11:15.627 +03:00 [INF] Сообщение bb446b29-d2a4-4b60-b98b-149f58cca011 отправлено в rabbit
+2025-05-20 16:11:15.677 +03:00 [INF] Сообщение 931e65c7-757e-4e2f-9d2b-591cb2ac4ce0 отправлено в rabbit
+2025-05-20 16:11:15.726 +03:00 [INF] Сообщение 5a87702e-b50c-40c8-9ed8-a8717db52ba6 отправлено в rabbit
+2025-05-20 16:11:15.777 +03:00 [INF] Сообщение 97eca98c-89b1-4d6e-a320-af8d363fc273 отправлено в rabbit
+2025-05-20 16:11:15.827 +03:00 [INF] Сообщение 550ea194-f4d1-4b71-9150-c14061e09873 отправлено в rabbit
+2025-05-20 16:11:15.887 +03:00 [INF] Сообщение 6f03549a-7adc-49f2-b9cb-a847754b0d74 отправлено в rabbit
+2025-05-20 16:11:15.937 +03:00 [INF] Сообщение 80947cb9-e452-4fc9-9036-e6741b617200 отправлено в rabbit
+2025-05-20 16:11:15.987 +03:00 [INF] Сообщение 83befb31-7ef9-413c-bf79-0bceb8f33312 отправлено в rabbit
+2025-05-20 16:11:16.037 +03:00 [INF] Сообщение 666ee6b8-90c9-4df2-a53b-472e0006c38f отправлено в rabbit
+2025-05-20 16:11:16.087 +03:00 [INF] Сообщение f0ea793b-7053-4de3-aee1-03be2387bf2e отправлено в rabbit
+2025-05-20 16:11:16.146 +03:00 [INF] Сообщение 2a22ceb2-db2f-44b4-829c-68b33d15703d отправлено в rabbit
+2025-05-20 16:11:16.207 +03:00 [INF] Сообщение c79005ba-a6c9-43e0-8d33-b0ecaef304ca отправлено в rabbit
+2025-05-20 16:11:16.257 +03:00 [INF] Сообщение 25cc25d0-6fb4-42a4-aefb-94363f3cf484 отправлено в rabbit
+2025-05-20 16:11:16.307 +03:00 [INF] Сообщение 98dd7149-7de6-4aa5-aa06-440c319679a0 отправлено в rabbit
+2025-05-20 16:12:06.002 +03:00 [INF] Сообщение e83ca25d-4da3-41e7-8281-55ac8e3a1658 отправлено в rabbit
+2025-05-20 16:12:06.056 +03:00 [INF] Сообщение 7e4ff4c1-93b7-4f72-94c7-121ec61ed66b отправлено в rabbit
+2025-05-20 16:12:06.104 +03:00 [INF] Сообщение 7697b0f5-c968-4d47-8e73-a4e18e28fd31 отправлено в rabbit
+2025-05-20 16:12:06.154 +03:00 [INF] Сообщение d833f184-0757-4c0e-be7f-6b590fd7d64a отправлено в rabbit
+2025-05-20 16:12:06.204 +03:00 [INF] Сообщение ea98c7f2-39cf-4aa2-89e4-52110c655568 отправлено в rabbit
+2025-05-20 16:12:06.254 +03:00 [INF] Сообщение b44e9d45-ef0d-438b-9a6c-8c2abbc9f437 отправлено в rabbit
+2025-05-20 16:12:06.304 +03:00 [INF] Сообщение 0c85df9b-1030-4a35-801e-518127b6ccdc отправлено в rabbit
+2025-05-20 16:12:06.354 +03:00 [INF] Сообщение 49f33c1e-5384-4050-9977-95833197d1fc отправлено в rabbit
+2025-05-20 16:12:06.404 +03:00 [INF] Сообщение d4ce5155-7e0a-4b23-a66f-6c56b4835690 отправлено в rabbit
+2025-05-20 16:12:06.454 +03:00 [INF] Сообщение 99067849-8a55-40b5-96d7-d33cd6975054 отправлено в rabbit
+2025-05-20 16:12:06.504 +03:00 [INF] Сообщение e6796184-bec7-4253-bd7b-66a7e2893fae отправлено в rabbit
+2025-05-20 16:12:06.554 +03:00 [INF] Сообщение cf643be2-042b-41db-8157-f947253a83bc отправлено в rabbit
+2025-05-20 16:12:06.604 +03:00 [INF] Сообщение 3338d824-ec46-42ef-b886-86df27b3c7d3 отправлено в rabbit
+2025-05-20 16:12:06.654 +03:00 [INF] Сообщение 980b2f83-e15d-4837-80cb-ff3e826ac067 отправлено в rabbit
+2025-05-20 16:12:06.714 +03:00 [INF] Сообщение ecd1d149-9a5a-409e-b665-ffd55b0dfe2a отправлено в rabbit
+2025-05-20 16:12:06.764 +03:00 [INF] Сообщение a2bf5e8e-4f11-4f14-a5b9-303de658b168 отправлено в rabbit
+2025-05-20 16:12:06.814 +03:00 [INF] Сообщение 1aff8336-a653-4cfb-9c57-216eecad2aab отправлено в rabbit
+2025-05-20 16:12:06.874 +03:00 [INF] Сообщение 4e8901ad-7964-4909-9bfc-262b7f2e2f22 отправлено в rabbit
+2025-05-20 16:12:06.924 +03:00 [INF] Сообщение df51c131-fe46-4ef4-a135-2b3079115dbc отправлено в rabbit
+2025-05-20 16:12:06.984 +03:00 [INF] Сообщение 88d22669-e72d-4634-a36c-7cf1e1e04b4e отправлено в rabbit
+2025-05-20 16:12:07.034 +03:00 [INF] Сообщение 91dba4e9-c4f7-4ee3-8fdf-983b550a9437 отправлено в rabbit
+2025-05-20 16:12:07.084 +03:00 [INF] Сообщение a3130500-71a7-4ca3-b187-74f2af747f73 отправлено в rabbit
+2025-05-20 16:12:07.144 +03:00 [INF] Сообщение 72bfda0c-e52e-4167-91bd-e0b1500d972e отправлено в rabbit
+2025-05-20 16:12:07.194 +03:00 [INF] Сообщение 45ec73ca-0ce7-474d-9106-d84f408cb772 отправлено в rabbit
+2025-05-20 16:12:07.244 +03:00 [INF] Сообщение 1d9afe59-f57e-4a01-b71f-80e78c5caeb4 отправлено в rabbit
+2025-05-20 16:12:07.294 +03:00 [INF] Сообщение 5d06cbc4-7298-4392-8db4-65202ee43e6b отправлено в rabbit
+2025-05-20 16:12:07.344 +03:00 [INF] Сообщение ff30b3f4-f5df-4347-af7b-a838a3de6099 отправлено в rabbit
+2025-05-20 16:12:07.394 +03:00 [INF] Сообщение 2960b0dc-edd9-4e2b-9939-6b5573e2363c отправлено в rabbit
+2025-05-20 16:12:07.444 +03:00 [INF] Сообщение 9b6d4c32-7ac6-468c-9fb7-2cf3cda00606 отправлено в rabbit
+2025-05-20 16:12:07.446 +03:00 [INF] Сообщение 5edffe3e-eba9-46e5-b96a-adad5c1edeec отправлено в rabbit
+2025-05-20 16:12:07.494 +03:00 [INF] Сообщение 7a40c419-45fd-472a-b198-0abb199f4fe3 отправлено в rabbit
+2025-05-20 16:12:07.544 +03:00 [INF] Сообщение 2ad1fad7-48be-42e5-86b0-783a25c2a9c0 отправлено в rabbit
+2025-05-20 16:12:07.594 +03:00 [INF] Сообщение 074c427e-265f-4a5b-8124-7da27d1e0720 отправлено в rabbit
+2025-05-20 16:12:07.644 +03:00 [INF] Сообщение daccabea-8582-487c-a940-784eb17b4b3e отправлено в rabbit
+2025-05-20 16:12:07.694 +03:00 [INF] Сообщение 1b7e5ad5-798e-47a6-a90e-fba2100f2762 отправлено в rabbit
+2025-05-20 16:12:07.744 +03:00 [INF] Сообщение 2bf2b51d-9a71-4b9f-8fa3-6b70507dee1e отправлено в rabbit
+2025-05-20 16:12:07.794 +03:00 [INF] Сообщение 9bc72ec2-ccaa-4993-bf97-a4e4af00ea88 отправлено в rabbit
+2025-05-20 16:12:07.844 +03:00 [INF] Сообщение f4fc18c4-cfe4-47a4-bab9-1fb5e614ea9f отправлено в rabbit
+2025-05-20 16:12:07.894 +03:00 [INF] Сообщение dc20eaa9-4c2c-497d-8778-1fdeb9a1ba55 отправлено в rabbit
+2025-05-20 16:12:07.954 +03:00 [INF] Сообщение 36884a67-38d5-47a0-833c-67944b3f9faa отправлено в rabbit
+2025-05-20 16:12:08.004 +03:00 [INF] Сообщение bc846daf-21c3-483e-82c3-f5f0df4d54ed отправлено в rabbit
+2025-05-20 16:12:08.054 +03:00 [INF] Сообщение 6113b27b-a224-4a0c-9aad-6cc4a19113c4 отправлено в rabbit
+2025-05-20 16:12:08.104 +03:00 [INF] Сообщение 280d46d2-fab3-43c6-b37d-d98e1b53887c отправлено в rabbit
+2025-05-20 16:12:08.154 +03:00 [INF] Сообщение 17b771f6-e8ed-41ce-b978-c4e1833e40a3 отправлено в rabbit
+2025-05-20 16:12:08.214 +03:00 [INF] Сообщение 6ea4a7d4-f1ac-4af2-aebe-176ff4c53456 отправлено в rabbit
+2025-05-20 16:12:08.264 +03:00 [INF] Сообщение d522115c-9fdf-4928-9199-aec0b355e812 отправлено в rabbit
+2025-05-20 16:12:08.314 +03:00 [INF] Сообщение d9b8dd60-514a-4730-ace2-256d462b8bda отправлено в rabbit
+2025-05-20 16:12:08.364 +03:00 [INF] Сообщение cee1b5a3-8460-4a29-b3d0-cadba9553b96 отправлено в rabbit
+2025-05-20 16:12:08.414 +03:00 [INF] Сообщение 7e66882d-da15-40f0-aa66-b4647d1ba43e отправлено в rabbit
+2025-05-20 16:12:08.464 +03:00 [INF] Сообщение 3c81a4a1-af7f-4eee-86bd-f7f26c63489d отправлено в rabbit
+2025-05-20 16:12:08.524 +03:00 [INF] Сообщение 5bf097e8-162f-4168-8ef1-4119a9f5d038 отправлено в rabbit
+2025-05-20 16:12:08.574 +03:00 [INF] Сообщение 7e183e01-5f4e-46a2-8f0e-29626aa0f41b отправлено в rabbit
+2025-05-20 16:12:08.624 +03:00 [INF] Сообщение 9cf77a01-dfd3-43c2-9dfe-0019585b7f0b отправлено в rabbit
+2025-05-20 16:12:08.684 +03:00 [INF] Сообщение dd7aa7cb-e056-4769-b466-1275e8fdcf5c отправлено в rabbit
+2025-05-20 16:12:08.744 +03:00 [INF] Сообщение b37ac101-6a60-4e48-9634-5c5cd95fd6b2 отправлено в rabbit
+2025-05-20 16:12:08.794 +03:00 [INF] Сообщение 1c5d6149-08c8-4115-b25a-a648ad170c37 отправлено в rabbit
+2025-05-20 16:12:08.844 +03:00 [INF] Сообщение cfba9e34-e638-4ae4-b936-6b8a5fbc6d8a отправлено в rabbit
+2025-05-20 16:12:08.894 +03:00 [INF] Сообщение e5f25bab-00fc-4d8b-a455-1bba3597ef31 отправлено в rabbit
+2025-05-20 16:12:08.944 +03:00 [INF] Сообщение bbdf5a95-810a-42a5-84ff-896505188629 отправлено в rabbit
+2025-05-20 16:12:08.994 +03:00 [INF] Сообщение 99f067ca-255e-477c-b666-53661efb53b5 отправлено в rabbit
+2025-05-20 16:12:09.044 +03:00 [INF] Сообщение 123f2bf8-51de-4058-b80d-6d4f955d5568 отправлено в rabbit
+2025-05-20 16:12:09.094 +03:00 [INF] Сообщение 9b0cb9a0-92e3-46f8-9bab-e47dd1bf527e отправлено в rabbit
+2025-05-20 16:12:09.144 +03:00 [INF] Сообщение 3c27450d-4b94-4c1f-aa54-33371a58adcb отправлено в rabbit
+2025-05-20 16:12:09.193 +03:00 [INF] Сообщение 336167f1-a98d-4641-8370-df0ef9bebc2c отправлено в rabbit
+2025-05-20 16:12:09.244 +03:00 [INF] Сообщение fa1471cb-dc3e-4be9-9156-c3ab75b76208 отправлено в rabbit
+2025-05-20 16:12:09.294 +03:00 [INF] Сообщение 95d7b8d4-a6a7-4a38-a02e-86290f8af0d8 отправлено в rabbit
+2025-05-20 16:12:09.344 +03:00 [INF] Сообщение 2f11ab8c-4d94-4b54-b665-afdb722f0161 отправлено в rabbit
+2025-05-20 16:12:09.394 +03:00 [INF] Сообщение e4d10b5c-015d-48bb-ac90-cfc7776296d8 отправлено в rabbit
+2025-05-20 16:12:09.454 +03:00 [INF] Сообщение 189ba0b1-510d-487d-aa2d-6ab1b742e464 отправлено в rabbit
+2025-05-20 16:12:09.504 +03:00 [INF] Сообщение 1ec1d8af-06ce-4c32-8fcf-ea02a5b507aa отправлено в rabbit
+2025-05-20 16:12:09.554 +03:00 [INF] Сообщение e2848fc9-c380-47ff-b39d-a81bac586409 отправлено в rabbit
+2025-05-20 16:12:09.613 +03:00 [INF] Сообщение 020ab5dc-f9fc-476f-85c6-35ad08c1ec1c отправлено в rabbit
+2025-05-20 16:12:09.674 +03:00 [INF] Сообщение 354851e0-b82a-4977-9521-f5825f372321 отправлено в rabbit
+2025-05-20 16:12:09.724 +03:00 [INF] Сообщение a3cb91e6-cc00-452e-8ffc-8671a03edbbd отправлено в rabbit
+2025-05-20 16:12:09.774 +03:00 [INF] Сообщение 51cd9c89-f9af-4ebc-a1f3-d626973da9f3 отправлено в rabbit
+2025-05-20 16:12:09.824 +03:00 [INF] Сообщение 91aeebd0-ba45-48f8-80f0-bf0f5679a008 отправлено в rabbit
+2025-05-20 16:12:09.874 +03:00 [INF] Сообщение f92a1352-fc36-46c6-b3f2-a8c28a9f057f отправлено в rabbit
+2025-05-20 16:12:09.934 +03:00 [INF] Сообщение 6cb31f40-9112-4d9f-81aa-49d3b1b6b757 отправлено в rabbit
+2025-05-20 16:12:09.984 +03:00 [INF] Сообщение 82443abf-23f3-4f36-9abb-5a8e14cc9432 отправлено в rabbit
+2025-05-20 16:12:10.044 +03:00 [INF] Сообщение ea892aa9-ccff-472a-8d64-ec42a9fe41c2 отправлено в rabbit
+2025-05-20 16:12:10.094 +03:00 [INF] Сообщение b79ccc3b-a2a0-4192-9c0b-8df8efdd45d4 отправлено в rabbit
+2025-05-20 16:12:10.144 +03:00 [INF] Сообщение 151ff173-2d16-46ac-acb3-a623c9657ef8 отправлено в rabbit
+2025-05-20 16:12:10.194 +03:00 [INF] Сообщение e719c22d-2d48-448d-99e7-d3816376c73e отправлено в rabbit
+2025-05-20 16:12:10.243 +03:00 [INF] Сообщение ceaa9be4-a88a-4db6-83b0-d63bb2c36839 отправлено в rabbit
+2025-05-20 16:12:10.294 +03:00 [INF] Сообщение 26836fbf-f1f8-4334-8a6c-3c0b72a38ac0 отправлено в rabbit
+2025-05-20 16:12:10.354 +03:00 [INF] Сообщение 0de266e3-7e79-42d7-8fd8-58767026ac37 отправлено в rabbit
+2025-05-20 16:12:10.404 +03:00 [INF] Сообщение c74b9de0-9724-498a-a3bf-2133a221c76d отправлено в rabbit
+2025-05-20 16:12:10.454 +03:00 [INF] Сообщение 65fc1c87-05a6-4b32-abc5-12499e62d57a отправлено в rabbit
+2025-05-20 16:12:10.504 +03:00 [INF] Сообщение 75ddae2e-4384-4587-a650-c45bab350476 отправлено в rabbit
+2025-05-20 16:12:10.554 +03:00 [INF] Сообщение 1cddccc0-c461-4f3f-92b2-cde062e90fb2 отправлено в rabbit
+2025-05-20 16:12:10.603 +03:00 [INF] Сообщение 03b6a48c-513b-4440-9142-aa0cf58a3c26 отправлено в rabbit
+2025-05-20 16:12:10.654 +03:00 [INF] Сообщение 399dd689-c4a9-449e-be18-f531245bf8c9 отправлено в rabbit
+2025-05-20 16:12:10.704 +03:00 [INF] Сообщение 6a9ad23e-ee9e-4474-8433-b49b4227e688 отправлено в rabbit
+2025-05-20 16:12:10.753 +03:00 [INF] Сообщение 0d09e468-4582-4b9a-878a-5d5bc342b71b отправлено в rabbit
+2025-05-20 16:12:10.814 +03:00 [INF] Сообщение 2bb05efc-44f9-4b96-972f-2f52a038d8e5 отправлено в rabbit
+2025-05-20 16:12:10.864 +03:00 [INF] Сообщение 92a67321-cb00-486a-8253-c6ddfb5329ef отправлено в rabbit
+2025-05-20 16:12:10.914 +03:00 [INF] Сообщение c8539255-b860-472b-8b1f-a1cefa38cc8f отправлено в rabbit
+2025-05-20 16:12:10.963 +03:00 [INF] Сообщение 78a9b47d-bf44-48f4-9959-9869eeadb181 отправлено в rabbit
+2025-05-20 16:12:11.014 +03:00 [INF] Сообщение 553e4c1f-f8ae-4141-ae56-d98b4b7e0850 отправлено в rabbit

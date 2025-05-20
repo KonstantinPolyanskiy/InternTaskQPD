@@ -6,13 +6,15 @@ using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
 using QPDCar.Models.ApplicationModels.AuthModels;
 using QPDCar.Models.ApplicationModels.ErrorTypes;
+using QPDCar.Models.ApplicationModels.Events;
 using QPDCar.ServiceInterfaces.MailServices;
+using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.ServiceInterfaces.UserServices;
 
 namespace QPDCar.UseCases.UseCases.UserUseCases;
 
 /// <summary> Кейсы для пользователей в целом </summary>
-public class UserUseCases(IAuthService authService, IUserService userService, IMailSender mailSender, 
+public class UserUseCases(IAuthService authService, IUserService userService, INotificationPublisher publisher, 
     IMailConfirmationService mailConfirmation, ILogger<UserUseCases> logger)  
 {
     /// <summary> Вход пользователя </summary>
@@ -41,7 +43,13 @@ public class UserUseCases(IAuthService authService, IUserService userService, IM
         
         // Отправляем email о входе
         var body = $"Уважаемый {user.LastName} + {user.FirstName}, в ваш аккаунт {user.UserName} совершен вход {now.ToShortDateString() + now.ToShortTimeString()}";
-        var sendResult = await mailSender.SendAsync(user.Email!, "В аккаунт совершен вход", body);
+        var sendResult = await publisher.NotifyAsync(new EmailNotificationEvent
+        {
+            MessageId = Guid.NewGuid(),
+            To = user.Email!,
+            Subject = "Вход в аккаунт",
+            BodyHtml = body
+        });
         if (sendResult.IsSuccess is false)
             warns.Add(new ApplicationError(
                 EmailErrors.MailNotSend, "Почта не отправлена",
@@ -105,7 +113,13 @@ public class UserUseCases(IAuthService authService, IUserService userService, IM
         
         // Отправляем email об успешном подтверждении
         var body = $"Уважаемый {user.LastName} + {user.FirstName} благодарим за подтверждение почты";
-        var thanksResult = await mailSender.SendAsync(user.Email!, "Почта подтверждена", body);
+        var thanksResult = await publisher.NotifyAsync(new EmailNotificationEvent
+        {
+            MessageId = Guid.NewGuid(),
+            To = user.Email!,
+            Subject = "Подтверждение почты",
+            BodyHtml = body
+        });
         if (thanksResult.IsSuccess is false)
             warns.Add(new ApplicationError(
                 EmailErrors.MailNotSend, "Email не отправлен",

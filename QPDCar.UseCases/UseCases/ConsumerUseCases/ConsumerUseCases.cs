@@ -2,17 +2,19 @@
 using QPDCar.Models.ApplicationModels;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
+using QPDCar.Models.ApplicationModels.Events;
 using QPDCar.Models.BusinessModels.EmployerModels;
 using QPDCar.Models.BusinessModels.UserModels;
 using QPDCar.Models.DtoModels.UserDtos;
 using QPDCar.ServiceInterfaces.MailServices;
+using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.ServiceInterfaces.UserServices;
 
 namespace QPDCar.UseCases.UseCases.ConsumerUseCases;
 
 /// <summary> Кейсы с аккаунтом для клиента </summary>
 public class ConsumerUseCases(IUserService userService, IRoleService roleService, IMailConfirmationService mailConfirmation, 
-    IMailSender mailSender, ILogger<ConsumerUseCases> logger)
+    INotificationPublisher publisher, ILogger<ConsumerUseCases> logger)
 {
     /// <summary> Регистрация клиента </summary>
     public async  Task<ApplicationExecuteResult<UserSummary>> RegisterUser(DtoForCreateConsumer userData)
@@ -50,7 +52,13 @@ public class ConsumerUseCases(IUserService userService, IRoleService roleService
 
         var body = $"Перейдите по {url} для подтверждения почты";
         
-        var sendResult = await mailSender.SendAsync(user.Email!, "Подтвердите почту", body);
+        var sendResult = await publisher.NotifyAsync(new EmailNotificationEvent
+        {
+            MessageId = Guid.NewGuid(),
+            To = user.Email!,
+            Subject = "Подтвердите почту",
+            BodyHtml = body
+        });
         if (sendResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(sendResult);
 

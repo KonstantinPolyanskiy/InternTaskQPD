@@ -11,5 +11,5 @@ public class RefreshTokenEntity()
     
     public DateTime ExpiresAtUtc { get; set; }
     public required string UserId { get; set; }
-    public required ApplicationUserEntity ApplicationUser { get; set; }
+    public ApplicationUserEntity ApplicationUser { get; set; } = null!;
 }
