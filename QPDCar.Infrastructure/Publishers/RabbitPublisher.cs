@@ -8,6 +8,7 @@ using RabbitMQ.Client;
 
 namespace QPDCar.Infrastructure.Publishers;
 
+/// <summary> Публикует Email нотификации в очередь Rabbit </summary>
 public class RabbitPublisher(IConnection connection, ILogger<RabbitPublisher> logger) : INotificationPublisher
 {
     private const string ExchangeName = "notifications";

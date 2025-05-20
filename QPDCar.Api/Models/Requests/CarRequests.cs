@@ -6,6 +6,7 @@ using QPDCar.Models.BusinessModels.CarModels;
 
 namespace QPDCar.Api.Models.Requests;
 
+/// <summary> Запрос на добавление машины </summary>
 public record AddCarRequest
 {
     [Required]
@@ -27,6 +28,7 @@ public record AddCarRequest
     public IFormFile? Photo { get; init; }
 }
 
+/// <summary> Запрос на обновление машины </summary>
 public record PatchCarRequest
 {
     [Required]
@@ -47,6 +49,7 @@ public record PatchCarRequest
     public string? NewManager { get; init; }
 }
 
+/// <summary> Параметры и фильтры на запрос м-ва машин </summary>
 public record CarQueryRequest
 {
     public string[]? Brands { get; init; }

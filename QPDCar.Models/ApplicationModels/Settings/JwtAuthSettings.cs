@@ -1,5 +1,6 @@
 ﻿namespace QPDCar.Models.ApplicationModels.Settings;
 
+/// <summary> Настройки JWT токенов </summary>
 public class JwtAuthSettings
 {
     public string Issuer { get; set; }                = null!;

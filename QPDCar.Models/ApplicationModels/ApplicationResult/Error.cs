@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace QPDCar.Models.ApplicationModels;
+namespace QPDCar.Models.ApplicationModels.ApplicationResult;
 
 /// <summary> Различные уровни ошибок </summary>
 public enum ErrorSeverity

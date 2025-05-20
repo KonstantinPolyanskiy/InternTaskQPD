@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using QPDCar.Models.ApplicationModels;
+using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.StorageModels.ErrorTypes;
 
 namespace QPDCar.Repositories.ErrorHelpers;

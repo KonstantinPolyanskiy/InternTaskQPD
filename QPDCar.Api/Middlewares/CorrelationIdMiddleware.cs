@@ -2,6 +2,7 @@
 
 namespace QPDCar.Api.Middlewares;
 
+/// <summary> Добавляет в контекст http запроса Id для его отслеживания </summary>
 public class CorrelationIdMiddleware(RequestDelegate next)
 {
     public async Task Invoke(HttpContext ctx)

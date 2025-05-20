@@ -6,6 +6,7 @@ using Quartz;
 
 namespace QPDCar.Jobs;
 
+/// <summary> Отправляет Email уведомление отвественным менеджерам что машина без фотографии </summary>
 public class PublishCarDontHavePhotoJob(AppDbContext db, INotificationPublisher publisher) : IJob
 {
     public async Task Execute(IJobExecutionContext context)

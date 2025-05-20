@@ -4,7 +4,8 @@ using QPDCar.Models.StorageModels;
 
 namespace QPDCar.Api.Seeder;
 
-public static class IdentitySeeder
+/// <summary> Создает в БД приложения роли и основного администратора </summary>
+public static class IdentitySeeder 
 {
     private const string AdminEmail    = "admin@mail.ru";
     private const string AdminUserName = "admin";

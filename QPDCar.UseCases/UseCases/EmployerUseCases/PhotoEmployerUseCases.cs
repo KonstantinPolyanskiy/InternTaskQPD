@@ -35,7 +35,7 @@ public class PhotoEmployerUseCases(ICarService carService)
         
         if (car.Photo != null)
             warns.Add(new ApplicationError(
-                CarErrors.CarAlredyHavePhoto, "Машина уже с фото",
+                CarErrors.CarAlreadyHavePhoto, "Машина уже с фото",
                 $"У машины {car.Id} уже есть фото {car.Photo.Id}",
                 ErrorSeverity.NotImportant));
         

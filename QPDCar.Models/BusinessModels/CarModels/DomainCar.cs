@@ -24,7 +24,8 @@ public class DomainCar
     public DomainPhoto? Photo { get; set; }
 }
 
-public class DomainCarPage
+/// <summary> Результат параметризированного запроса с машинами </summary> 
+public class DomainCarPage 
 {
     public List<DomainCar> Cars { get; init; } = [];
     

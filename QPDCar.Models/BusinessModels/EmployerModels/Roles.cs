@@ -1,6 +1,7 @@
 ﻿namespace QPDCar.Models.BusinessModels.EmployerModels;
 
-public enum ApplicationRoles
+/// <summary> Возможные роли в приложении </summary>
+public enum ApplicationRoles 
 {
     Admin = 0,
     Manager = 1,

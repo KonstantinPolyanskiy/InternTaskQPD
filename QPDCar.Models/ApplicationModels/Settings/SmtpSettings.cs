@@ -1,5 +1,6 @@
 ﻿namespace QPDCar.Models.ApplicationModels.Settings;
 
+/// <summary> Настройки использования SMTP </summary>
 public class SmtpSettings
 {
     public required string Host { get; init; }

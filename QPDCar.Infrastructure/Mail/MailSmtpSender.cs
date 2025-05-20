@@ -12,6 +12,7 @@ using QPDCar.ServiceInterfaces.MailServices;
 
 namespace QPDCar.Infrastructure.Mail;
 
+/// <summary> Сервис отправки Email сообщений по протоколу SMTP </summary> 
 public class MailSmtpSender(IOptions<SmtpSettings> opts, ILogger<MailSmtpSender> logger) : IMailSender
 {
     public async Task<ApplicationExecuteResult<Unit>> SendAsync(string to, string subject, string body)

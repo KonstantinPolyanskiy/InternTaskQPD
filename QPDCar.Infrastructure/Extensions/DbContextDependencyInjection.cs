@@ -6,6 +6,7 @@ namespace QPDCar.Infrastructure.Extensions;
 
 public static class DbContextDependencyInjection
 {
+    /// <summary> Добавляет EF контексты </summary>
     public static IServiceCollection AddDbContexts(this IServiceCollection services, string conn)
     {
         services.AddDbContext<AppDbContext>((_, opt) =>

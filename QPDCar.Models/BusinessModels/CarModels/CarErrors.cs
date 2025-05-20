@@ -1,5 +1,6 @@
 ﻿namespace QPDCar.Models.BusinessModels.CarModels;
 
+/// <summary> Типы ошибок связанные с машиной </summary>
 public enum CarErrors
 {
     CarNotFound,
@@ -8,5 +9,5 @@ public enum CarErrors
     CarNotDeleted,
     
     CarNotSetPhoto,
-    CarAlredyHavePhoto,
+    CarAlreadyHavePhoto,
 }

@@ -1,5 +1,6 @@
 ﻿namespace QPDCar.Models.ApplicationModels.Settings;
 
+/// <summary> Настройки подклчюения к Minio </summary>
 public class MinioSettings
 {
     public string Endpoint { get; set; } = string.Empty;

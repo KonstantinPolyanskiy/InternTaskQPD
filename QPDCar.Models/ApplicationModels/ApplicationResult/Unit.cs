@@ -1,4 +1,4 @@
-﻿namespace QPDCar.Models.ApplicationModels;
+﻿namespace QPDCar.Models.ApplicationModels.ApplicationResult;
 
 /// <summary> Структура-заглушка для пустого значения </summary>
 public readonly struct Unit : IEquatable<Unit>

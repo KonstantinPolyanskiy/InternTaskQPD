@@ -1,5 +1,6 @@
 ﻿namespace QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
 
+/// <summary> Мердж двух ApplicationExecuteResult в одну в один с warn и critical ошибками </summary>
 public static class ApplicationExecuteLogicResultExtensions
 {
     public static ApplicationExecuteResult<TTarget> Merge<TTarget, TSource>(

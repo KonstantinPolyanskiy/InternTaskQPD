@@ -1,5 +1,6 @@
 ﻿namespace QPDCar.Models.ApplicationModels.Events;
 
+/// <summary> Данные для эвента отправки email сообщения </summary>
 public class EmailNotificationEvent
 {
     public required Guid MessageId { get; init; }

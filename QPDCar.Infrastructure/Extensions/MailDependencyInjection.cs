@@ -8,6 +8,7 @@ namespace QPDCar.Infrastructure.Extensions;
 
 public static class MailDependencyInjection
 {
+    /// <summary> Добавляет сервис отправки Email </summary>
     public static IServiceCollection AddMailSender(
         this IServiceCollection services,
         IConfiguration configSection)       

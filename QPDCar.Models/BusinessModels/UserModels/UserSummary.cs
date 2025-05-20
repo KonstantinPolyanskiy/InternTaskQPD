@@ -2,6 +2,7 @@
 
 namespace QPDCar.Models.BusinessModels.UserModels;
 
+/// <summary> Данные пользователя в приложении </summary>
 public class UserSummary
 {
     public string Id { get; init; } = null!;

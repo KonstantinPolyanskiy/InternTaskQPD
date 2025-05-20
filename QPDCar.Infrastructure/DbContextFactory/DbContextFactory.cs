@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration;
 using QPDCar.Infrastructure.DbContexts;
 
 namespace QPDCar.Infrastructure.DbContextFactory;
-
+ 
+/// <summary> Фабрика DbContext для корректных миграций </summary>
 public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
