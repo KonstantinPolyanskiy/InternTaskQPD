@@ -11,3 +11,9 @@ public enum CarErrors
     CarNotSetPhoto,
     CarAlreadyHavePhoto,
 }
+
+/// <summary> Типы ошибок связанные с корзиной </summary>
+public enum CartErrors
+{
+    NoOneCarInCart
+}

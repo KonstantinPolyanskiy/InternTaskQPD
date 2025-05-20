@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using Microsoft.Extensions.Logging;
 using QPDCar.Models.ApplicationModels;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
@@ -158,6 +159,7 @@ public class CarService(ICarRepository carRepo, IPhotoDataRepository photoDataRe
                 Price = updatedCar.Price,
                 CurrentOwner = updatedCar.CurrentOwner,
                 Mileage = updatedCar.Mileage,
+                IsSold = updatedCar.IsSold,
                 CarCondition = updatedCar.CarCondition,
                 PrioritySale = updatedCar.PrioritySale,
                 Manager = manager,
@@ -177,6 +179,31 @@ public class CarService(ICarRepository carRepo, IPhotoDataRepository photoDataRe
             return DbErrorHelper.WrapAllDbErrors<Unit, Unit>(CarErrors.CarNotDeleted, result, string.Join(" ", CarObjectName, carId.ToString()));
         
         return ApplicationExecuteResult<Unit>.Success(Unit.Value);
+    }
+
+    public async Task<ApplicationExecuteResult<DomainCar>> SoldCarAsync(DomainCar car)
+    {
+        logger.LogInformation("Продажа машины с id {carId}", car.Id);
+
+        var carEntityResult = await carRepo.ByIdAsync(car.Id);
+        if (carEntityResult.IsSuccess is false)
+            return ApplicationExecuteResult<DomainCar>.Failure(new ApplicationError(
+                CarErrors.CarNotUpdated, "Машина не продана",
+                "Ошибка при обновлении статуса машины на проданную",
+                ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+        var entity = carEntityResult.Value!;
+        
+        entity.IsSold = true;
+        entity.PrioritySale = PrioritySaleTypes.No;
+        
+        var updatedResult = await carRepo.RewriteAsync(entity);
+        if (updatedResult.IsSuccess is false)
+            return DbErrorHelper.WrapAllDbErrors<CarEntity, DomainCar>(CarErrors.CarNotUpdated, updatedResult, string.Join(" ", CarObjectName, car.Id.ToString()));
+
+        car.IsSold = true;
+        car.PrioritySale = PrioritySaleTypes.No;
+
+        return ApplicationExecuteResult<DomainCar>.Success(car);
     }
 
     public async Task<ApplicationExecuteResult<DomainCar>> ByIdAsync(int carId)
@@ -217,6 +244,7 @@ public class CarService(ICarRepository carRepo, IPhotoDataRepository photoDataRe
                 Price = carEntity.Price,
                 CurrentOwner = carEntity.CurrentOwner,
                 Mileage = carEntity.Mileage,
+                IsSold = carEntity.IsSold,
                 CarCondition = carEntity.CarCondition,
                 PrioritySale = carEntity.PrioritySale,
                 Manager = manager,

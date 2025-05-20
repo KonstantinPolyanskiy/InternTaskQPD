@@ -17,6 +17,8 @@ public class CarEntity()
     
     public int? Mileage { get; set; }
     
+    public bool IsSold { get; set; } = false;
+    
     public PrioritySaleTypes PrioritySale { get; set; }
     
     public ConditionTypes CarCondition { get; set; }

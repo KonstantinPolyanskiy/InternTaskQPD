@@ -44,10 +44,10 @@ public class CarConsumerUseCases(ICarService carService, ILogger<CarConsumerUseC
         {
             PageSize = carsPage.PageSize,
             PageNumber = carsPage.PageNumber,
+            Cars = carsPage.Cars.Select(CarHelper.BuildRestrictedResponse).ToList()
         };
-        
-        response.Cars = carsPage.Cars.Select(CarHelper.BuildRestrictedResponse).ToList();
-        
+
         return ApplicationExecuteResult<CarUseCaseResponsePage>.Success(response).WithWarnings(warns);
     }
+    
 }

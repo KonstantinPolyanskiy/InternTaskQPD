@@ -15,6 +15,8 @@ public class DomainCar
     public string? CurrentOwner { get; set; }
     public int? Mileage { get; set; }
     
+    public bool IsSold { get; set; }
+    
     public ConditionTypes CarCondition { get; set; }
     
     public PrioritySaleTypes PrioritySale { get; set; }

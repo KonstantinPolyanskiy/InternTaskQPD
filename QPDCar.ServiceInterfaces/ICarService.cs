@@ -13,6 +13,8 @@ public interface ICarService
     Task<ApplicationExecuteResult<DomainCar>> UpdateCarAsync(DtoForUpdateCar carData);
     Task<ApplicationExecuteResult<Unit>> DeleteCarAsync(int carId);
     
+    Task<ApplicationExecuteResult<DomainCar>> SoldCarAsync(DomainCar car);    
+    
     Task<ApplicationExecuteResult<DomainCar>> ByIdAsync(int carId);
     Task<ApplicationExecuteResult<DomainCarPage>> ByParamsAsync(DtoForSearchCars parameters);
     

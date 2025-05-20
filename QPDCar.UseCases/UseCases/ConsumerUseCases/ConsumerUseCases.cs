@@ -21,8 +21,6 @@ public class ConsumerUseCases(IUserService userService, IRoleService roleService
     {
         logger.LogInformation("Попытка регистрации пользователя с логином {login}", userData.Login);
 
-        var warns = new List<ApplicationError>();
-        
         // Создаем аккаунт
         var userResult = await userService.CreateAsync(new DtoForCreateUser
         {
@@ -51,7 +49,6 @@ public class ConsumerUseCases(IUserService userService, IRoleService roleService
         var url = new Uri($"/confirm-email?uid={ Uri.EscapeDataString(user.Id) }&code={ Uri.EscapeDataString(token) }", UriKind.Relative);
 
         var body = $"Перейдите по {url} для подтверждения почты";
-        
         var sendResult = await publisher.NotifyAsync(new EmailNotificationEvent
         {
             MessageId = Guid.NewGuid(),
