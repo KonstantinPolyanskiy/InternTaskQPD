@@ -7,7 +7,8 @@ namespace QPDCar.UseCases.Helpers;
 
 internal static class CarHelper
 {
-    internal static CarUseCaseResponse BuildFullResponse(DomainCar car)
+    /// <summary> Строит полный ответ о машине и ее частях для уполномоченного сотрудника </summary>
+    internal static CarUseCaseResponse BuildFullResponse(DomainCar car) 
     {
         var resp = new CarUseCaseResponse
         {
@@ -47,7 +48,8 @@ internal static class CarHelper
         
         return resp;
     }
-
+    
+    /// <summary> Строит частичный ответ о машине и ее частях для клиента </summary>
     internal static CarUseCaseResponse BuildRestrictedResponse(DomainCar car)
     {
         var resp = new CarUseCaseResponse

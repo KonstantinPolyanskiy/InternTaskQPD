@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Net;
+using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using QPDCar.Models.ApplicationModels;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
@@ -25,9 +26,15 @@ public class CarConsumerUseCases(ICarService carService, ICartService cartServic
         if (carResult.IsSuccess is false)
             return ApplicationExecuteResult<CarUseCaseResponse>.Failure().Merge(carResult);
         var car = carResult.Value!;
-
-        var resp = CarHelper.BuildRestrictedResponse(car);
         
+        var resp = CarHelper.BuildRestrictedResponse(car);
+
+        if (car.IsSold)
+            return ApplicationExecuteResult<CarUseCaseResponse>.Success(resp).WithWarning(new ApplicationError(
+                CarErrors.CarIsSold, "Запрошенная машина продана",
+                $"Запрашиваемая машина {car.Id} уже продана",
+                ErrorSeverity.NotImportant));
+
         return ApplicationExecuteResult<CarUseCaseResponse>.Success(resp);
     }
 
@@ -48,7 +55,7 @@ public class CarConsumerUseCases(ICarService carService, ICartService cartServic
         {
             PageSize = carsPage.PageSize,
             PageNumber = carsPage.PageNumber,
-            Cars = carsPage.Cars.Select(CarHelper.BuildRestrictedResponse).ToList()
+            Cars = carsPage.Cars.Where(c => c.IsSold == false).Select(CarHelper.BuildRestrictedResponse).ToList()
         };
 
         return ApplicationExecuteResult<CarUseCaseResponsePage>.Success(response).WithWarnings(warns);

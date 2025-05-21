@@ -10,6 +10,8 @@ public enum CarErrors
     
     CarNotSetPhoto,
     CarAlreadyHavePhoto,
+    
+    CarIsSold,
 }
 
 /// <summary> Типы ошибок связанные с корзиной </summary>
