@@ -4,7 +4,7 @@ using QPDCar.Models.ApplicationModels.Events;
 using QPDCar.ServiceInterfaces.Publishers;
 using Quartz;
 
-namespace QPDCar.Jobs;
+namespace QPDCar.Jobs.Jobs;
 
 /// <summary> Отправляет Email уведомление отвественным менеджерам что машина без фотографии </summary>
 public class PublishCarDontHavePhotoJob(AppDbContext db, INotificationPublisher publisher) : IJob

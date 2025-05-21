@@ -10,11 +10,14 @@ using QPDCar.Infrastructure.DbContexts;
 using QPDCar.Infrastructure.Extensions;
 using QPDCar.Infrastructure.Publishers;
 using QPDCar.Jobs;
+using QPDCar.Jobs.Extensions;
+using QPDCar.Jobs.Jobs;
 using QPDCar.Models.ApplicationModels.Settings;
 using QPDCar.Models.StorageModels;
 using QPDCar.Repositories.Extensions;
 using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.Services.Extensions;
+using QPDCar.UseCases.Extensions;
 using QPDCar.UseCases.Models.UserModels;
 using QPDCar.UseCases.UseCases.ConsumerUseCases;
 using QPDCar.UseCases.UseCases.EmployerUseCases;
@@ -72,50 +75,23 @@ builder.Services.AddSingleton<IConnection>(sp =>
     var cfg     = sp.GetRequiredService<IConfiguration>();
     var factory = new ConnectionFactory
     {
-        HostName = cfg["Rabbit:Host"],
-        UserName = cfg["Rabbit:User"],
-        Password = cfg["Rabbit:Pass"],
+        HostName = cfg["Rabbit:Host"] ?? string.Empty,
+        UserName = cfg["Rabbit:User"] ?? string.Empty,
+        Password = cfg["Rabbit:Pass"] ?? string.Empty,
     };
 
     return factory.CreateConnectionAsync("api-publisher").Result;
 });
-
 builder.Services.AddScoped<INotificationPublisher, RabbitPublisher>();
 
 var defaultPgConn = builder.Configuration.GetConnectionString("Default");
 
 builder.Services.AddDbContexts(defaultPgConn!);
-
 builder.Services.AddMailSender(builder.Configuration.GetSection("SmtpSettings"));
-
 builder.Services.AddRepositories();
-
 builder.Services.AddServices();
-
-builder.Services.AddScoped<CarConsumerUseCases>();
-builder.Services.AddScoped<ConsumerUseCases>();
-
-builder.Services.AddScoped<CarEmployerUseCases>();
-builder.Services.AddScoped<PhotoEmployerUseCases>();
-
-builder.Services.AddScoped<AdminUseCases>();
-builder.Services.AddScoped<UserUseCases>();
-
-builder.Services.AddQuartz(q =>
-{
-    q.UseMicrosoftDependencyInjectionJobFactory();
-
-    var jobKey = new JobKey("car-no-photo");
-
-    q.AddJob<PublishCarDontHavePhotoJob>(opts => opts.WithIdentity(jobKey));
-
-    q.AddTrigger(opts => opts
-            .ForJob(jobKey)
-            .WithIdentity("car-no-photo-trigger")
-            .WithCronSchedule("0 0/1 * * * ?",
-                x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Europe/Moscow")))
-    );
-});
+builder.Services.AddUseCases();
+builder.Services.AddQuartzJobs();
 
 builder.Services.AddQuartzHostedService(opt =>
 {
