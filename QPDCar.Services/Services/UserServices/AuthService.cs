@@ -15,6 +15,7 @@ using QPDCar.Models.ApplicationModels.ErrorTypes;
 using QPDCar.Models.BusinessModels.EmployerModels;
 using QPDCar.Models.StorageModels;
 using QPDCar.ServiceInterfaces.UserServices;
+using QPDCar.Services.ErrorHelpers;
 
 namespace QPDCar.Services.Services.UserServices;
 
@@ -25,17 +26,14 @@ public class AuthService(SignInManager<ApplicationUserEntity> signInManager, IRo
     {
         var signInResult = await signInManager.PasswordSignInAsync(login, password, false, false);
         if (signInResult.Succeeded is false)
-            return ApplicationExecuteResult<AuthTokensPair>.Failure(new ApplicationError(
-                UserErrors.InvalidLoginOrPassword, "Не верный логин или пароль",
-                "Не получилось авторизовать пользователя по переданному логину/парою",
-                ErrorSeverity.Critical, HttpStatusCode.Unauthorized));
+            return ApplicationExecuteResult<AuthTokensPair>.Failure(UserErrorHelper.ErrorIncorrectLoginOrPasswordWarning());
         
         var user = await signInManager.UserManager.FindByNameAsync(login);
         if (user is null)
-            return ApplicationExecuteResult<AuthTokensPair>.Failure(new ApplicationError(
-                UserErrors.UserNotFound, "Не получилось найти пользователя",
-                $"Авторизация прошла успешно, но пользователь {login} не найден",
-                ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+            return ApplicationExecuteResult<AuthTokensPair>
+                .Failure(UserErrorHelper
+                    .ErrorUserNotFoundWarning(login)
+                    .ToCritical(HttpStatusCode.NotFound));
 
         var rolesResult = await roleService.GetRolesByUser(user);
         if (rolesResult.IsSuccess is false)
@@ -56,10 +54,10 @@ public class AuthService(SignInManager<ApplicationUserEntity> signInManager, IRo
             .FirstOrDefaultAsync(u =>
                 u.RefreshTokens.Any(rt => rt.RefreshBody == refreshToken));
         if (user is null)
-            return ApplicationExecuteResult<AuthTokensPair>.Failure(new ApplicationError(
-                UserErrors.UserNotFound, "Не получилось найти пользователя",
-                $"Авторизация прошла успешно, но пользователь c токеном {refreshToken} не найден",
-                ErrorSeverity.Critical, HttpStatusCode.InternalServerError));
+            return ApplicationExecuteResult<AuthTokensPair>
+                .Failure(UserErrorHelper
+                    .ErrorUserNotFoundWarning($"refresh token - {refreshToken}")
+                    .ToCritical(HttpStatusCode.NotFound));
         
         var rolesResult = await roleService.GetRolesByUser(user);
         if (rolesResult.IsSuccess is false)

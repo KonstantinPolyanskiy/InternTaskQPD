@@ -21,7 +21,8 @@ public class RoleService(UserManager<ApplicationUserEntity>  userManager, ILogge
         if (!roles.Any())
             return ApplicationExecuteResult<List<ApplicationRoles>>.Failure(new ApplicationError(
                 UserErrors.NotFoundAnyRole, "Роли не найдены",
-                $"Не найдено ни 1 роли для пользователя {user.UserName}", ErrorSeverity.Critical, HttpStatusCode.NotFound));
+                $"Не найдено ни 1 роли для пользователя {user.UserName}", 
+                ErrorSeverity.Critical, HttpStatusCode.NotFound));
         
         logger.LogInformation("Для пользователя с id {id} найдено {count} ролей", user.Id, roles.Count);
 

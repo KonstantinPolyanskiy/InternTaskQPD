@@ -90,10 +90,10 @@ public class AuthTokenService(IRefreshRepository refreshRepository, IBlackListAc
         var refreshEntity = refreshResult.Value!;
 
         if (refreshEntity.ExpiresAtUtc < DateTime.UtcNow)
-            return ApplicationExecuteResult<AuthTokensPair>.Failure(new ApplicationError(
-                RefreshTokenErrors.TokenExpired, "Refresh токен истек",
-                $"Refresh токен {refreshToken} истек, авторизуйтесь повторно",
-                ErrorSeverity.Critical, HttpStatusCode.Unauthorized));
+            return ApplicationExecuteResult<AuthTokensPair>
+                .Failure(TokenErrorHelper
+                    .ErrorRefreshTokenExpiredWarning(refreshToken)
+                    .ToCritical(HttpStatusCode.Unauthorized));
         
         var newPairResult = await GenerateAuthTokensPairAsync(user, roles);
         if (refreshResult.IsSuccess is false)
@@ -102,10 +102,9 @@ public class AuthTokenService(IRefreshRepository refreshRepository, IBlackListAc
         
         var deletedResult = await refreshRepository.DeleteByIdAsync(refreshEntity.Id);
         if (deletedResult.IsSuccess is false)
-            return ApplicationExecuteResult<AuthTokensPair>.Success(pair).WithWarning(new ApplicationError(
-                RefreshTokenErrors.TokenNotDeleted, "Токен не удален",
-                $"Новая пара токенов успешно создана, но старый refresh не удален",
-                ErrorSeverity.NotImportant));
+            return ApplicationExecuteResult<AuthTokensPair>
+                .Success(pair)
+                .WithWarning(TokenErrorHelper.ErrorRefreshTokenNotDeletedWarning(refreshToken));
         
         return ApplicationExecuteResult<AuthTokensPair>.Success(pair);
     }
@@ -139,7 +138,7 @@ public class AuthTokenService(IRefreshRepository refreshRepository, IBlackListAc
                 "Не передан Jti Access токена для точечного отзыва",
                 ErrorSeverity.Critical, HttpStatusCode.BadRequest));
         
-        var blockedResult = await accessRepository.SaveTokenInBlackListAsync(new BlackListAccessTokenEntity()
+        var blockedResult = await accessRepository.SaveTokenInBlackListAsync(new BlackListAccessTokenEntity
         {
             Jti = jti,
             Reason = reason,
