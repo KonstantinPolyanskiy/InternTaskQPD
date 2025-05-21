@@ -11,6 +11,7 @@ public class InMemoryCartService(ICarService carService) : ICartService
 {
     private static readonly ConcurrentDictionary<Guid, HashSet<int>> Carts = new();
     
+    /// <summary> Добавить машину в карзину </summary>
     public async Task<ApplicationExecuteResult<Unit>> AddCarAsync(Guid userId, int carId)
     {
         var set = Carts.GetOrAdd(userId, id => []);

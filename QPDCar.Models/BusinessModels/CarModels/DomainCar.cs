@@ -35,3 +35,19 @@ public class DomainCarPage
     public int PageNumber { get; init; }
     public int PageSize { get; init; }
 }
+
+public record DomainCarsInCart
+{
+    public List<DomainCar> Cars { get; init; } = [];
+    
+    public int TotalCount { get; init; }
+    
+    public decimal TotalCost { get; init; }
+}
+
+public record SoldDomainCarsInfo
+{
+    public int TotalCount { get; init; }
+    
+    public decimal TotalCost { get; init; }
+}
