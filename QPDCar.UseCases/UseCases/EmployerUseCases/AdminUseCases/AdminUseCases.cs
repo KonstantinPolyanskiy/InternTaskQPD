@@ -1,44 +1,38 @@
-﻿using Microsoft.Extensions.Logging;
-using QPDCar.Models.ApplicationModels;
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
-using QPDCar.Models.ApplicationModels.ErrorTypes;
 using QPDCar.Models.BusinessModels.EmployerModels;
 using QPDCar.Models.BusinessModels.UserModels;
 using QPDCar.Models.DtoModels.UserDtos;
 using QPDCar.Models.StorageModels;
 using QPDCar.ServiceInterfaces.UserServices;
+using QPDCar.UseCases.Helpers;
 
 namespace QPDCar.UseCases.UseCases.EmployerUseCases.AdminUseCases;
 
 /// <summary> Действия администратора </summary>
 public class AdminUseCases(IRoleService roleService, IUserService userService, 
-    IAuthService authService, ILogger<AdminUseCases> logger)
+    IAuthService authService, IMapper mapper, ILogger<AdminUseCases> logger)
 {
     /// <summary> Кейс создания пользователя администратором </summary>
     public async Task<ApplicationExecuteResult<UserSummary>> CreateUser(DtoForCreateUser data)
     {
         logger.LogInformation("Создание пользователя администратором, данные - {@data}", data);
 
+        // Создаем пользователя
         var userResult = await userService.CreateAsync(data);
         if (userResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(userResult);
         var user = userResult.Value!;
         
+        // Устанавливаем роли
         var setRolesResult = await roleService.AddRolesToUser(user, data.InitialRoles.ToList());
         if (setRolesResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(setRolesResult);
-
-        var resp = new UserSummary
-        {
-            Id = user.Id,
-            Login = user.UserName!,
-            FirstName = user.FirstName,
-            LastName = user.LastName!,
-            Email = user.Email!,
-            EmailConfirmed = user.EmailConfirmed,
-            Roles = data.InitialRoles
-        };
+        
+        var resp = mapper.Map<UserSummary>(user);
+        resp.Roles = data.InitialRoles;
         
         return ApplicationExecuteResult<UserSummary>.Success(resp);
     }
@@ -48,26 +42,20 @@ public class AdminUseCases(IRoleService roleService, IUserService userService,
     {
         logger.LogInformation("Получение пользователя {id} администратором", id);
         
+        // Получаем пользователя
         var userResult = await userService.ByLoginOrIdAsync(id.ToString());
         if (userResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(userResult);
         var user = userResult.Value!;
         
+        // Получаем его роли
         var rolesResult = await roleService.GetRolesByUser(user);
         if (rolesResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(rolesResult);
         var roles = rolesResult.Value!;
 
-        var resp = new UserSummary
-        {
-            Id = user.Id,
-            Login = user.UserName!,
-            FirstName = user.FirstName,
-            LastName = user.LastName!,
-            Email = user.Email!,
-            EmailConfirmed = user.EmailConfirmed,
-            Roles = roles
-        };
+        var resp = mapper.Map<UserSummary>(user);
+        resp.Roles = roles;
         
         return ApplicationExecuteResult<UserSummary>.Success(resp);
     }
@@ -77,6 +65,7 @@ public class AdminUseCases(IRoleService roleService, IUserService userService,
     {
         logger.LogInformation("Получение всех пользователей");
         
+        // Получаем всех пользователей
         var usersResult = await userService.AllUsers();
         if (usersResult.IsSuccess is false)
             return ApplicationExecuteResult<List<UserSummary>>.Failure().Merge(usersResult);
@@ -85,26 +74,18 @@ public class AdminUseCases(IRoleService roleService, IUserService userService,
         var warns = new List<ApplicationError>();
         var resp = new List<UserSummary>();
 
+        // Для каждого пользователя находим роли
         foreach (var user in users)
         {
             var rolesResult = await roleService.GetRolesByUser(user);
             if (rolesResult.IsSuccess is false)
-                warns.Add(new ApplicationError(
-                    UserErrors.NotFoundAnyRole, "Ошибка с получением ролей",
-                    $"Для пользователя {user.UserName!} возникла проблема с получением ролей",
-                    ErrorSeverity.NotImportant));
+                warns.Add(RoleErrorHelper.ErrorUnknownRoleWarning(user.UserName!));
             var roles = rolesResult.Value!;
             
-            resp.Add(new UserSummary
-            {
-                Id = user.Id,
-                Login = user.UserName!,
-                FirstName = user.FirstName,
-                LastName = user.LastName!,
-                Email = user.Email!,
-                EmailConfirmed = user.EmailConfirmed,
-                Roles = roles
-            });
+            var summary = mapper.Map<UserSummary>(user);
+            summary.Roles = roles;
+            
+            resp.Add(summary);
         }
         
         return ApplicationExecuteResult<List<UserSummary>>
@@ -117,33 +98,29 @@ public class AdminUseCases(IRoleService roleService, IUserService userService,
     {
         logger.LogInformation("Обновление пользователя {id} администратором", data.UserId);
         
+        // Получаем обновляемого пользователя
         var userResult = await userService.ByLoginOrIdAsync(data.UserId.ToString());
         if (userResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(userResult);
         var user = userResult.Value!;
         
+        // Переназначаем поля
         user.FirstName = data.FirstName;
         user.LastName = data.LastName;
         
+        // Обновляем пользователя с новыми данными
         var updatedUserResult = await userService.UpdateAsync(user);
         if (updatedUserResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(updatedUserResult);
         user = updatedUserResult.Value!;
         
+        // Обновляем пользователя с новыми ролями
         var updatedRolesResult = await RewriteUserRoles(data.NewRoles.ToList(), user);
         if (updatedRolesResult.IsSuccess is false)
             return ApplicationExecuteResult<UserSummary>.Failure().Merge(updatedRolesResult);
 
-        var resp = new UserSummary
-        {
-            Id = user.Id,
-            Login = user.UserName!,
-            FirstName = user.FirstName,
-            LastName = user.LastName!,
-            Email = user.Email!,
-            EmailConfirmed = user.EmailConfirmed,
-            Roles = data.NewRoles
-        };
+        var resp = mapper.Map<UserSummary>(user);
+        resp.Roles = data.NewRoles;
         
         return ApplicationExecuteResult<UserSummary>.Success(resp);
     }
@@ -153,15 +130,18 @@ public class AdminUseCases(IRoleService roleService, IUserService userService,
     {
         logger.LogInformation("Изменение статуса блокировки пользователя {id}", id);
         
+        // Получаем пользователя
         var userResult = await userService.ByLoginOrIdAsync(id.ToString());
         if (userResult.IsSuccess is false)
             return ApplicationExecuteResult<Unit>.Failure().Merge(userResult);
         var user = userResult.Value!;
         
+        // Логаутим пользователя
         var logoutResult = await authService.LogoutUserAsync(user, true, "Бан пользователя");
         if (logoutResult.IsSuccess is false)
             return ApplicationExecuteResult<Unit>.Failure().Merge(logoutResult);
-
+        
+        // Меняем статус пользователя
         var blockResult = await userService.BlockOrUnblockAsync(user);
         if (blockResult.IsSuccess is false)
             return ApplicationExecuteResult<Unit>.Failure().Merge(blockResult);
@@ -174,11 +154,13 @@ public class AdminUseCases(IRoleService roleService, IUserService userService,
     {
         logger.LogInformation("Логаут администратором пользователя {id}", userId);
         
+        // Получаем пользователя
         var userResult = await userService.ByLoginOrIdAsync(userId.ToString());
         if (userResult.IsSuccess is false)
             return ApplicationExecuteResult<Unit>.Failure().Merge(userResult);
         var user = userResult.Value!;
         
+        // Логаутим пользователя
         var logoutResult = await authService.LogoutUserAsync(user, true, "Кик администратором");
         if (logoutResult.IsSuccess is false)
             return ApplicationExecuteResult<Unit>.Failure().Merge(logoutResult);

@@ -1,15 +1,14 @@
 ﻿using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
-using QPDCar.Models.ApplicationModels;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
 using QPDCar.Models.ApplicationModels.AuthModels;
 using QPDCar.Models.ApplicationModels.ErrorTypes;
-using QPDCar.Models.ApplicationModels.Events;
 using QPDCar.ServiceInterfaces.MailServices;
 using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.ServiceInterfaces.UserServices;
+using QPDCar.UseCases.Helpers;
 
 namespace QPDCar.UseCases.UseCases.UserUseCases;
 
@@ -35,26 +34,14 @@ public class UserUseCases(IAuthService authService, IUserService userService, IN
         // Получаем пользователя для отправки email
         var userResult = await userService.ByLoginOrIdAsync(login);
         if (userResult.IsSuccess is false)
-            warns.Add(new ApplicationError(
-                UserErrors.UserNotFound, "Пользователь не найден",
-                "Пользователь успешно авторизован, но не найден",
-                ErrorSeverity.NotImportant));
+            warns.Add(UserErrorHelper.ErrorUserNotFound(login));
         var user = userResult.Value!;
         
         // Отправляем email о входе
-        var body = $"Уважаемый {user.LastName} + {user.FirstName}, в ваш аккаунт {user.UserName} совершен вход {now.ToShortDateString() + now.ToShortTimeString()}";
-        var sendResult = await publisher.NotifyAsync(new EmailNotificationEvent
-        {
-            MessageId = Guid.NewGuid(),
-            To = user.Email!,
-            Subject = "Вход в аккаунт",
-            BodyHtml = body
-        });
+        var sendResult = await publisher.NotifyAsync(EmailNotificationEventHelper
+            .BuildAccountLoginEvent(user.Email!, string.Join(" ", now.ToShortDateString(), now.ToShortTimeString()), user.UserName!) );
         if (sendResult.IsSuccess is false)
-            warns.Add(new ApplicationError(
-                EmailErrors.MailNotSend, "Почта не отправлена",
-                $"На почту {user.Email!} не удалось отправить email о входе в аккаунт",
-                ErrorSeverity.NotImportant));
+            warns.Add(EmailErrorHelper.ErrorMailNotSendWarn(user.Email!, "вход в аккаунт"));
         
         return ApplicationExecuteResult<AuthTokensPair>.Success(pair)
             .WithWarnings(warns);
@@ -112,19 +99,9 @@ public class UserUseCases(IAuthService authService, IUserService userService, IN
             return ApplicationExecuteResult<Unit>.Failure().Merge(confirmResult);
         
         // Отправляем email об успешном подтверждении
-        var body = $"Уважаемый {user.LastName} + {user.FirstName} благодарим за подтверждение почты";
-        var thanksResult = await publisher.NotifyAsync(new EmailNotificationEvent
-        {
-            MessageId = Guid.NewGuid(),
-            To = user.Email!,
-            Subject = "Подтверждение почты",
-            BodyHtml = body
-        });
+        var thanksResult = await publisher.NotifyAsync(EmailNotificationEventHelper.BuildThanksEmailConfirmEvent(user.Email!, user.UserName!));
         if (thanksResult.IsSuccess is false)
-            warns.Add(new ApplicationError(
-                EmailErrors.MailNotSend, "Email не отправлен",
-                $"Email о подтверждении почты {user.Email} не отправлено",
-                ErrorSeverity.NotImportant)); 
+            warns.Add(EmailErrorHelper.ErrorMailNotSendWarn(user.Email!, "подтверждение почты")); 
         
         return ApplicationExecuteResult<Unit>.Success(Unit.Value).WithWarnings(warns);
     }

@@ -16,13 +16,21 @@ public enum ErrorSeverity
 public sealed class ApplicationError
 {
     /// <summary> Http код который необходимо отдать </summary>
-    public HttpStatusCode? HttpStatusCode { get; } = null!;
+    public HttpStatusCode? HttpStatusCode { get; set; } = null!;
     
     public Enum ErrorType { get; }
     
     public string Title { get; }
     public string Message { get; }
-    public ErrorSeverity Severity { get; }
+    public ErrorSeverity Severity { get; set; }
+
+    public ApplicationError ToCritical(HttpStatusCode code)
+    {
+        HttpStatusCode = code;
+        Severity = ErrorSeverity.Critical;
+        
+        return this;
+    }
     
     public ApplicationError(
         Enum errorType,

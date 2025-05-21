@@ -1,30 +1,25 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using QPDCar.Models.ApplicationModels;
+using AutoMapper;
 using QPDCar.Models.ApplicationModels.ApplicationResult;
 using QPDCar.Models.ApplicationModels.ApplicationResult.Extensions;
-using QPDCar.Models.ApplicationModels.ErrorTypes;
-using QPDCar.Models.ApplicationModels.Events;
-using QPDCar.Models.BusinessModels.CarModels;
 using QPDCar.Models.BusinessModels.EmployerModels;
 using QPDCar.Models.DtoModels.CarDtos;
 using QPDCar.ServiceInterfaces;
-using QPDCar.ServiceInterfaces.MailServices;
 using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.UseCases.Helpers;
 using QPDCar.UseCases.Models.CarModels;
-using QPDCar.UseCases.Models.PhotoModels;
-using QPDCar.UseCases.Models.UserModels;
 
 namespace QPDCar.UseCases.UseCases.EmployerUseCases;
 
 /// <summary> Действия с машиной для сотрудника </summary>
-public class CarEmployerUseCases(ICarService carService, INotificationPublisher publisher)
+public class CarEmployerUseCases(ICarService carService, IMapper mapper, INotificationPublisher publisher)
 {
     /// <summary> Кейс добавления сотрудником  новой машины в систему </summary>
     public async Task<ApplicationExecuteResult<CarUseCaseResponse>> NewCar(DtoForSaveCar carDto)
     {
         var warns = new List<ApplicationError>();
+        
         // Сохраняем машину
         var carResult = await carService.CreateCarAsync(carDto);
         if (carResult.IsSuccess is false)
@@ -34,24 +29,11 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
         // Нет фото - оправляем email
         if (carDto.Photo is null)
         {
-            warns.Add(new ApplicationError(
-                CarErrors.CarNotSetPhoto, "Нет фото",
-                $"Машина {car.Id} создана без фото",
-                ErrorSeverity.NotImportant));
+            warns.Add(CarErrorHelper.ErrorCarAddedWithoutPhotoWarning(car.Id));
             
-            var body = $"Для машины {car.Id} не добавлено фото";
-            var sendResult = await publisher.NotifyAsync(new EmailNotificationEvent
-            {
-                MessageId = Guid.NewGuid(),
-                To = car.Manager!.Email!,
-                Subject = "Машина без фото",
-                BodyHtml = body
-            });
+            var sendResult = await publisher.NotifyAsync(EmailNotificationEventHelper.BuildCarWithoutPhotoEmailEvent(car.Manager!.Email, car.Id));
             if (sendResult.IsSuccess is false)
-                warns.Add(new ApplicationError(
-                    EmailErrors.MailNotSend, "Email не отправлено",
-                    "Письмо о том, что машина установлена без фото не отправлено",
-                    ErrorSeverity.NotImportant));
+                warns.Add(EmailErrorHelper.ErrorMailNotSendWarn(car.Manager.Email, $"фото {car.Id} не добавлено"));
         }
 
         var resp = CarHelper.BuildFullResponse(car);
@@ -63,9 +45,8 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
     public async Task<ApplicationExecuteResult<CarUseCaseResponse>> UpdateCar(DtoForUpdateCar carDto, ClaimsPrincipal userClaims)
     {
         var warns = new List<ApplicationError>();
+        
         var requestedEmployerId = Guid.Parse(userClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var requestedEmployerRoles = userClaims.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList()
-            .Select(x => Enum.Parse<ApplicationRoles>(x, ignoreCase: true)).ToList();
 
         var carResult = await carService.ByIdAsync(carDto.CarId);
         if (carResult.IsSuccess is false)
@@ -73,19 +54,16 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
         var car = carResult.Value!;
         
         // Пользователь должен быть либо администратором, либо его id совпадать с Id менеджера машины
-        if (!requestedEmployerRoles.Contains(ApplicationRoles.Admin) || requestedEmployerId != car.Manager!.Id)
-            return ApplicationExecuteResult<CarUseCaseResponse>.Failure(new ApplicationError(
-                UserErrors.DontEnoughPermissions, "Не достаточно прав",
-                "Обновить машину может только менеджер за нее ответственный или администратор",
-                ErrorSeverity.Critical, HttpStatusCode.Forbidden));
+        if (!EmployerRoles(userClaims).Contains(ApplicationRoles.Admin) || requestedEmployerId != car.Manager!.Id)
+            return ApplicationExecuteResult<CarUseCaseResponse>
+                .Failure(RoleErrorHelper
+                    .ErrorDontEnoughPermissionWarning("изменить машину", car.Id.ToString())
+                    .ToCritical(HttpStatusCode.Forbidden));
 
-        if (carDto.NewManager is not null && !requestedEmployerRoles.Contains(ApplicationRoles.Admin))
+        if (carDto.NewManager is not null && !EmployerRoles(userClaims).Contains(ApplicationRoles.Admin))
         {
             carDto.NewManager = null;
-            warns.Add(new ApplicationError(
-                UserErrors.DontEnoughPermissions, "Менеджер не изменен",
-                "Изменить ответственного менеджера может только администратор",
-                ErrorSeverity.NotImportant));
+            warns.Add(RoleErrorHelper.ErrorDontEnoughPermissionWarning("изменить менеджера машины", car.Id.ToString()));
         }
         
         var updatedResult = await carService.UpdateCarAsync(carDto);
@@ -102,19 +80,16 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
     public async Task<ApplicationExecuteResult<Unit>> DeleteCar(int carId, ClaimsPrincipal userClaims)
     {
         var requestedEmployerId = Guid.Parse(userClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var requestedEmployerRoles = userClaims.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList()
-            .Select(x => Enum.Parse<ApplicationRoles>(x, ignoreCase: true)).ToList();
 
         var carResult = await carService.ByIdAsync(carId);
         if (carResult.IsSuccess is false)
             return ApplicationExecuteResult<Unit>.Failure().Merge(carResult);
         var car = carResult.Value!;
         
-        if (!requestedEmployerRoles.Contains(ApplicationRoles.Admin) || requestedEmployerId != car.Manager!.Id)
-            return ApplicationExecuteResult<Unit>.Failure(new ApplicationError(
-                UserErrors.DontEnoughPermissions, "Не достаточно прав",
-                "Удалить машину может только менеджер за нее ответственный или администратор",
-                ErrorSeverity.Critical, HttpStatusCode.Forbidden));
+        if (!EmployerRoles(userClaims).Contains(ApplicationRoles.Admin) || requestedEmployerId != car.Manager!.Id)
+            return ApplicationExecuteResult<Unit>
+                .Failure(CarErrorHelper.ErrorRestrictedCarWarn(requestedEmployerId, car.Id)
+                .ToCritical(HttpStatusCode.Forbidden));
         
         var deletedResult = await carService.DeleteCarAsync(carId);
         if (deletedResult.IsSuccess is false)
@@ -127,17 +102,15 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
     public async Task<ApplicationExecuteResult<CarUseCaseResponse>> GetCar(int carId, ClaimsPrincipal userClaims)
     {
         var requestedEmployerId = Guid.Parse(userClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var requestedEmployerRoles = userClaims.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList()
-            .Select(x => Enum.Parse<ApplicationRoles>(x, ignoreCase: true)).ToList();
 
         var carResult = await carService.ByIdAsync(carId);
         if (carResult.IsSuccess is false)
             return ApplicationExecuteResult<CarUseCaseResponse>.Failure().Merge(carResult);
         var car = carResult.Value!;
 
-        CarUseCaseResponse? resp = null;
+        CarUseCaseResponse? resp;
 
-        if (requestedEmployerRoles.Contains(ApplicationRoles.Admin) || requestedEmployerId == car.Manager!.Id)
+        if (EmployerRoles(userClaims).Contains(ApplicationRoles.Admin) || requestedEmployerId == car.Manager!.Id)
             resp = CarHelper.BuildFullResponse(car);
         else 
             resp = CarHelper.BuildRestrictedResponse(car);
@@ -150,10 +123,9 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
     {
         var warnings = new List<ApplicationError>();
         
-        var requestedEmployerId = Guid.Parse(userClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var requestedEmployerRoles = userClaims.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList()
-            .Select(x => Enum.Parse<ApplicationRoles>(x, ignoreCase: true)).ToList();
+        var employerId = Guid.Parse(userClaims.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         
+        // Получаем страницу с машинами
         var carsPageResult = await carService.ByParamsAsync(parameters);
         if (carsPageResult.IsSuccess is false)
             return ApplicationExecuteResult<CarUseCaseResponsePage>.Failure().Merge(carsPageResult);
@@ -161,31 +133,26 @@ public class CarEmployerUseCases(ICarService carService, INotificationPublisher 
 
         var preparedCars = new List<CarUseCaseResponse>();
         
-        var resp = new CarUseCaseResponsePage
-        {
-            TotalCount = carsPage.TotalCount,
-            PageNumber = carsPage.PageNumber,
-            PageSize = carsPage.PageSize,
-        };
-
+        // Строим ответ с данными согласно роли запросившего сотрудника
         foreach (var car in carsPage.Cars)
         {
-            if (requestedEmployerRoles.Contains(ApplicationRoles.Admin) || requestedEmployerId == car.Manager!.Id) 
+            if (EmployerRoles(userClaims).Contains(ApplicationRoles.Admin) || employerId == car.Manager!.Id) 
                 preparedCars.Add(CarHelper.BuildFullResponse(car));
             else
-            {
-                warnings.Add(new ApplicationError(
-                    UserErrors.DontEnoughPermissions, "Не полный ответ",
-                    $"Частичный ответ: пользователь не является администратором или ответственным менеджером машины {car.Id}",
-                    ErrorSeverity.NotImportant));
-                preparedCars.Add(CarHelper.BuildRestrictedResponse(car));
-            }
+                warnings.Add(CarErrorHelper.ErrorRestrictedCarWarn(employerId, car.Id));
         }
         
+        var resp = mapper.Map<CarUseCaseResponsePage>(carsPage);
         resp.Cars = preparedCars;
     
         return ApplicationExecuteResult<CarUseCaseResponsePage>.Success(resp)
             .WithWarnings(warnings)
             .WithWarnings(carsPageResult.GetWarnings);
+    }
+
+    private List<ApplicationRoles> EmployerRoles(ClaimsPrincipal userClaims)
+    {
+        return userClaims.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList()
+            .Select(x => Enum.Parse<ApplicationRoles>(x, ignoreCase: true)).ToList();
     }
 }

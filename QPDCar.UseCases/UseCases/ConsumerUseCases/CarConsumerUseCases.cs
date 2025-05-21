@@ -27,13 +27,11 @@ public class CarConsumerUseCases(ICarService carService, ICartService cartServic
             return ApplicationExecuteResult<CarUseCaseResponse>.Failure().Merge(carResult);
         var car = carResult.Value!;
         
-        var resp = CarHelper.BuildRestrictedResponse(car);
-
         if (car.IsSold)
-            return ApplicationExecuteResult<CarUseCaseResponse>.Success(resp).WithWarning(new ApplicationError(
-                CarErrors.CarIsSold, "Запрошенная машина продана",
-                $"Запрашиваемая машина {car.Id} уже продана",
-                ErrorSeverity.NotImportant));
+            return ApplicationExecuteResult<CarUseCaseResponse>.Failure()
+                .WithCritical(CarErrorHelper.ErrorCarIsSoldWarning(car.Id));
+
+        var resp = CarHelper.BuildRestrictedResponse(car);
 
         return ApplicationExecuteResult<CarUseCaseResponse>.Success(resp);
     }
