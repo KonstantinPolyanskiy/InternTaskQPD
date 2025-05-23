@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using QPDCar.Models.ApplicationModels.Events;
+using QPDCar.Models.ApplicationModels.Settings;
 using QPDCar.ServiceInterfaces.MailServices;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -8,37 +9,113 @@ namespace QPDCar.Notifications.Consumers;
 
 public class RabbitEmailConsumer(IConnection conn, IMailSender mailSender) : BackgroundService
 {
-    private IChannel? channel; 
+    private IChannel? _channel; 
+    
+    /// <summary>
+    /// Топик оповещений
+    /// </summary>
+    private const string ExchangeName = "notifications";
+    
+    /// <summary>
+    /// Routing-key email сообщений
+    /// </summary>
+    private const string RoutingKeyName = "email";
+    
+    /// <summary>
+    /// Очередь email сообщений
+    /// </summary>
+    private const string QueueName = "email-notify";
+    
+    /// <summary>
+    /// Очередь неотправленных email сообщений
+    /// </summary>
+    private const string DeadQueueName = QueueName + "-death";
+    
+    private const string DeadExchangeName = ExchangeName + "-death";
+    
+    private const string RetryExchangeName = DeadExchangeName + "-retry";
+    
+    private const string DeadLetterHeader = "x-dead-letter-exchange";
+
+    private RabbitRetryPolicy? RetryPolicy { get; set; }
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        channel = await conn.CreateChannelAsync(cancellationToken: stoppingToken);
-        
-        const string exchange = "notifications";
-        const string queue    = "email-notify";
-        await channel.ExchangeDeclareAsync(exchange, ExchangeType.Topic, durable: true, cancellationToken: stoppingToken);
-        
-        await channel.ExchangeDeclareAsync("notifications.dlx", ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
-        await channel.QueueDeclareAsync("email-notify.dlq", durable: true,
-            exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
+        _channel = await conn.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        await channel.QueueDeclareAsync(queue, durable: true,
-            exclusive: false, autoDelete: false,
-            arguments: new Dictionary<string, object?>
-            {
-                ["x-dead-letter-exchange"] = "notifications.dlx"
-            }, cancellationToken: stoppingToken);
-        await channel.QueueBindAsync(queue, exchange, routingKey: "email", cancellationToken: stoppingToken);
+        var args = new Dictionary<string, object?>();
+        
+        if (RetryPolicy is not null)
+            args.Add(DeadLetterHeader, DeadExchangeName);
+        
+        await _channel.ExchangeDeclareAsync(
+            exchange: ExchangeName, 
+            type: ExchangeType.Topic,
+            durable: true, 
+            cancellationToken: stoppingToken);
 
-        var consumer = new AsyncEventingBasicConsumer(channel);
+        await _channel.QueueDeclareAsync(
+            queue: QueueName + ".dlq",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            cancellationToken: stoppingToken);
+        
+        await _channel.QueueBindAsync(
+            queue: QueueName, 
+            exchange: ExchangeName,
+            routingKey: RoutingKeyName,
+            arguments: args,
+            cancellationToken: stoppingToken);
+
+        if (RetryPolicy is not null)
+        {
+            await _channel.ExchangeDeclareAsync(DeadExchangeName + ".dlx", 
+                type: ExchangeType.Direct, 
+                durable: true,
+                cancellationToken: stoppingToken);
+            
+            await _channel.ExchangeDeclareAsync(RetryExchangeName + ".dlx", 
+                type: ExchangeType.Direct, 
+                durable: true,
+                cancellationToken: stoppingToken);
+            
+            await _channel.QueueDeclareAsync(DeadQueueName,
+                durable: true,
+                autoDelete: false,
+                arguments: new Dictionary<string, object?>
+                {
+                    {"x-message-ttl", RetryPolicy.Timeout},
+                    {DeadLetterHeader, RetryPolicy.Timeout},
+                },
+                cancellationToken: stoppingToken);
+            
+            await _channel.QueueBindAsync(DeadQueueName,
+                exchange: DeadExchangeName,
+                routingKey: RoutingKeyName,
+                cancellationToken: stoppingToken);
+            
+            await _channel.QueueBindAsync(QueueName,
+                RetryExchangeName,
+                RoutingKeyName,
+                cancellationToken: stoppingToken);
+        }
+        
+        
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+        
         consumer.ReceivedAsync += OnMessageAsync;
 
-        await channel.BasicConsumeAsync(queue, autoAck: false, consumer, cancellationToken: stoppingToken);
+        await _channel.BasicConsumeAsync(QueueName, autoAck: false, consumer, cancellationToken: stoppingToken);
+        
+        await _channel.CloseAsync(stoppingToken);
+        
         await Task.CompletedTask;
     }
     
     async Task OnMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
-        EmailNotificationEvent? evt = null;
+        EmailNotificationEvent? evt;
         try
         {
             evt = JsonSerializer.Deserialize<EmailNotificationEvent>(ea.Body.Span);
@@ -46,11 +123,11 @@ public class RabbitEmailConsumer(IConnection conn, IMailSender mailSender) : Bac
 
             await mailSender.SendAsync(evt.To, evt.Subject, evt.BodyHtml);
 
-            await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+            if (_channel != null) await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
         }
         catch (Exception ex)
         {
-            await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+            if (_channel != null) await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
         }
     }
 }

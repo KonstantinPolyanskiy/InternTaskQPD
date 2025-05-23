@@ -5,10 +5,10 @@ using Microsoft.Extensions.Options;
 using Minio;
 using QPDCar.Api.Extensions;
 using QPDCar.Api.Middlewares;
-using QPDCar.Api.Seeder;
 using QPDCar.Infrastructure.DbContexts;
 using QPDCar.Infrastructure.Extensions;
 using QPDCar.Infrastructure.Publishers;
+using QPDCar.Infrastructure.Seeder;
 using QPDCar.Jobs;
 using QPDCar.Jobs.Extensions;
 using QPDCar.Jobs.Jobs;
@@ -18,11 +18,6 @@ using QPDCar.Repositories.Extensions;
 using QPDCar.ServiceInterfaces.Publishers;
 using QPDCar.Services.Extensions;
 using QPDCar.UseCases.Extensions;
-using QPDCar.UseCases.Models.UserModels;
-using QPDCar.UseCases.UseCases.ConsumerUseCases;
-using QPDCar.UseCases.UseCases.EmployerUseCases;
-using QPDCar.UseCases.UseCases.EmployerUseCases.AdminUseCases;
-using QPDCar.UseCases.UseCases.UserUseCases;
 using Quartz;
 using RabbitMQ.Client;
 using Serilog;
@@ -120,9 +115,10 @@ using (var scope = app.Services.CreateScope())
     serviceDb.Database.Migrate();
 }
 
-await IdentitySeeder.SeedAsync(app.Services);
+await AppDbContextSeeder.SeedAsync(app.Services);
 
 app.UseMiddleware<CorrelationIdMiddleware>();      
+
 app.UseSerilogRequestLogging(opts =>
 {
     opts.GetLevel = (ctx, _, ex) =>

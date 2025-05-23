@@ -14,6 +14,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRol
     public DbSet<BlackListAccessTokenEntity> BlackListToken => Set<BlackListAccessTokenEntity>();
     public DbSet<RefreshTokenEntity> RefreshToken => Set<RefreshTokenEntity>();
     public DbSet<ApplicationUserEntity> ApplicationUser => Set<ApplicationUserEntity>();
+    
     public DbSet<EmailConfirmationTokenEntity> EmailConfirmationToken { get; set; }
     
     public DbSet<PhotoDataEntity> PhotoData { get; set; }

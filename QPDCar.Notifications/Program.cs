@@ -20,6 +20,7 @@ builder.Services.AddSingleton<IConnection>(sp =>
 
     return factory.CreateConnectionAsync("api-publisher").Result;
 });
+
 builder.Services.AddTransient<IMailSender, MailSmtpSender>();
 builder.Services.AddHostedService<RabbitEmailConsumer>();
 
