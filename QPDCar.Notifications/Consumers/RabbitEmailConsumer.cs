@@ -7,127 +7,146 @@ using RabbitMQ.Client.Events;
 
 namespace QPDCar.Notifications.Consumers;
 
-public class RabbitEmailConsumer(IConnection conn, IMailSender mailSender) : BackgroundService
+public class RabbitEmailConsumer(IConnection conn, IMailSender mailSender, ILogger<RabbitEmailConsumer> logger) : BackgroundService
 {
-    private IChannel? _channel; 
+    private IChannel? _channel;
     
-    /// <summary>
-    /// Топик оповещений
-    /// </summary>
+    // Константы для именования RabbitMQ сущностей
     private const string ExchangeName = "notifications";
-    
-    /// <summary>
-    /// Routing-key email сообщений
-    /// </summary>
     private const string RoutingKeyName = "email";
-    
-    /// <summary>
-    /// Очередь email сообщений
-    /// </summary>
     private const string QueueName = "email-notify";
+    private const string DeadQueueName = QueueName + "-dead";
+    private const string DeadExchangeName = ExchangeName + "-dead";
+    private const string RetryExchangeName = ExchangeName + "-retry";
     
-    /// <summary>
-    /// Очередь неотправленных email сообщений
-    /// </summary>
-    private const string DeadQueueName = QueueName + "-death";
-    
-    private const string DeadExchangeName = ExchangeName + "-death";
-    
-    private const string RetryExchangeName = DeadExchangeName + "-retry";
-    
-    private const string DeadLetterHeader = "x-dead-letter-exchange";
+    // Политика повторов с настройками по умолчанию
+    private RabbitRetryPolicy RetryPolicy { get; } = new()
+    {
+        Count = 5,
+        Timeout = 5000
+    };
 
-    private RabbitRetryPolicy? RetryPolicy { get; set; }
-    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _channel = await conn.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        var args = new Dictionary<string, object?>();
-        
-        if (RetryPolicy is not null)
-            args.Add(DeadLetterHeader, DeadExchangeName);
-        
+        // Основной топик
         await _channel.ExchangeDeclareAsync(
-            exchange: ExchangeName, 
+            exchange: ExchangeName,
             type: ExchangeType.Topic,
-            durable: true, 
+            durable: true,
             cancellationToken: stoppingToken);
 
+        // Топик неотправленных
+        await _channel.ExchangeDeclareAsync(
+            exchange: DeadExchangeName,
+            type: ExchangeType.Direct,
+            durable: true,
+            cancellationToken: stoppingToken);
+
+        // Топик на повтор
+        await _channel.ExchangeDeclareAsync(
+            exchange: RetryExchangeName,
+            type: ExchangeType.Direct,
+            durable: true,
+            cancellationToken: stoppingToken);
+
+        // Основная очередь
         await _channel.QueueDeclareAsync(
-            queue: QueueName + ".dlq",
+            queue: QueueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
+            arguments: new Dictionary<string, object?>
+            {
+                { "x-dead-letter-exchange", DeadExchangeName },
+                { "x-dead-letter-routing-key", DeadQueueName }  
+            },
             cancellationToken: stoppingToken);
-        
+
+        // Очередь для мертвых
+        await _channel.QueueDeclareAsync(
+            queue: DeadQueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: new Dictionary<string, object?>
+            {
+                { "x-message-ttl", RetryPolicy.Timeout },       
+                { "x-dead-letter-exchange", RetryExchangeName } 
+            },
+            cancellationToken: stoppingToken);
+
+        // Привязки
         await _channel.QueueBindAsync(
-            queue: QueueName, 
+            queue: QueueName,
             exchange: ExchangeName,
             routingKey: RoutingKeyName,
-            arguments: args,
             cancellationToken: stoppingToken);
 
-        if (RetryPolicy is not null)
-        {
-            await _channel.ExchangeDeclareAsync(DeadExchangeName + ".dlx", 
-                type: ExchangeType.Direct, 
-                durable: true,
-                cancellationToken: stoppingToken);
-            
-            await _channel.ExchangeDeclareAsync(RetryExchangeName + ".dlx", 
-                type: ExchangeType.Direct, 
-                durable: true,
-                cancellationToken: stoppingToken);
-            
-            await _channel.QueueDeclareAsync(DeadQueueName,
-                durable: true,
-                autoDelete: false,
-                arguments: new Dictionary<string, object?>
-                {
-                    {"x-message-ttl", RetryPolicy.Timeout},
-                    {DeadLetterHeader, RetryPolicy.Timeout},
-                },
-                cancellationToken: stoppingToken);
-            
-            await _channel.QueueBindAsync(DeadQueueName,
-                exchange: DeadExchangeName,
-                routingKey: RoutingKeyName,
-                cancellationToken: stoppingToken);
-            
-            await _channel.QueueBindAsync(QueueName,
-                RetryExchangeName,
-                RoutingKeyName,
-                cancellationToken: stoppingToken);
-        }
-        
-        
+        await _channel.QueueBindAsync(
+            queue: DeadQueueName,
+            exchange: DeadExchangeName,
+            routingKey: DeadQueueName,
+            cancellationToken: stoppingToken);
+
+        await _channel.QueueBindAsync(
+            queue: QueueName,
+            exchange: RetryExchangeName,
+            routingKey: RoutingKeyName,
+            cancellationToken: stoppingToken);
+
         var consumer = new AsyncEventingBasicConsumer(_channel);
-        
         consumer.ReceivedAsync += OnMessageAsync;
 
-        await _channel.BasicConsumeAsync(QueueName, autoAck: false, consumer, cancellationToken: stoppingToken);
-        
-        await _channel.CloseAsync(stoppingToken);
-        
-        await Task.CompletedTask;
+        await _channel.BasicConsumeAsync(
+            queue: QueueName,
+            autoAck: false, 
+            consumer: consumer,
+            cancellationToken: stoppingToken);
     }
-    
-    async Task OnMessageAsync(object sender, BasicDeliverEventArgs ea)
+
+    private async Task OnMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
-        EmailNotificationEvent? evt;
         try
         {
-            evt = JsonSerializer.Deserialize<EmailNotificationEvent>(ea.Body.Span);
-            if (evt is null) throw new InvalidDataException("Empty event");
+            var evt = JsonSerializer.Deserialize<EmailNotificationEvent>(ea.Body.Span);
+            if (evt == null)
+            {
+                logger.LogError("Получено пустое email-сообщение");
+                await NegativeAck(ea);
+                return;
+            }
 
+            logger.LogInformation("Отправка email на адрес {Email}", evt.To);
             await mailSender.SendAsync(evt.To, evt.Subject, evt.BodyHtml);
-
-            if (_channel != null) await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+            
+            await PositiveAck(ea);
         }
         catch (Exception ex)
         {
-            if (_channel != null) await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+            logger.LogError(ex, "Ошибка при обработке email-уведомления");
+            await NegativeAck(ea);
         }
+    }
+
+    private async Task PositiveAck(BasicDeliverEventArgs ea)
+    {
+        if (_channel != null && _channel.IsOpen)
+            await _channel.BasicAckAsync(ea.DeliveryTag, false);
+    }
+
+    private async Task NegativeAck(BasicDeliverEventArgs ea)
+    {
+        if (_channel != null && _channel.IsOpen)
+            await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_channel != null)
+            await _channel.CloseAsync(cancellationToken: cancellationToken);
+        
+        await base.StopAsync(cancellationToken);
     }
 }
