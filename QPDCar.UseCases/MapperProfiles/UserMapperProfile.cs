@@ -5,17 +5,6 @@ using QPDCar.Models.StorageModels;
 
 namespace QPDCar.UseCases.MapperProfiles;
 
-public class ConsumerToUserProfile : Profile
-{
-    public ConsumerToUserProfile()
-    {
-        CreateMap<DtoForCreateConsumer, DtoForCreateUser>()
-            .ForMember(dest => dest.InitialRoles, opt => opt.Ignore());
-    }
-
-    
-}
-
 public class ApplicationUserToUserSummary : Profile
 {
     public ApplicationUserToUserSummary()
@@ -27,5 +16,8 @@ public class ApplicationUserToUserSummary : Profile
                 opt => opt.MapFrom(src => src.LastName ?? string.Empty))
             .ForMember(dest => dest.Roles,
                 opt => opt.Ignore());
+        
+        CreateMap<DtoForCreateConsumer, DtoForCreateUser>()
+            .ForMember(dest => dest.InitialRoles, opt => opt.Ignore());
     }
 }

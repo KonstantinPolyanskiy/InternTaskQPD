@@ -12,6 +12,7 @@ public static class ServiceDependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<ICarService, CarService>();
+        services.AddScoped<ICartService, InMemoryCartService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();

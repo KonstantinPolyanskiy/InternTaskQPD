@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-const string BASE_URL = "http://localhost:5116"; // ← твой host
+const string BASE_URL = "http://localhost:5000"; // ← твой host
 const bool SINGLE_TEST = false;                  // true → создаётся одна Lada
 
 var http = new HttpClient { BaseAddress = new Uri(BASE_URL) };

@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:latest
+    image: postgres:16-alpine
     container_name: car_service_db
     restart: unless-stopped
     environment:
@@ -10,9 +8,32 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: main_db
     ports:
-      - "5313:5432"
+      - "5313:5432"            
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d main_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbit:
+    image: rabbitmq:3.13-management
+    container_name: car_service_rabbit
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   minio:
     image: minio/minio:latest
@@ -21,12 +42,12 @@ services:
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
+    command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"      # S3-API
-      - "9001:9001"      # Web-console
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - miniodata:/data
-    command: server /data --console-address ":9001"
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -38,35 +59,63 @@ services:
     ports:
       - "5050:80"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - pgadmindata:/var/lib/pgadmin
-
-  rabbit:
-    image: rabbitmq:3.13-management
-    container_name: car_service_rabbit
-    restart: unless-stopped
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    ports:
-      - "5672:5672"      # AMQP
-      - "15672:15672"    # RabbitMQ Mgmt UI
-    volumes:
-      - rabbitdata:/var/lib/rabbitmq
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   mailhog:
     image: mailhog/mailhog:v1.0.1
     container_name: car_service_mailhog
     restart: unless-stopped
     ports:
-      - "8025:8025"      # Web-inbox
-      - "1025:1025"      # SMTP
+      - "8025:8025"
+      - "1025:1025"
+
+  api:
+    build:
+      context: .
+      dockerfile: QPDCar.Api/Dockerfile
+    container_name: car_service_api
+    restart: unless-stopped
+    ports:
+      - "5000:8080"                 
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development             
+      ConnectionStrings__Default: Host=db;Port=5432;Database=main_db;Username=admin;Password=password
+      Rabbit__Host: rabbit
+      Rabbit__User: guest
+      Rabbit__Pass: guest
+      MinioSettings__Endpoint: minio
+      SmtpSettings__Host: mailhog
+      SmtpSettings__Port: 1025
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+  notifications:
+    build:
+      context: .
+      dockerfile: QPDCar.Notifications/Dockerfile
+    container_name: car_service_notifications
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Rabbit__Host: rabbit
+      Rabbit__User: guest
+      Rabbit__Pass: guest
+      SmtpSettings__Host: mailhog
+      SmtpSettings__Port: 1025
+      ConnectionStrings__Default: Host=db;Port=5432;Database=main_db;Username=admin;Password=password
+    depends_on:
+      rabbit:
+        condition: service_healthy
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:

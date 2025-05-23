@@ -9,9 +9,7 @@ using QPDCar.Infrastructure.DbContexts;
 using QPDCar.Infrastructure.Extensions;
 using QPDCar.Infrastructure.Publishers;
 using QPDCar.Infrastructure.Seeder;
-using QPDCar.Jobs;
 using QPDCar.Jobs.Extensions;
-using QPDCar.Jobs.Jobs;
 using QPDCar.Models.ApplicationModels.Settings;
 using QPDCar.Models.StorageModels;
 using QPDCar.Repositories.Extensions;
@@ -37,9 +35,9 @@ builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("SmtpSettings")
 );
 
-#region Minio
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("MinioSettings"));
+#region Minio
 
 builder.Services.AddSingleton<IMinioClient>(sp =>
 {
@@ -58,7 +56,7 @@ builder.Services.AddSingleton<IMinioClient>(sp =>
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.WithProperty("BackendCarService", builder.Environment.ApplicationName)
+    .Enrich.WithProperty("Application", builder.Environment.ApplicationName)
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -115,7 +113,13 @@ using (var scope = app.Services.CreateScope())
     serviceDb.Database.Migrate();
 }
 
-await AppDbContextSeeder.SeedAsync(app.Services);
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+
+    await AppDbContextSeeder.SeedAsync(scope.ServiceProvider); 
+}
 
 app.UseMiddleware<CorrelationIdMiddleware>();      
 

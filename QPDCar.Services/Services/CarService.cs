@@ -229,7 +229,7 @@ public class CarService(ICarRepository carRepo, IPhotoDataRepository photoDataRe
         
         // Находим фото
         var photoResult = await PhotoByCarIdAsync(carId);
-        if (managerResult.IsSuccess is false)
+        if (photoResult.IsSuccess is false)
             warns.Add(new ApplicationError(
                 PhotoErrors.MetadataNotSaved, "Фото машины не найдено",
                 $"Не получилось найти фото машины {carEntity.Id}",
@@ -360,6 +360,11 @@ public class CarService(ICarRepository carRepo, IPhotoDataRepository photoDataRe
         if (carResult.IsSuccess is false)
             return DbErrorHelper.WrapAllDbErrors<CarEntity, DomainPhoto>(PhotoErrors.PhotoNotFound, carResult, string.Join(" ", CarObjectName, carId.ToString()));
         var car = carResult.Value!;
+        
+        if (car.PhotoMetadataId == null)
+            return ApplicationExecuteResult<DomainPhoto>.Failure(new ApplicationError(CarErrors.CarNotSetPhoto, "нет фото",
+                $"У машины {carId} нет метаданных фотографии", 
+                ErrorSeverity.Critical, HttpStatusCode.NotFound));
 
         var metadataResult = await photoMetadataRepo.ByIdAsync((int)car.PhotoMetadataId!);
         if (metadataResult.IsSuccess is false)
